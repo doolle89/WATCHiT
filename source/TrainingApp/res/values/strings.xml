@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">TreningApp</string>
+    <string name="action_search">Search</string>
+    <string name="action_settings">Settings</string>
+    <string name="content_description">Description</string>
+    <string name="permission_label_watchit">Start WATCHiT service</string>
+    
+    <string name="training_activity_label">Training</string>
+    
+    <string name="local_service_started">Training service has started</string>
+    <string name="local_service_stopped">Training service has stopped</string>
+    <string name="local_service_label">Training service</string>
+    <string name="local_service_context">See training progress</string>
+    
+    <string name="local_service_connected">Connected to Training service</string>
+    <string name="local_service_disconnected">Disconnected from Training service</string>
+
+</resources>

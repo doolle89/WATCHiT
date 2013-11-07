@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ConnectionApp</string>
+    <string name="action_settings">Settings</string>
+    <string name="content_description">Description</string>
+    <string name="permission_label_watchit">Start WATCHiT service</string>
+    
+    <!--  MainActivity -->
+    <string name="bt_not_enabled">Bluetooth was not enabled</string>
+    <string name="remote_service_binding">Binding to WATCHiT service</string>
+    <string name="remote_service_bound">Bound to WATCHiT service</string>
+    <string name="remote_service_unbound">Unbound from WATCHiT service</string>
+    
+    
+    <!--  DeviceListActivity -->
+    <string name="scanning">Scanning for devices&#8230;</string>
+    <string name="select_device">Select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
+    
+    <!-- WATCHiTCommunicationService -->
+    <string name="remote_service_started">WATCHiT service has started</string>
+    <string name="remote_service_stopped">WATCHiT service has stopped</string>
+    <string name="remote_service_label">WATCHiT service</string>
+    <string name="remote_service_context">Touch for settings</string>
+
+</resources>
