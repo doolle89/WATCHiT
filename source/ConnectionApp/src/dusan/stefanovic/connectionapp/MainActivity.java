@@ -61,6 +61,7 @@ public class MainActivity extends Activity {
 
 		IncomingHandler(MainActivity activity) {
 			mWeakReference = new WeakReference<MainActivity>(activity);
+			int w = 2;
 	    }
 		
         @Override
