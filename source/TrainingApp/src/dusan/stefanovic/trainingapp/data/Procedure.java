@@ -12,15 +12,17 @@ public class Procedure implements Parcelable {
 	public static final int STATE_PAUSED = 2;
 	public static final int STATE_RUNNING = 3;
 
-	String mTitle;
-	List<Step> mSteps;
-	int mState;
-	int mCurrentStepIndex;
+	private String mTitle;
+	private String mDescription;
+	private List<Step> mSteps;
+	private int mState;
+	private int mCurrentStepIndex;
 	
 	private Step lastStepInProgress;
 	
-	public Procedure(String title) {
+	public Procedure(String title, String description) {
 		mTitle = title;
+		mDescription = description;
 		mSteps = new ArrayList<Step>();
 		mState = STATE_STOPPED;
 		mCurrentStepIndex = -1;
@@ -33,7 +35,7 @@ public class Procedure implements Parcelable {
 			startNextStep();
 	    	mState = STATE_RUNNING;
 		} else if(mState == STATE_PAUSED) {
-			startNextStep();
+			mSteps.get(mCurrentStepIndex).start();
 	    	mState = STATE_RUNNING;
 		}
 	}
@@ -147,8 +149,20 @@ public class Procedure implements Parcelable {
 		mSteps.add(step);
 	}
 	
+	public String getTitle() {
+		return mTitle;
+	}
+	
+	public String getDescription() {
+		return mDescription;
+	}
+
 	public Step getCurrentStep() {
-		return mSteps.get(mCurrentStepIndex);
+		Step currentStep = null;
+		if (mCurrentStepIndex >= 0 && mCurrentStepIndex < mSteps.size()) {
+			currentStep = mSteps.get(mCurrentStepIndex);
+		}
+		return currentStep;
 	}
 	
 	public Step getStep(int i) {
@@ -190,6 +204,8 @@ public class Procedure implements Parcelable {
 	public int getProgress() {
 		return Math.round(mCurrentStepIndex / (float) mSteps.size() * 100);
 	}
+	
+	
 
 	@Override
 	public int describeContents() {
@@ -199,6 +215,7 @@ public class Procedure implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeString(mTitle);
+		out.writeString(mDescription);
 		out.writeTypedList(mSteps);
 		out.writeInt(mState);
 		out.writeInt(mCurrentStepIndex);
@@ -216,6 +233,7 @@ public class Procedure implements Parcelable {
     
     private Procedure(Parcel in) {
 		mTitle = in.readString();
+		mDescription = in.readString();
 		mSteps = new ArrayList<Step>();
 		in.readTypedList(mSteps, Step.CREATOR);
 		mState = in.readInt();

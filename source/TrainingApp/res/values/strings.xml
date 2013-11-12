@@ -7,6 +7,10 @@
     <string name="action_settings">Settings</string>
     <string name="content_description">Description</string>
     <string name="permission_label_watchit">Start WATCHiT service</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    
+    <string name="main_menu_activity_label">Main menu</string>
     
     <string name="training_activity_label">Training</string>
     
@@ -22,5 +26,14 @@
     
     <string name="local_service_connected">Connected to Training service</string>
     <string name="local_service_disconnected">Disconnected from Training service</string>
+    
+    <string-array name="menu_array">
+        <item>News feed</item>
+        <item>Create procedure</item>
+        <item>Select procedure</item>
+        <item>Achievements</item>
+        <item>Profile</item>
+        <item>Settings</item>
+    </string-array>
 
 </resources>

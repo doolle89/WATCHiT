@@ -36,13 +36,32 @@ public class MainActivity extends ActionBarActivity {
             }
         });
         
+        button = (Button) findViewById(R.id.button1);
+        button.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MainMenuActivity.class);
+                startActivity(intent);
+            }
+        });
+        
         mTextView = (TextView) findViewById(R.id.textView1);
         
-        procedure = new Procedure("TestProcedure");
-        procedure.addStep(new Step("Step 1", "description 1"));
-        procedure.addStep(new Step("Step 2", "description 2"));
-        procedure.addStep(new Step("Step 3", "description 3"));
-        procedure.addStep(new Step("Step 4", "description 4"));
+        procedure = new Procedure("Test procedure", "Procedure description description description " +
+        							"description description description description description " +
+        							"description description description description description");
+        Step step = new Step("Step 1", "description 1");
+        step.setOptimalTime(10000);
+        procedure.addStep(step);
+        step = new Step("Step 2", "description 2");
+        step.setOptimalTime(5000);
+        procedure.addStep(step);
+        step = new Step("Step 3", "description 3");
+        step.setOptimalTime(15000);
+        procedure.addStep(step);
+        step = new Step("Step 4", "description 4");
+        step.setOptimalTime(30000);
+        procedure.addStep(step);
 	}
 	
 	@Override

@@ -21,20 +21,13 @@ public class TrainingStepsFragment extends ListFragment {
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = super.onCreateView(inflater, container, savedInstanceState);
-        updateAdapter();
         return rootView;
     }
 	
 	public void setStepsList(List<Step> steps) {
 		mSteps = steps;
-		updateAdapter();
-	}
-	
-	private void updateAdapter() {
-		if (isAdded() && mSteps != null) {
-			StepListAdapter stepListAdapter = new StepListAdapter(getActivity(), R.layout.list_item_step_training, mSteps);
-	        setListAdapter(stepListAdapter);
-		}
+		StepListAdapter stepListAdapter = new StepListAdapter(getActivity(), R.layout.list_item_step_training, mSteps);
+        setListAdapter(stepListAdapter);
 	}
 	
 	public static class StepListAdapter extends ArrayAdapter<Step> {
@@ -64,7 +57,7 @@ public class TrainingStepsFragment extends ListFragment {
                 holder.status = (TextView) row.findViewById(R.id.step_status);
                 row.setTag(holder);
             } else {
-                holder= (ViewHolder) row.getTag();
+                holder = (ViewHolder) row.getTag();
             }
             
             final Step step = this.getItem(position);

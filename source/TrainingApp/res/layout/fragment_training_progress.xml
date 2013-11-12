@@ -14,7 +14,9 @@
             android:id="@+id/imageView"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/abc_ab_solid_dark_holo" />
+            android:src="@drawable/ic_launcher"
+            android:scaleType="centerInside"
+            android:contentDescription="@string/content_description" />
         
         <TextView
             android:layout_width="wrap_content"

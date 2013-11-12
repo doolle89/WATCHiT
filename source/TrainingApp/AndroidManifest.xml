@@ -28,6 +28,10 @@
         </activity>
         
         <activity 
+            android:name="dusan.stefanovic.trainingapp.MainMenuActivity" 
+            android:label="@string/main_menu_activity_label" />
+        
+        <activity 
             android:name="dusan.stefanovic.trainingapp.TrainingActivity" 
             android:label="@string/training_activity_label"
             android:windowSoftInputMode="stateAlwaysHidden" />

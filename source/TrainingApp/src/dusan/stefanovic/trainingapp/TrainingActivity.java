@@ -267,8 +267,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     @Override
 	public void onTrainingStart() {
-    	updateSteps();
     	updateTimer(0);
+    	updateSteps();
     	performCountDown();
     	mStartButton.setVisibility(View.GONE);
     	showPauseButton();
@@ -277,6 +277,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     @Override
 	public void onTrainingStarted() {
     	updateSteps();
+    	updateCurrentStep();
 	}
 
 	@Override
@@ -307,6 +308,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	public void onProgressUpdated() {
     	updateProgress();
     	updateSteps();
+    	updateCurrentStep();
 	}
 
 	@Override
@@ -364,6 +366,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     		updateState();
 	        updateTimer(mBoundService.getElapsedTime());
 	        setDeviceConnectionState(mBoundService.getDeviceConnectionState());
+	        mSectionsPagerAdapter.mTrainingCurrentStepFragment.setProcedure(mProcedure);
     	} else {
     		setIsBound(false);
     	}
@@ -408,6 +411,10 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     private void updateSteps() {
     	mSectionsPagerAdapter.mTrainingStepsFragment.setStepsList(mProcedure.getSteps());
+    }
+    
+    private void updateCurrentStep() {
+    	mSectionsPagerAdapter.mTrainingCurrentStepFragment.setStep(mProcedure.getCurrentStep());
     }
     
     private void updateState() {

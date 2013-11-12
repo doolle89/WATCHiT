@@ -389,6 +389,9 @@ public class TrainingService extends Service {
     }
     
     public void processTag(String tagValue) {
+    	Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
+    	
+    	/*
     	int tag = -1;
     	if (tagValue.equalsIgnoreCase("I rescued someone")) {
     		tag = 0;
@@ -399,25 +402,8 @@ public class TrainingService extends Service {
     	} else if (tagValue.equalsIgnoreCase("I'm happy")) {
     		tag = 3;
     	}
-    	Toast.makeText(this, "Tag: " + tag, Toast.LENGTH_SHORT).show();
-    	
     	boolean updateProcedure = false;
     	updateProcedure = mProcedure.completeStepAtIndex(tag);
-    	/*
-    	boolean updateProress = false;
-    	if (tagValue.equalsIgnoreCase("complite")) {
-    		updateProress = mProcedure.completeCurrentStep();
-    	} else if (tagValue.equalsIgnoreCase("skip")) {
-    		updateProress = mProcedure.skipCurrentStep();
-    	} else {
-    		try {
-	    		int stepIndex = Integer.parseInt(tagValue);
-	    		updateProress = mProcedure.completeStepAtIndex(stepIndex);
-    		} catch (NumberFormatException e) {
-    			e.printStackTrace();
-    		}
-    	}
-    	*/
     	if (updateProcedure) {
 			progressUpdated();
 	    	if(!mProcedure.isStarted()) {
@@ -425,6 +411,30 @@ public class TrainingService extends Service {
 		    	stopForeground(true);
 	    	}
 		}
+		*/
+    	
+    	
+    	boolean updateProcedure = false;
+    	if (tagValue.equalsIgnoreCase("c")) {
+    		updateProcedure = mProcedure.completeCurrentStep();
+    	} else if (tagValue.equalsIgnoreCase("s")) {
+    		updateProcedure = mProcedure.skipCurrentStep();
+    	} else {
+    		try {
+	    		int stepIndex = Integer.parseInt(tagValue);
+	    		updateProcedure = mProcedure.completeStepAtIndex(stepIndex);
+    		} catch (NumberFormatException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	if (updateProcedure) {
+			progressUpdated();
+	    	if(!mProcedure.isStarted()) {
+	    		mTimer.stop(false);
+		    	stopForeground(true);
+	    	}
+		}
+		
     }
 	
 	public int getDeviceConnectionState() {

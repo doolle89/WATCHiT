@@ -301,7 +301,7 @@ public class BluetoothConnection {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     
-                    
+                    /*
                     String receivedStirng = new String(buffer, 0, bytes);           // create string from bytes array
 					stringBuilder.append(receivedStirng); 
 					int endOfLineIndex = stringBuilder.indexOf("\r\n");             // determine the end-of-line
@@ -316,7 +316,16 @@ public class BluetoothConnection {
 						message.setData(bundle);
 						message.sendToTarget();
 					}
+					*/
                     
+                    // skip first 3 bytes to remove prefix
+                    String receivedStirng = new String(buffer, 3, bytes - 3);
+                    Bundle bundle = new Bundle();
+					bundle.putString("watchit_data", receivedStirng);
+					Message message = mHandler.obtainMessage(WATCHiTService.READ);
+					message.setData(bundle);
+					message.sendToTarget();
+					
                     // Send the obtained bytes to the UI Activity
                     // mHandler.obtainMessage(WATCHiTCommunicationService.MESSAGE_READ, bytes, -1, buffer).sendToTarget();
                 } catch (IOException e) {
