@@ -33,7 +33,7 @@ public class TrainingProgressFragment extends Fragment {
     	mTimerEditText.setText(time);
     }
     
-    public void updateProgress(int progress) {
+    public void setProgress(int progress) {
     	mProgressBar.setProgress(progress);
     }
 }

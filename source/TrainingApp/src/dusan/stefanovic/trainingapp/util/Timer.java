@@ -98,7 +98,9 @@ public class Timer {
 
 						@Override
 						public void run() {
-							onTick(mElapsedTime);
+							if (mIsRunning) {
+								onTick(mElapsedTime);
+							}
 						}
 	            		
 	            	});

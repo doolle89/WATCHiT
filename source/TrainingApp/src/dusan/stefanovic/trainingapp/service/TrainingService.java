@@ -13,17 +13,16 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.ResolveInfo;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 import dusan.stefanovic.trainingapp.TrainingActivity;
 import dusan.stefanovic.trainingapp.data.Procedure;
-import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.util.Timer;
 import dusan.stefanovic.treningapp.R;
 
@@ -41,11 +40,7 @@ public class TrainingService extends Service {
     // Intent for starting service after it's already bound
     Intent mDelayedStartServiceIntent;
     
-    boolean mIsTrainingStarted;
-    boolean mIsTrainingRunning;
-    
     Procedure mProcedure;
-    int mCurrentStepIndex;
     
 
     /**
@@ -87,6 +82,7 @@ public class TrainingService extends Service {
 			            break;
 		            case WATCHiTServiceInterface.CLIENT_REGISTERED:
 		            	service.setIsBound(true);
+		            	service.requestUpdate();
 		                break;
 		            case WATCHiTServiceInterface.CLIENT_UNREGISTERED:
 		            	service.setIsBound(false);
@@ -101,7 +97,7 @@ public class TrainingService extends Service {
 		            	service.setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_CONNECTED);
 			            break;
 		            case WATCHiTServiceInterface.UPDATE:
-		            	// service.updateInterface(message.getData());
+		            	service.update(message.getData());
 		            	break;
 		            case WATCHiTServiceInterface.TAG_READ:
 		            	String tag = message.getData().getString(WATCHiTServiceInterface.TAG_VALUE);
@@ -165,11 +161,12 @@ public class TrainingService extends Service {
     	
     	@Override
     	protected void onPrepare() {
-			trainingPrepared();
+			trainingStart();
     	}
     	
     	@Override
     	protected void onStart() {
+    		mProcedure.start();
     		trainingStarted();
     	}
     	
@@ -205,9 +202,6 @@ public class TrainingService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("LocalService", "Received start id " + startId + ": " + intent);
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
         
         return START_NOT_STICKY;
     }
@@ -316,6 +310,24 @@ public class TrainingService extends Service {
         }
     }
     
+    private void requestUpdate() {
+	    if (mServiceMessenger != null) {
+	        try {
+	        	Message message = Message.obtain(null, WATCHiTServiceInterface.REQUEST_UPDATE);
+				message.replyTo = mMessenger;
+	        	mServiceMessenger.send(message);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+    }
+    
+    private void update(Bundle data) {
+    	data.setClassLoader(getClassLoader());
+    	setIsStarted(data.getBoolean(WATCHiTServiceInterface.IS_CONNECTING_TO_DEVICE, false));
+    	setDeviceConnectionState(data.getInt(WATCHiTServiceInterface.DEVICE_CONNECTION_STATUS, WATCHiTServiceInterface.DEVICE_DISCONNECTED));
+    }
+    
 	private void setIsBound(boolean isBound) {
 		mIsBound = isBound;
 		if (!mIsBound) {
@@ -333,41 +345,46 @@ public class TrainingService extends Service {
 	private void setDeviceConnectionState(int deviceConnectionState) {
 		mDeviceConnectionState = deviceConnectionState;
 		deviceConnectionChanged(deviceConnectionState);
-		if (deviceConnectionState != WATCHiTServiceInterface.DEVICE_CONNECTED) {
+		if (mProcedure != null && mProcedure.isRunning() && deviceConnectionState != WATCHiTServiceInterface.DEVICE_CONNECTED) {
 			pauseTraining();
 		}
 	}
 	
-    public void startTraining(Procedure procedure) {
-    	if (!mIsTrainingStarted) {
-	    	mProcedure = procedure;
-	    	mCurrentStepIndex = 0;
+    public void startTraining() {
+    	if (!mProcedure.isStarted()) {
+    		mProcedure.reset();
 	    	mTimer.start(5000, 100);
 	    	doStartForeground();
-	    	mIsTrainingStarted = true;
-	    	mIsTrainingRunning = true;
+	    	// procedureUpdated();
+	    	// mIsTrainingStarted = true;
     	}
     }
     
     public void resumeTraining() {
-    	if (mIsTrainingStarted && !mIsTrainingRunning) {
+    	if (mProcedure.isPaused()) {
+    		mProcedure.start();
 	    	mTimer.start();
-	    	mIsTrainingRunning = true;
+	    	// procedureUpdated();
+	    	// mIsTrainingRunning = true;
     	}
     }
     
     public void pauseTraining() {
-    	if (mIsTrainingStarted && mIsTrainingRunning) {
+    	if (mProcedure.isRunning()) {
+    		mProcedure.pause();
 	    	mTimer.stop(true);
-	    	mIsTrainingRunning = false;
+	    	// procedureUpdated();
+	    	// mIsTrainingRunning = false;
     	}
     }
     
     public void stopTraining() {
-    	if (mIsTrainingStarted) {
+    	if (mProcedure.isStarted()) {
+    		mProcedure.stop();
 	    	mTimer.stop(false);
 	    	stopForeground(true);
-	    	mIsTrainingStarted = false;
+	    	// procedureUpdated();
+	    	// mIsTrainingStarted = false;
     	}
     }
     
@@ -384,49 +401,63 @@ public class TrainingService extends Service {
     	}
     	Toast.makeText(this, "Tag: " + tag, Toast.LENGTH_SHORT).show();
     	
-    	if (mIsTrainingStarted) {
-    		boolean isProgressChanged = false;
-	    	while (mCurrentStepIndex <= tag) {
-	    		if (mCurrentStepIndex == tag) {
-	    			mProcedure.getStep(mCurrentStepIndex).mStatus = Step.STATUS_COMPLETED;
-	    		} else {
-	    			mProcedure.getStep(mCurrentStepIndex).mStatus = Step.STATUS_SKIPPED;
-	    		}
-	    		mCurrentStepIndex++;
-	    		isProgressChanged = true;
-	    	}
-	    	if (mCurrentStepIndex < mProcedure.getStepsNumber()) {
-	    		mProcedure.getStep(mCurrentStepIndex).mStatus = Step.STATUS_IN_PROGRESS;
-	    	} else {
-	    		stopTraining();
-	    	}
-	    	if (isProgressChanged) {
-		    	int progress = (int) (((float) mCurrentStepIndex) / (float) mProcedure.getStepsNumber() * 100);
-		    	progressChanged(progress);
-	    	}
+    	boolean updateProcedure = false;
+    	updateProcedure = mProcedure.completeStepAtIndex(tag);
+    	/*
+    	boolean updateProress = false;
+    	if (tagValue.equalsIgnoreCase("complite")) {
+    		updateProress = mProcedure.completeCurrentStep();
+    	} else if (tagValue.equalsIgnoreCase("skip")) {
+    		updateProress = mProcedure.skipCurrentStep();
+    	} else {
+    		try {
+	    		int stepIndex = Integer.parseInt(tagValue);
+	    		updateProress = mProcedure.completeStepAtIndex(stepIndex);
+    		} catch (NumberFormatException e) {
+    			e.printStackTrace();
+    		}
     	}
+    	*/
+    	if (updateProcedure) {
+			progressUpdated();
+	    	if(!mProcedure.isStarted()) {
+	    		mTimer.stop(false);
+		    	stopForeground(true);
+	    	}
+		}
     }
-    
-    public boolean isTrainingStarted() {
-		return mIsTrainingStarted;
+	
+	public int getDeviceConnectionState() {
+		return mDeviceConnectionState;
 	}
 
-	public boolean isTrainingRunning() {
-		return mIsTrainingRunning;
-	}    
+	public Procedure getProcedure() {
+		return mProcedure;
+	}
+	
+	public Procedure setProcedure(Procedure procedure) {
+		if (mProcedure == null) {
+			mProcedure = procedure;
+		}
+		return mProcedure;
+	}
     
+	public long getElapsedTime() {
+		return mTimer.getElapsedTime();
+	}
+	
     
     // Listener ---------------------------------------------------
     
-    
-    public interface TrainingServiceListener {
-    	public void onTrainingPrepared();
+
+	public interface TrainingServiceListener {
+    	public void onTrainingStart();
     	public void onTrainingStarted();
     	public void onTrainingResumed();
     	public void onTrainingPaused();
     	public void onTrainingStopped();
+    	public void onProgressUpdated();
     	public void onDeviceConnectionChanged(int connectionState);
-    	public void onProgressChanged(int progress);
     	public void onTimerTicked(long milliseconds);
     }
     
@@ -444,10 +475,10 @@ public class TrainingService extends Service {
     	return mTrainingServiceListeners.remove(trainingServiceListener);
     }
     
-    public void trainingPrepared() {
+    public void trainingStart() {
     	for (int i = mTrainingServiceListeners.size()-1; i >=0 ; i--) {
             try {
-            	mTrainingServiceListeners.get(i).onTrainingPrepared();
+            	mTrainingServiceListeners.get(i).onTrainingStart();
             } catch (Exception e) {
             	mTrainingServiceListeners.remove(i);
             }
@@ -514,10 +545,10 @@ public class TrainingService extends Service {
         }
     }
     
-    public void progressChanged(int progress) {
+    public void progressUpdated() {
     	for (int i = mTrainingServiceListeners.size()-1; i >=0 ; i--) {
             try {
-            	mTrainingServiceListeners.get(i).onProgressChanged(progress);
+            	mTrainingServiceListeners.get(i).onProgressUpdated();
             } catch (Exception e) {
             	mTrainingServiceListeners.remove(i);
             }

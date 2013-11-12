@@ -1,6 +1,36 @@
-*.class
-
 # Package Files #
 *.jar
 *.war
 *.ear
+
+# LaTeX stuff
+*.log
+*.bbl
+*.out
+*.toc
+*.blg
+*.synctex.gz
+*.aux
+
+# Android stuff
+*.apk
+*.ap_
+*.db
+
+# files for the dex VM
+*.dex
+
+# Java class files
+*.class
+
+# generated files
+source/*/bin/
+source/*/gen/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Eclipse project files
+.classpath
+.project
+project.properties

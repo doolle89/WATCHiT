@@ -20,15 +20,17 @@ package dusan.stefanovic.trainingapp;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.os.Vibrator;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -43,17 +45,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.fragment.TrainingCurrentStepFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingProgressFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingStepsFragment;
 import dusan.stefanovic.trainingapp.service.TrainingService;
-import dusan.stefanovic.trainingapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.trainingapp.service.TrainingService.TrainingServiceListener;
+import dusan.stefanovic.trainingapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingActivity extends ActionBarActivity implements TabListener, TrainingServiceListener {
@@ -70,6 +71,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     private boolean mIsBindCalled;
     private boolean mIsBound;
+    private int mDeviceConnectionState;
 
     private TrainingService mBoundService;
     
@@ -85,6 +87,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
             // cast its IBinder to a concrete class and directly access it.
             mBoundService = ((TrainingService.LocalBinder) service).getService();
             mBoundService.registerTrainingServiceListener(TrainingActivity.this);
+            mProcedure = mBoundService.setProcedure(mProcedure);
+            doSynchronization();
             
             // start service with the intent after it's already bound
             if (mDelayedStartServiceIntent != null) {
@@ -105,6 +109,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         }
     };
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
@@ -154,7 +159,9 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 			@Override
 			public void onClick(View view) {
 				if (mBoundService != null) {
-					mBoundService.startTraining(mProcedure);
+					mBoundService.startTraining();
+				} else {
+					setIsBound(false);
 				}
 			}
 		});
@@ -166,6 +173,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 			public void onClick(View view) {
 				if (mBoundService != null) {
 					mBoundService.resumeTraining();
+				} else {
+					setIsBound(false);
 				}
 			}
 		});
@@ -177,15 +186,27 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 			public void onClick(View view) {
 				if (mBoundService != null) {
 					mBoundService.pauseTraining();
+				} else {
+					setIsBound(false);
 				}
 			}
 		});
-                
         
-        
-        mProcedure = getIntent().getParcelableExtra("Procedure");
-        
-        doBindAndStartService(new Intent(this, TrainingService.class));
+        mProcedure = getIntent().getParcelableExtra("procedure");
+        Intent intent = new Intent(this, TrainingService.class);
+        intent.putExtras(getIntent());
+        doBindAndStartService(intent);
+    }
+    
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        doSynchronization();
     }
     
     @Override
@@ -196,17 +217,26 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		getMenuInflater().inflate(R.menu.training, menu);
 		return true;
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case android.R.id.home:
 	        	tryToQuitTrainingActivity();
+	            return true;
+	        case R.id.action_stop_training:
+	        	if (mBoundService != null) {
+					mBoundService.stopTraining();
+				} else {
+					setIsBound(false);
+				}
+	            return true;
+	        case R.id.action_settings:
+	        	Intent intent = new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SETTINGS);
+	        	startActivity(intent);
 	            return true;
 	            
 	        default:
@@ -236,109 +266,72 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     @Override
-	public void onTrainingPrepared() {
+	public void onTrainingStart() {
+    	updateSteps();
+    	updateTimer(0);
     	performCountDown();
+    	mStartButton.setVisibility(View.GONE);
+    	showPauseButton();
 	}
     
     @Override
 	public void onTrainingStarted() {
-		mStartButton.setVisibility(View.GONE);
-		mPauseButton.setVisibility(View.VISIBLE);
+    	updateSteps();
 	}
 
 	@Override
 	public void onTrainingResumed() {
-		mResumeButton.setVisibility(View.GONE);
-		mPauseButton.setVisibility(View.VISIBLE);
+		updateSteps();
+		showPauseButton();
 	}
 
 	@Override
 	public void onTrainingPaused() {
-		mPauseButton.setVisibility(View.GONE);
-		mResumeButton.setVisibility(View.VISIBLE);
+		updateSteps();
+		showResumeButton();
 	}
 
 	@Override
 	public void onTrainingStopped() {
-		mStartButton.setVisibility(View.VISIBLE);
-		mResumeButton.setVisibility(View.GONE);
-		mPauseButton.setVisibility(View.GONE);
+		updateSteps();
+		showSelfAssessmentDialog();
+		showStartButton();
 	}
 	
 	@Override
 	public void onDeviceConnectionChanged(int connectionState) {
-		switch (connectionState) {
-			case WATCHiTServiceInterface.DEVICE_DISCONNECTED:
-	        	mActionBar.setIcon(R.drawable.circle_red);
-		        break;
-			case WATCHiTServiceInterface.DEVICE_CONNECTING:
-				mActionBar.setIcon(R.drawable.circle_yellow);
-	            break;
-	        case WATCHiTServiceInterface.DEVICE_CONNECTED:
-	        	mActionBar.setIcon(R.drawable.circle_green);
-	            break;
-		}
+		setDeviceConnectionState(connectionState);
 	}
     
     @Override
-	public void onProgressChanged(int progress) {
-    	mSectionsPagerAdapter.mTrainingProgressFragment.updateProgress(progress);
+	public void onProgressUpdated() {
+    	updateProgress();
+    	updateSteps();
 	}
 
 	@Override
 	public void onTimerTicked(long milliseconds) {
-		mSectionsPagerAdapter.mTrainingProgressFragment.updateTimer(milliseconds);
+		updateTimer(milliseconds);
 	}
 	
 	private void tryToQuitTrainingActivity() {
-		if (mBoundService != null && mBoundService.isTrainingStarted()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	    	builder.setTitle("Quit training?");
-	    	builder.setMessage("Are you sure you want to quit training?");
-	    	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-	    		
-	    		@Override
-	    		public void onClick(DialogInterface dialog, int which) {
-	    	        stopService(new Intent(TrainingActivity.this, TrainingService.class));
-	    			finish();
-	            }
-	    		
-	    	});
-	        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-	        	
-	        	@Override
-	            public void onClick(DialogInterface dialog, int which) {
-	        		
-	            }
-	        	
-	        });
-	        builder.show();
+		if (mProcedure.isStarted()) {
+			DialogFragment dialog = new QuitDialogFragment();
+			dialog.show(getSupportFragmentManager(), "quit_dialog");
 		} else {
 	        stopService(new Intent(this, TrainingService.class));
 			finish();
 		}
 	}
 	
+	public void showSelfAssessmentDialog() {
+		DialogFragment dialog = new SelfAssessmentDialogFragment();
+		dialog.show(getSupportFragmentManager(), "self_assessment_dialog");
+	}
+	
 	public void performCountDown() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCancelable(false);
-    	final AlertDialog dialog = builder.show();
-    	dialog.setContentView(R.layout.dialog_countdown);
-    	final TextView textView = (TextView) dialog.findViewById(android.R.id.message);
-    	new CountDownTimer(5000, 1000) {
-    		
-    		@Override
-    		public void onTick(long millisUntilFinished) {
-    			long secondsUntilFinished = (millisUntilFinished / 1000) - 1;
-    			textView.setText(String.valueOf(secondsUntilFinished));
-    		}
-    		
-    		@Override
-    		public void onFinish() {
-    			dialog.dismiss();
-    		}
-    		
-    	}.start();
+		CountDownDialogFragment dialog = new CountDownDialogFragment();
+		dialog.show(getSupportFragmentManager(), "count_down_dialog");
 	}
 	
 	private void doBindService(Intent intent) {
@@ -362,12 +355,92 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         }
     }
     
+    private void doSynchronization() {
+    	// nesto ne radi u slucaju kada se upali rucno konekcija i onda se vratimo u aplikaciju
+    	if (mBoundService != null) {
+    		mProcedure = mBoundService.getProcedure();
+    		updateProgress();
+    		updateSteps();
+    		updateState();
+	        updateTimer(mBoundService.getElapsedTime());
+	        setDeviceConnectionState(mBoundService.getDeviceConnectionState());
+    	} else {
+    		setIsBound(false);
+    	}
+    }
+    
     private void setIsBound(boolean isBound) {
 		mIsBound = isBound;
 		if (!mIsBound) {
-			//setIsStarted(false);
+			setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_DISCONNECTED);
 		}
 	}
+    
+    private void setDeviceConnectionState(int deviceConnectionState) {
+    	mDeviceConnectionState = deviceConnectionState;
+	    switch (deviceConnectionState) {
+			case WATCHiTServiceInterface.DEVICE_DISCONNECTED:
+		    	mActionBar.setIcon(R.drawable.circle_red);
+		        break;
+			case WATCHiTServiceInterface.DEVICE_CONNECTING:
+				mActionBar.setIcon(R.drawable.circle_yellow);
+		        break;
+		    case WATCHiTServiceInterface.DEVICE_CONNECTED:
+		    	mActionBar.setIcon(R.drawable.circle_green);
+		        break;
+		}
+	    
+	    if (deviceConnectionState != WATCHiTServiceInterface.DEVICE_CONNECTED) {
+	    	if (mProcedure.isStarted()) {
+	    		// notifikacija ovde
+	    	}
+			mStartButton.setEnabled(false);
+			mResumeButton.setEnabled(false);
+		} else {
+			mStartButton.setEnabled(true);
+			mResumeButton.setEnabled(true);
+		}
+    }
+    
+    private void updateProgress() {
+    	mSectionsPagerAdapter.mTrainingProgressFragment.setProgress(mProcedure.getProgress());
+    }
+    
+    private void updateSteps() {
+    	mSectionsPagerAdapter.mTrainingStepsFragment.setStepsList(mProcedure.getSteps());
+    }
+    
+    private void updateState() {
+    	if (!mProcedure.isStarted()) {
+    		showStartButton();
+    	} else if (mProcedure.isPaused()) {
+    		showResumeButton();
+    	} else if (mProcedure.isRunning()) {
+    		showPauseButton();
+    	}
+    }
+    
+    private void updateTimer(long milliseconds) {
+    	mSectionsPagerAdapter.mTrainingProgressFragment.updateTimer(milliseconds);
+    }
+    
+    private void showStartButton() {
+    	mStartButton.setVisibility(View.VISIBLE);
+		mResumeButton.setVisibility(View.GONE);
+		mPauseButton.setVisibility(View.GONE);
+    }
+    
+    private void showResumeButton() {
+    	mStartButton.setVisibility(View.GONE);
+		mResumeButton.setVisibility(View.VISIBLE);
+		mPauseButton.setVisibility(View.GONE);
+    }
+    
+    private void showPauseButton() {
+    	mStartButton.setVisibility(View.GONE);
+		mResumeButton.setVisibility(View.GONE);
+		mPauseButton.setVisibility(View.VISIBLE);
+    }
     
     public static class SectionsPagerAdapter extends FragmentPagerAdapter {
     	
@@ -429,5 +502,121 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	        }
 			return null;
         }
+    }
+    
+    public static class QuitDialogFragment extends DialogFragment {
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    	builder.setTitle("Quit training?");
+	    	builder.setMessage("Are you sure you want to quit training?");
+	    	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    	        getActivity().stopService(new Intent(getActivity(), TrainingService.class));
+	    	        getActivity().finish();
+	            }
+	    		
+	    	});
+	        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	        	
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+	        		
+	            }
+	        	
+	        });
+	        return builder.create();
+		}
+		 
+	}
+    
+    public static class SelfAssessmentDialogFragment extends DialogFragment {
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    	builder.setTitle("Start self-assessment?");
+	    	builder.setMessage("Do you want to start self-assessment?");
+	    	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    	        Intent intent = new Intent(getActivity(), SelfAssessment.class);
+	    	        intent.putExtra("procedure", ((TrainingActivity) getActivity()).mProcedure);
+	    	        startActivity(intent);
+	            }
+	    		
+	    	});
+	        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	        	
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+	        		
+	            }
+	        	
+	        });
+	        return builder.create();
+		}
+	}
+    
+    public static class CountDownDialogFragment extends DialogFragment {
+    	
+    	TextView mTextView;
+    	
+    	boolean mShouldStart;
+    	
+    	@Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme_Translucent);
+            setRetainInstance(true);
+        }
+		
+    	@Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.dialog_countdown, container, false);
+            mTextView = (TextView) rootView.findViewById(R.id.textView);
+            
+        	if (mShouldStart) {
+        		CountDownTimer countDownTimer = new CountDownTimer(4000, 1000) {
+            		
+            		Vibrator mVibrator = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            		
+            		@Override
+            		public void onTick(long millisUntilFinished) {
+            			long secondsUntilFinished = (millisUntilFinished / 1000);
+            			mTextView.setText(String.valueOf(secondsUntilFinished));
+            			mVibrator.vibrate(300);
+            		}
+            		
+            		@Override
+            		public void onFinish() {
+            			mTextView.setText("GO");
+            			mVibrator.vibrate(1500);
+            			dismiss();
+            		}
+            		
+            	};
+            	countDownTimer.start();
+        		mShouldStart = false;
+        	}
+            
+            return rootView;
+    	}
+    	
+    	@Override
+    	 public void onDestroyView() {
+    	     if (getDialog() != null && getRetainInstance())
+    	         getDialog().setDismissMessage(null);
+    	         super.onDestroyView();
+    	 }
+    	
+    	public void show(FragmentManager manager, String tag) {
+    		super.show(manager, tag);
+    		mShouldStart = true;
+    	}
     }
 }

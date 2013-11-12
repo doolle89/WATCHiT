@@ -8,6 +8,7 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="19" />
     
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="dusan.stefanovic.connectionapp.permission.WATCHiT" />
 
     <application
@@ -28,7 +29,16 @@
         
         <activity 
             android:name="dusan.stefanovic.trainingapp.TrainingActivity" 
-            android:label="@string/training_activity_label" />
+            android:label="@string/training_activity_label"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        
+        <activity 
+            android:name="dusan.stefanovic.trainingapp.SelfAssessment" 
+            android:label="@string/self_assessment_activity_label" />
+        
+        <activity 
+            android:name="dusan.stefanovic.trainingapp.RealityCheckActivity" 
+            android:label="@string/reality_check_activity_label" />
         
         <service android:name="dusan.stefanovic.trainingapp.service.TrainingService" />
             

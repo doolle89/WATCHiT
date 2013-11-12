@@ -31,7 +31,7 @@ public class WATCHiTService extends Service {
     boolean mIsConnectingToDevice = false;
     // Indicator when device should be reconnected in case
     // connection has been lost. Delay in ms and it's off if value < 0
-    int mReconnectingAfter = 15000;
+    int mReconnectingAfter = 10000;
     // Device's physical address
     String mDeviceAddress;
     // Device connection state

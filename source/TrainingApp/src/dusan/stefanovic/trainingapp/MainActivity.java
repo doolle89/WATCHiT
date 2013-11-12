@@ -31,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, TrainingActivity.class);
-                intent.putExtra("Procedure", procedure);
+                intent.putExtra("procedure", procedure);
                 startActivity(intent);
             }
         });

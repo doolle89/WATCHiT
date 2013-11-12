@@ -3,11 +3,17 @@
 
     <string name="app_name">TreningApp</string>
     <string name="action_search">Search</string>
+    <string name="action_stop_training">Stop training</string>
     <string name="action_settings">Settings</string>
     <string name="content_description">Description</string>
     <string name="permission_label_watchit">Start WATCHiT service</string>
     
     <string name="training_activity_label">Training</string>
+    
+    <string name="self_assessment_activity_label">Self-assessment</string>
+    <string name="action_reality_check">Reality check</string>
+    
+    <string name="reality_check_activity_label">Reality check</string>
     
     <string name="local_service_started">Training service has started</string>
     <string name="local_service_stopped">Training service has stopped</string>

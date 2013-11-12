@@ -61,7 +61,6 @@ public class MainActivity extends Activity {
 
 		IncomingHandler(MainActivity activity) {
 			mWeakReference = new WeakReference<MainActivity>(activity);
-			int w = 2;
 	    }
 		
         @Override
@@ -77,6 +76,7 @@ public class MainActivity extends Activity {
 			            break;
 		            case WATCHiTServiceInterface.CLIENT_REGISTERED:
 		            	activity.setIsBound(true);
+		            	// activity.requestUpdate();
 		                break;
 		            case WATCHiTServiceInterface.CLIENT_UNREGISTERED:
 		            	activity.setIsBound(false);
@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
 		            	activity.setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_CONNECTED);
 			            break;
 		            case WATCHiTServiceInterface.UPDATE:
-		            	activity.updateInterface(message.getData());
+		            	activity.update(message.getData());
 		            	break;
 		            default:
 		                super.handleMessage(message);
@@ -116,7 +116,6 @@ public class MainActivity extends Activity {
             // service through an IDL interface, so get a client-side
             // representation of that from the raw service object.
         	mServiceMessenger = new Messenger(service);
-
             // We want to monitor the service for as long as we are
             // connected to it.
             try {
@@ -242,6 +241,9 @@ public class MainActivity extends Activity {
 		toggleButton.setChecked(mIsStarted);
 		if (!mIsStarted) {
             setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_DISCONNECTED);
+		} else if (!bluetoothAdapter.isEnabled()) {
+			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 		}
 	}
 
@@ -338,15 +340,10 @@ public class MainActivity extends Activity {
 		}
     }
     
-    private void updateInterface(Bundle data) {
+    private void update(Bundle data) {
     	data.setClassLoader(getClassLoader());
     	setIsStarted(data.getBoolean(WATCHiTServiceInterface.IS_CONNECTING_TO_DEVICE, false));
     	setDeviceConnectionState(data.getInt(WATCHiTServiceInterface.DEVICE_CONNECTION_STATUS, WATCHiTServiceInterface.DEVICE_DISCONNECTED));
-    	
-		if (!bluetoothAdapter.isEnabled() && mIsStarted) {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-		}
     }
 
 }
