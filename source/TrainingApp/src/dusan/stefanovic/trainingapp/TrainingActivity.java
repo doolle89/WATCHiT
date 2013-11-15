@@ -1,19 +1,3 @@
-/*
- * Copyright 2012 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package dusan.stefanovic.trainingapp;
 
 
@@ -34,8 +18,10 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.SimpleOnPageChangeListener;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
@@ -49,19 +35,24 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Procedure;
+import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.fragment.TrainingCurrentStepFragment;
+import dusan.stefanovic.trainingapp.fragment.TrainingProcedureListener;
+import dusan.stefanovic.trainingapp.fragment.TrainingOverviewFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingProgressFragment;
+import dusan.stefanovic.trainingapp.fragment.TrainingResultsFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingStepsFragment;
 import dusan.stefanovic.trainingapp.service.TrainingService;
 import dusan.stefanovic.trainingapp.service.TrainingService.TrainingServiceListener;
 import dusan.stefanovic.trainingapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.treningapp.R;
 
-public class TrainingActivity extends ActionBarActivity implements TabListener, TrainingServiceListener {
+public class TrainingActivity extends ActionBarActivity implements TabListener, TrainingProcedureListener, TrainingServiceListener {
 	
 	ActionBar mActionBar;
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
+    Menu mMenu;
     Button mStartButton;
     Button mResumeButton;
     Button mPauseButton;
@@ -114,6 +105,14 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
+        mProcedure = getIntent().getParcelableExtra("procedure");
+        if (mProcedure == null) {
+        	finish();
+        } else {
+	        Intent intent = new Intent(this, TrainingService.class);
+	        intent.putExtras(getIntent());
+	        doBindAndStartService(intent);
+        }
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -124,15 +123,16 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         // Specify Home/Up button 
         //actionBar.setHomeButtonEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);
-
+        mActionBar.setTitle(mProcedure.getTitle());
         // Specify that we will be displaying tabs in the action bar.
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Set up the ViewPager, attaching the adapter and setting up a listener for when the
         // user swipes between sections.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+        //mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
             
         	@Override
             public void onPageSelected(int position) {
@@ -144,14 +144,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         	
         });
 
-        // For each of the sections in the app, add a tab to the action bar.
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by the adapter.
-            // Also specify this Activity object, which implements the TabListener interface, as the
-            // listener for when this tab is selected.
-            mActionBar.addTab(mActionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
-        }
-        mActionBar.setSelectedNavigationItem(SectionsPagerAdapter.FRAGMENT_PROGRESS);
+        setUpTabsTabs();
         
         mStartButton = (Button) findViewById(R.id.start_button);
         mStartButton.setOnClickListener(new OnClickListener() {
@@ -191,11 +184,6 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 				}
 			}
 		});
-        
-        mProcedure = getIntent().getParcelableExtra("procedure");
-        Intent intent = new Intent(this, TrainingService.class);
-        intent.putExtras(getIntent());
-        doBindAndStartService(intent);
     }
     
     @Override
@@ -217,6 +205,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+    	mMenu = menu;
 		getMenuInflater().inflate(R.menu.training, menu);
 		return true;
 	}
@@ -233,6 +222,17 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 				} else {
 					setIsBound(false);
 				}
+	            return true;
+	        case R.id.action_reset_training:
+	        	if (mBoundService != null) {
+					mBoundService.resetTraining();
+					changeTrainingView();
+					updateProgress();
+					updateTimer(0);
+				} else {
+					setIsBound(false);
+				}
+	        	showStartButton();
 	            return true;
 	        case R.id.action_settings:
 	        	Intent intent = new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SETTINGS);
@@ -266,9 +266,12 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     @Override
+	public Procedure onProcedureRequested() {
+		return mProcedure;
+	}
+    
+    @Override
 	public void onTrainingStart() {
-    	updateTimer(0);
-    	updateSteps();
     	performCountDown();
     	mStartButton.setVisibility(View.GONE);
     	showPauseButton();
@@ -294,9 +297,10 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 
 	@Override
 	public void onTrainingStopped() {
+		changeTrainingView();
 		updateSteps();
 		showSelfAssessmentDialog();
-		showStartButton();
+		showRestartOption();
 	}
 	
 	@Override
@@ -314,6 +318,14 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	@Override
 	public void onTimerTicked(long milliseconds) {
 		updateTimer(milliseconds);
+	}
+	
+	private void setUpTabsTabs() {
+		mActionBar.removeAllTabs();
+        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+            mActionBar.addTab(mActionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+        }
+        mActionBar.setSelectedNavigationItem(SectionsPagerAdapter.TAB_2);
 	}
 	
 	private void tryToQuitTrainingActivity() {
@@ -358,7 +370,6 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     private void doSynchronization() {
-    	// nesto ne radi u slucaju kada se upali rucno konekcija i onda se vratimo u aplikaciju
     	if (mBoundService != null) {
     		mProcedure = mBoundService.getProcedure();
     		updateProgress();
@@ -366,7 +377,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     		updateState();
 	        updateTimer(mBoundService.getElapsedTime());
 	        setDeviceConnectionState(mBoundService.getDeviceConnectionState());
-	        mSectionsPagerAdapter.mTrainingCurrentStepFragment.setProcedure(mProcedure);
+	        updateCurrentStep();
     	} else {
     		setIsBound(false);
     	}
@@ -397,8 +408,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	    	if (mProcedure.isStarted()) {
 	    		// notifikacija ovde
 	    	}
-			mStartButton.setEnabled(false);
-			mResumeButton.setEnabled(false);
+			// mStartButton.setEnabled(false);
+			// mResumeButton.setEnabled(false);
 		} else {
 			mStartButton.setEnabled(true);
 			mResumeButton.setEnabled(true);
@@ -406,19 +417,37 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     private void updateProgress() {
-    	mSectionsPagerAdapter.mTrainingProgressFragment.setProgress(mProcedure.getProgress());
+    	TrainingProgressFragment progressFragment = mSectionsPagerAdapter.getTrainingProgressFragment();
+        if (progressFragment != null) {
+        	progressFragment.update();
+        }
+    }
+
+    private void updateTimer(long milliseconds) {
+    	TrainingProgressFragment progressFragment = mSectionsPagerAdapter.getTrainingProgressFragment();
+        if (progressFragment != null) {
+        	progressFragment.updateTimer(milliseconds);
+        }
     }
     
     private void updateSteps() {
-    	mSectionsPagerAdapter.mTrainingStepsFragment.setStepsList(mProcedure.getSteps());
+    	TrainingStepsFragment stepsFragment = mSectionsPagerAdapter.getTrainingStepsFragment();
+        if (stepsFragment != null) {
+        	stepsFragment.update();
+        }
     }
     
     private void updateCurrentStep() {
-    	mSectionsPagerAdapter.mTrainingCurrentStepFragment.setStep(mProcedure.getCurrentStep());
+    	TrainingCurrentStepFragment currentStepFragment = mSectionsPagerAdapter.getTrainingCurrentStepFragment();
+        if (currentStepFragment != null) {
+        	currentStepFragment.update();
+        }
     }
     
     private void updateState() {
-    	if (!mProcedure.isStarted()) {
+    	if (isTrainingFinished()) {
+    		showRestartOption();
+    	} else if (!mProcedure.isStarted()) {
     		showStartButton();
     	} else if (mProcedure.isPaused()) {
     		showResumeButton();
@@ -427,67 +456,82 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     	}
     }
     
-    private void updateTimer(long milliseconds) {
-    	mSectionsPagerAdapter.mTrainingProgressFragment.updateTimer(milliseconds);
-    }
-    
     private void showStartButton() {
     	mStartButton.setVisibility(View.VISIBLE);
-		mResumeButton.setVisibility(View.GONE);
-		mPauseButton.setVisibility(View.GONE);
+    	setMeniOptionVisibility(R.id.action_stop_training, false);
+        setMeniOptionVisibility(R.id.action_reset_training, false);
     }
     
     private void showResumeButton() {
     	mStartButton.setVisibility(View.GONE);
 		mResumeButton.setVisibility(View.VISIBLE);
 		mPauseButton.setVisibility(View.GONE);
+		setMeniOptionVisibility(R.id.action_reset_training, false);
+        setMeniOptionVisibility(R.id.action_stop_training, true);
     }
     
     private void showPauseButton() {
     	mStartButton.setVisibility(View.GONE);
 		mResumeButton.setVisibility(View.GONE);
 		mPauseButton.setVisibility(View.VISIBLE);
+		setMeniOptionVisibility(R.id.action_reset_training, false);
+        setMeniOptionVisibility(R.id.action_stop_training, true);
     }
     
-    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
+    private void showRestartOption() {
+    	mResumeButton.setVisibility(View.GONE);
+		mPauseButton.setVisibility(View.GONE);
+    	setMeniOptionVisibility(R.id.action_stop_training, false);
+    	setMeniOptionVisibility(R.id.action_reset_training, true);
+    }
+    
+    private void setMeniOptionVisibility(int id, boolean isVisible) {
+    	if (mMenu != null) {
+    		MenuItem menuItem = mMenu.findItem(id);
+    		menuItem.setVisible(isVisible);
+    	}
+    }
+    
+    private boolean isTrainingFinished() {
+    	return !mProcedure.isStarted() && mProcedure.getStep(0).getStatus() != Step.STATUS_PENDING;
+    }
+    
+    private void changeTrainingView() {
+    	setUpTabsTabs();
+    	mSectionsPagerAdapter.notifyDataSetChanged();
+		
+    }
+    
+    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
     	
-    	static final int FRAGMENT_CURRENT_STEP = 0;
-    	static final int FRAGMENT_PROGRESS = 1;
-    	static final int FRAGMENT_STEPS = 2;
+    	static final int TAB_1 = 0;
+    	static final int TAB_2 = 1;
+    	static final int TAB_3 = 2;
     	
-    	TrainingCurrentStepFragment mTrainingCurrentStepFragment;
-    	TrainingProgressFragment mTrainingProgressFragment;
-    	TrainingStepsFragment mTrainingStepsFragment;
+    	TrainingResultsFragment mTrainingResultsFragment;
+    	TrainingOverviewFragment mTrainingOverviewFragment;
 
         public SectionsPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
-            List<Fragment> fragments = fragmentManager.getFragments();
-            if (fragments == null) {
-	            mTrainingCurrentStepFragment = new TrainingCurrentStepFragment();
-	            mTrainingProgressFragment = new TrainingProgressFragment();
-	            mTrainingStepsFragment = new TrainingStepsFragment();
-            } else {
-            	for (Fragment fragment : fragments) {
-            		if (fragment instanceof TrainingCurrentStepFragment) {
-            			mTrainingCurrentStepFragment = (TrainingCurrentStepFragment) fragment;
-            		} else if (fragment instanceof TrainingProgressFragment) {
-            			mTrainingProgressFragment = (TrainingProgressFragment) fragment;
-            		} else if (fragment instanceof TrainingStepsFragment) {
-            			mTrainingStepsFragment = (TrainingStepsFragment) fragment;
-            		}
-            	}
-            }
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position) {
-                case FRAGMENT_CURRENT_STEP:
-                    return mTrainingCurrentStepFragment;
-                case FRAGMENT_PROGRESS:
-                    return mTrainingProgressFragment;
-                case FRAGMENT_STEPS:
-                    return mTrainingStepsFragment;
+                case TAB_1:
+                	if (isTrainingFinished()) {
+	                    return new TrainingResultsFragment();
+                	} else {
+	                    return new TrainingCurrentStepFragment();
+                	}
+                case TAB_2:
+                	if (isTrainingFinished()) {
+                		return new TrainingOverviewFragment();
+                	} else {
+	                	return new TrainingProgressFragment();
+                	}
+                case TAB_3:
+                    return new TrainingStepsFragment();
             }
 			return null;
         }
@@ -500,14 +544,87 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         @Override
         public CharSequence getPageTitle(int position) {
         	switch (position) {
-	            case FRAGMENT_CURRENT_STEP:
-	                return "CURRENT STEP";
-	            case FRAGMENT_PROGRESS:
-	                return "PROGRESS";
-	            case FRAGMENT_STEPS:
-	                return "STEPS";
+	            case TAB_1:
+	            	if (isTrainingFinished()) {
+	            		return getText(R.string.training_activity_tab_results);
+	            	} else {
+	            		return getText(R.string.training_activity_tab_current_step);
+	            	}
+	            case TAB_2:
+	            	if (isTrainingFinished()) { 
+	            		return getText(R.string.training_activity_tab_overview);
+	            	} else {
+	            		return getText(R.string.training_activity_tab_progress);
+	            	}
+	            case TAB_3:
+	                return getText(R.string.training_activity_tab_steps);
 	        }
 			return null;
+        }
+        
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+        
+        public TrainingCurrentStepFragment getTrainingCurrentStepFragment() {
+        	List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            if (fragments != null) {
+            	for (Fragment fragment : fragments) {
+            		if (fragment instanceof TrainingCurrentStepFragment) {
+            			return (TrainingCurrentStepFragment) fragment;
+             		}
+             	}
+            }
+            return null;
+        }
+        
+        public TrainingProgressFragment getTrainingProgressFragment() {
+	       	List<Fragment> fragments = getSupportFragmentManager().getFragments();
+            if (fragments != null) {
+            	for (Fragment fragment : fragments) {
+            		if (fragment instanceof TrainingProgressFragment) {
+            			return (TrainingProgressFragment) fragment;
+            		}
+            	}
+            }
+            return null;
+	        }
+        
+        public TrainingStepsFragment getTrainingStepsFragment() {
+        	List<Fragment> fragments = getSupportFragmentManager().getFragments();
+       		if (fragments != null) {
+       			for (Fragment fragment : fragments) {
+       				if (fragment instanceof TrainingStepsFragment) {
+       					return (TrainingStepsFragment) fragment;
+       				}
+       			}
+       		}
+       		return null;
+        }
+        
+        public TrainingResultsFragment getTrainingResultsFragment() {
+        	List<Fragment> fragments = getSupportFragmentManager().getFragments();
+        	if (fragments != null) {
+        		for (Fragment fragment : fragments) {
+        			if (fragment instanceof TrainingResultsFragment) {
+        				return (TrainingResultsFragment) fragment;
+        			}
+        		}
+        	}
+        	return null;
+        }
+        
+        public TrainingOverviewFragment getTrainingOverviewFragment() {
+           	List<Fragment> fragments = getSupportFragmentManager().getFragments();
+           	if (fragments != null) {
+           		for (Fragment fragment : fragments) {
+           			if (fragment instanceof TrainingOverviewFragment) {
+           				return (TrainingOverviewFragment) fragment;
+           			}
+           		}
+           	}
+           	return null;
         }
     }
     
@@ -584,7 +701,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		
     	@Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.dialog_countdown, container, false);
+            View rootView = inflater.inflate(R.layout.dialog_fragment_countdown, container, false);
             mTextView = (TextView) rootView.findViewById(R.id.textView);
             
         	if (mShouldStart) {

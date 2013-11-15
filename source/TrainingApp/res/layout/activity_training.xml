@@ -15,9 +15,10 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="20dp"
-        android:enabled="false"
+        android:visibility="gone"
         android:background="@drawable/button_round"
         android:text="Start" />
+    <!-- android:enabled="false" -->
     
     <Button
         android:id="@+id/resume_button"

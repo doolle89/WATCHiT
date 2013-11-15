@@ -80,9 +80,9 @@ public class MainActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	        case R.id.action_search:
+	        //case R.id.action_search:
 	            // openSearch();
-	            return true;
+	           // return true;
 	        case R.id.action_settings:
 	            // openSettings();
 	            return true;

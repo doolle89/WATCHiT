@@ -58,9 +58,7 @@ public class TrainingService extends Service {
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
     
-    /**
-     * Handler of incoming messages from service.
-     */
+    // Handler of incoming messages from service
 	static class IncomingHandler extends Handler {
 		
 		private final WeakReference<TrainingService> mWeakReference; 
@@ -111,14 +109,10 @@ public class TrainingService extends Service {
         }
     }
     
-    /**
-     * Target we publish for clients to send messages to IncomingHandler.
-     */
+    // Target we publish for clients to send messages to IncomingHandler.
     final Messenger mMessenger = new Messenger(new IncomingHandler(this));
     
-    /**
-     * Class for interacting with the main interface of the service.
-     */
+    // Class for interacting with the main interface of the service
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className, IBinder service) {
             // This is called when the connection with the service has been
@@ -146,7 +140,6 @@ public class TrainingService extends Service {
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
             }
-            // Toast.makeText(TrainingService.this, R.string.remote_service_bound, Toast.LENGTH_SHORT).show();
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -217,22 +210,18 @@ public class TrainingService extends Service {
         doStopService();
         doUnbindService();
         mTimer.cancel();
-        // Tell the user we stopped.
-        Toast.makeText(this, R.string.local_service_stopped, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Show a notification while this service is running.
-     */
+    // Show a notification while this service is running.
     private void doStartForeground() {
     	Intent intent = new Intent(this, TrainingActivity.class);
     	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         Notification notification = new NotificationCompat.Builder(this)
-								        .setContentTitle(getText(R.string.local_service_label))
-								        .setContentText(getText(R.string.local_service_context))
+								        .setContentTitle(getText(R.string.training_service_label))
+								        .setContentText(getText(R.string.training_service_context))
 								        .setSmallIcon(R.drawable.stat_sample)
-								        .setTicker(getText(R.string.local_service_started))
+								        .setTicker(getText(R.string.training_service_started))
 								        .setWhen(System.currentTimeMillis())
 								        .setContentIntent(pendingIntent)
 								        .build();
@@ -279,7 +268,6 @@ public class TrainingService extends Service {
 		    // applications replace our component.
     		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
     		mIsBindCalled = true;
-		    // Toast.makeText(MainActivity.this, getText(R.string.remote_service_binding), Toast.LENGTH_SHORT).show();
     	}
     }
     
@@ -306,7 +294,6 @@ public class TrainingService extends Service {
             unbindService(mConnection);
             mIsBindCalled = false;
             setIsBound(false);
-            // Toast.makeText(MainActivity.this, getText(R.string.remote_service_unbound), Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -355,8 +342,6 @@ public class TrainingService extends Service {
     		mProcedure.reset();
 	    	mTimer.start(5000, 100);
 	    	doStartForeground();
-	    	// procedureUpdated();
-	    	// mIsTrainingStarted = true;
     	}
     }
     
@@ -364,8 +349,6 @@ public class TrainingService extends Service {
     	if (mProcedure.isPaused()) {
     		mProcedure.start();
 	    	mTimer.start();
-	    	// procedureUpdated();
-	    	// mIsTrainingRunning = true;
     	}
     }
     
@@ -373,8 +356,6 @@ public class TrainingService extends Service {
     	if (mProcedure.isRunning()) {
     		mProcedure.pause();
 	    	mTimer.stop(true);
-	    	// procedureUpdated();
-	    	// mIsTrainingRunning = false;
     	}
     }
     
@@ -383,9 +364,12 @@ public class TrainingService extends Service {
     		mProcedure.stop();
 	    	mTimer.stop(false);
 	    	stopForeground(true);
-	    	// procedureUpdated();
-	    	// mIsTrainingStarted = false;
     	}
+    }
+    
+    public void resetTraining() {
+    	stopTraining();
+    	mProcedure.reset();
     }
     
     public void processTag(String tagValue) {

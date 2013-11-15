@@ -11,12 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingStepsFragment extends ListFragment {
 	
-	List<Step> mSteps;
+	private Procedure mProcedure;
 
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,10 +25,23 @@ public class TrainingStepsFragment extends ListFragment {
         return rootView;
     }
 	
-	public void setStepsList(List<Step> steps) {
-		mSteps = steps;
-		StepListAdapter stepListAdapter = new StepListAdapter(getActivity(), R.layout.list_item_step_training, mSteps);
-        setListAdapter(stepListAdapter);
+	@Override
+	public void onActivityCreated (Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		try {
+			TrainingProcedureListener trainingProcedureListener = (TrainingProcedureListener) getActivity();
+			mProcedure = trainingProcedureListener.onProcedureRequested();
+			update();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
+        }
+	}
+	
+	public void update() {
+		if (getView() != null && mProcedure != null) {
+			StepListAdapter stepListAdapter = new StepListAdapter(getActivity(), R.layout.list_item_step_training, mProcedure.getSteps());
+	        setListAdapter(stepListAdapter);
+		}
 	}
 	
 	public static class StepListAdapter extends ArrayAdapter<Step> {
@@ -36,8 +50,6 @@ public class TrainingStepsFragment extends ListFragment {
     		View container;
     		TextView title;
     		TextView status;
-    		// ImageView icon;
-    		// int position;
     	}
     	
     	public StepListAdapter(Context context, int resource, List<Step> objects) {
@@ -65,23 +77,23 @@ public class TrainingStepsFragment extends ListFragment {
             switch (step.getStatus()) {
             	case Step.STATUS_COMPLETED:
             		holder.container.setBackgroundColor(Color.GREEN);
-            		holder.status.setText("Completed");
+            		holder.status.setText(getContext().getText(R.string.step_status_completed));
             		break;
             	case Step.STATUS_SKIPPED:
             		holder.container.setBackgroundColor(Color.RED);
-            		holder.status.setText("Skipped");
+            		holder.status.setText(getContext().getText(R.string.step_status_skipped));
             		break;
             	case Step.STATUS_IN_PROGRESS:
             		holder.container.setBackgroundColor(Color.CYAN);
-            		holder.status.setText("In progress");
+            		holder.status.setText(getContext().getText(R.string.step_status_in_progress));
             		break;
             	case Step.STATUS_PENDING:
             		holder.container.setBackgroundColor(Color.YELLOW);
-            		holder.status.setText("Pending");
+            		holder.status.setText(getContext().getText(R.string.step_status_pending));
             		break;
             	case Step.STATUS_PAUSED:
             		holder.container.setBackgroundColor(Color.LTGRAY);
-            		holder.status.setText("Paused");
+            		holder.status.setText(getContext().getText(R.string.step_status_paused));
             		break;
             }
             return row;

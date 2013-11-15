@@ -14,8 +14,9 @@
             android:id="@+id/imageView"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@drawable/ic_launcher"
+            android:adjustViewBounds="true"
             android:scaleType="centerInside"
+            android:src="@drawable/stopwatch"
             android:contentDescription="@string/content_description" />
         
         <TextView
@@ -45,8 +46,9 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp" >
+        android:layout_height="0dp"
+        android:layout_margin="20dp"
+        android:layout_weight="1" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -79,16 +81,22 @@
     </RelativeLayout>
 
     <RelativeLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="50dp" >
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="20dp"
+	    android:layout_marginRight="85dp"
+	    android:layout_marginBottom="20dp" >
 
         <ImageView
             android:id="@+id/stepImageView"
-            android:layout_width="250dp"
-            android:layout_height="150dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/abc_ab_bottom_solid_dark_holo" />
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:scaleType="centerInside"
+	        android:adjustViewBounds="true"
+	        android:src="@drawable/procedure1"
+        	android:background="@drawable/image_border"
+            android:contentDescription="@string/content_description"/>
         
     </RelativeLayout>
 
