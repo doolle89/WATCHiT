@@ -48,7 +48,7 @@ public class ProcedurePreviewActivity extends ActionBarActivity {
 		mImageView = (ImageView) findViewById(R.id.imageView);
 		
 		mListView = (ListView) findViewById(R.id.listView);
-		StepListAdapter stepListAdapter = new StepListAdapter(this, android.R.layout.simple_list_item_2, mProcedure.getSteps());
+		StepListAdapter stepListAdapter = new StepListAdapter(this, android.R.layout.simple_list_item_1, mProcedure.getSteps());
         mListView.setAdapter(stepListAdapter);
         mListView.setOnItemClickListener(new OnItemClickListener(){
 

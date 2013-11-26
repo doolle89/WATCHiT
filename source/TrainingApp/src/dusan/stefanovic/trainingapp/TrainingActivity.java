@@ -17,7 +17,6 @@ import android.os.Vibrator;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
@@ -36,8 +35,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
+import dusan.stefanovic.trainingapp.fragment.ProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.TrainingCurrentStepFragment;
-import dusan.stefanovic.trainingapp.fragment.TrainingProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.TrainingOverviewFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingProgressFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingResultsFragment;
@@ -47,10 +46,10 @@ import dusan.stefanovic.trainingapp.service.TrainingService.TrainingServiceListe
 import dusan.stefanovic.trainingapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.treningapp.R;
 
-public class TrainingActivity extends ActionBarActivity implements TabListener, TrainingProcedureListener, TrainingServiceListener {
+public class TrainingActivity extends ActionBarActivity implements TabListener, ProcedureListener, TrainingServiceListener {
 	
 	ActionBar mActionBar;
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    TabPagerAdapter mTabPagerAdapter;
     ViewPager mViewPager;
     Menu mMenu;
     Button mStartButton;
@@ -115,7 +114,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         }
         // Create the adapter that will return a fragment for each of the three primary sections
         // of the app.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mTabPagerAdapter = new TabPagerAdapter(getSupportFragmentManager());
 
         // Set up the action bar.
         mActionBar = getSupportActionBar();
@@ -131,7 +130,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         // user swipes between sections.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         //mViewPager.setOffscreenPageLimit(2);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setAdapter(mTabPagerAdapter);
         mViewPager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
             
         	@Override
@@ -322,10 +321,10 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	
 	private void setUpTabsTabs() {
 		mActionBar.removeAllTabs();
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            mActionBar.addTab(mActionBar.newTab().setText(mSectionsPagerAdapter.getPageTitle(i)).setTabListener(this));
+        for (int i = 0; i < mTabPagerAdapter.getCount(); i++) {
+            mActionBar.addTab(mActionBar.newTab().setText(mTabPagerAdapter.getPageTitle(i)).setTabListener(this));
         }
-        mActionBar.setSelectedNavigationItem(SectionsPagerAdapter.TAB_2);
+        mActionBar.setSelectedNavigationItem(TabPagerAdapter.TAB_2);
 	}
 	
 	private void tryToQuitTrainingActivity() {
@@ -394,13 +393,13 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     	mDeviceConnectionState = deviceConnectionState;
 	    switch (deviceConnectionState) {
 			case WATCHiTServiceInterface.DEVICE_DISCONNECTED:
-		    	mActionBar.setIcon(R.drawable.circle_red);
+		    	mActionBar.setIcon(R.drawable.ic_disconnected);
 		        break;
 			case WATCHiTServiceInterface.DEVICE_CONNECTING:
-				mActionBar.setIcon(R.drawable.circle_yellow);
+				mActionBar.setIcon(R.drawable.ic_connecting);
 		        break;
 		    case WATCHiTServiceInterface.DEVICE_CONNECTED:
-		    	mActionBar.setIcon(R.drawable.circle_green);
+		    	mActionBar.setIcon(R.drawable.ic_connected);
 		        break;
 		}
 	    
@@ -417,28 +416,28 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     private void updateProgress() {
-    	TrainingProgressFragment progressFragment = mSectionsPagerAdapter.getTrainingProgressFragment();
+    	TrainingProgressFragment progressFragment = mTabPagerAdapter.getTrainingProgressFragment();
         if (progressFragment != null) {
         	progressFragment.update();
         }
     }
 
     private void updateTimer(long milliseconds) {
-    	TrainingProgressFragment progressFragment = mSectionsPagerAdapter.getTrainingProgressFragment();
+    	TrainingProgressFragment progressFragment = mTabPagerAdapter.getTrainingProgressFragment();
         if (progressFragment != null) {
         	progressFragment.updateTimer(milliseconds);
         }
     }
     
     private void updateSteps() {
-    	TrainingStepsFragment stepsFragment = mSectionsPagerAdapter.getTrainingStepsFragment();
+    	TrainingStepsFragment stepsFragment = mTabPagerAdapter.getTrainingStepsFragment();
         if (stepsFragment != null) {
         	stepsFragment.update();
         }
     }
     
     private void updateCurrentStep() {
-    	TrainingCurrentStepFragment currentStepFragment = mSectionsPagerAdapter.getTrainingCurrentStepFragment();
+    	TrainingCurrentStepFragment currentStepFragment = mTabPagerAdapter.getTrainingCurrentStepFragment();
         if (currentStepFragment != null) {
         	currentStepFragment.update();
         }
@@ -498,11 +497,11 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     private void changeTrainingView() {
     	setUpTabsTabs();
-    	mSectionsPagerAdapter.notifyDataSetChanged();
+    	mTabPagerAdapter.notifyDataSetChanged();
 		
     }
     
-    public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
+    public class TabPagerAdapter extends FragmentStatePagerAdapter {
     	
     	static final int TAB_1 = 0;
     	static final int TAB_2 = 1;
@@ -511,7 +510,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     	TrainingResultsFragment mTrainingResultsFragment;
     	TrainingOverviewFragment mTrainingOverviewFragment;
 
-        public SectionsPagerAdapter(FragmentManager fragmentManager) {
+        public TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
         }
 
@@ -668,7 +667,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	    		
 	    		@Override
 	    		public void onClick(DialogInterface dialog, int which) {
-	    	        Intent intent = new Intent(getActivity(), SelfAssessment.class);
+	    	        Intent intent = new Intent(getActivity(), ReflectionActivity.class);
 	    	        intent.putExtra("procedure", ((TrainingActivity) getActivity()).mProcedure);
 	    	        startActivity(intent);
 	            }

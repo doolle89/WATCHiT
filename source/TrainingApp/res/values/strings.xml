@@ -12,6 +12,7 @@
     <string name="action_reset_training">Reset training</string>
     <string name="action_settings">Settings</string>
     <string name="action_reality_check">Reality check</string>
+    <string name="action_create_procedure">Create procedure</string>
     
     <!-- Main menu activity -->
     <string name="main_menu_activity_label">Main menu</string>

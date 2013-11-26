@@ -21,7 +21,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
+// import android.widget.Toast;
 import dusan.stefanovic.connectionapp.R;
 
 public class WATCHiTService extends Service {
@@ -75,7 +75,7 @@ public class WATCHiTService extends Service {
 	            switch (message.what) {
 		            case STATE_DISCONNECTED:
 		                service.mDeviceConnectionState = WATCHiTServiceInterface.DEVICE_DISCONNECTED;
-		            	Toast.makeText(service, "Disconnected from device", Toast.LENGTH_SHORT).show();
+		            	// Toast.makeText(service, "Disconnected from device", Toast.LENGTH_SHORT).show();
 		            	Message newMessage = Message.obtain(null, WATCHiTServiceInterface.DEVICE_DISCONNECTED);
 		            	service.sendMessageToClients(newMessage);
 		            	// Reconnect after delay
@@ -86,14 +86,14 @@ public class WATCHiTService extends Service {
 		                break;
 		            case STATE_CONNECTING:
 		                service.mDeviceConnectionState = WATCHiTServiceInterface.DEVICE_CONNECTING;
-		            	Toast.makeText(service, "Connecting to device", Toast.LENGTH_SHORT).show();
+		            	// Toast.makeText(service, "Connecting to device", Toast.LENGTH_SHORT).show();
 		            	newMessage = Message.obtain(null, WATCHiTServiceInterface.DEVICE_CONNECTING);
 		            	service.sendMessageToClients(newMessage);
 		            	Log.i("SERVICE", "STATE_CONNECTING");
 		            	break;
 		            case STATE_CONNECTED:
 		                service.mDeviceConnectionState = WATCHiTServiceInterface.DEVICE_CONNECTED;
-		            	Toast.makeText(service, "Connected to device", Toast.LENGTH_SHORT).show();
+		            	// Toast.makeText(service, "Connected to device", Toast.LENGTH_SHORT).show();
 		            	newMessage = Message.obtain(null, WATCHiTServiceInterface.DEVICE_CONNECTED);
 		            	service.sendMessageToClients(newMessage);
 		            	Log.i("SERVICE", "STATE_CONNECTED");
@@ -113,7 +113,7 @@ public class WATCHiTService extends Service {
 	                    */
 	                    break;
 	                case WROTE:
-	                	Toast.makeText(service, "Wrote to device", Toast.LENGTH_SHORT).show();
+	                	// Toast.makeText(service, "Wrote to device", Toast.LENGTH_SHORT).show();
 	                	/*
 	                    byte[] writeBuf = (byte[]) msg.obj;
 	                    // construct a string from the buffer
@@ -122,7 +122,7 @@ public class WATCHiTService extends Service {
 	                    */
 	                    break;
 	                case DEVICE_NAME:
-	                	Toast.makeText(service, "Device name", Toast.LENGTH_SHORT).show();
+	                	// Toast.makeText(service, "Device name", Toast.LENGTH_SHORT).show();
 	                    // save the connected device's name
 	                    /* 
 	                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
@@ -273,7 +273,7 @@ public class WATCHiTService extends Service {
     	// Disconnect device
     	stopConnectingToDevice();
         // Tell the user we stopped.
-        Toast.makeText(this, "DESTROYED", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "DESTROYED", Toast.LENGTH_SHORT).show();
         try {
     		unregisterReceiver(mBroadcastReceiver);
     	} catch (IllegalArgumentException  e) {

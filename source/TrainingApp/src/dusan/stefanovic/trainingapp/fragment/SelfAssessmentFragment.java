@@ -1,18 +1,14 @@
-package dusan.stefanovic.trainingapp;
+package dusan.stefanovic.trainingapp.fragment;
 
 import java.util.List;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.RatingBar.OnRatingBarChangeListener;
 import android.widget.TextView;
@@ -20,46 +16,32 @@ import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.treningapp.R;
 
-public class SelfAssessment extends ActionBarActivity {
-	
-	private ListView mListView;
-	
+public class SelfAssessmentFragment extends ListFragment {
+
 	private Procedure mProcedure;
 	
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_self_assessment);
-        
-        mProcedure = getIntent().getParcelableExtra("procedure");
-        
-        mListView = (ListView) findViewById(R.id.listView);
-        SelfAssessmentListAdapter stepListAdapter = new SelfAssessmentListAdapter(this, R.layout.list_item_step_self_assessment, mProcedure.getSteps());
-        mListView.setAdapter(stepListAdapter);
+	public void onActivityCreated (Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		try {
+			ProcedureListener procedureListener = (ProcedureListener) getActivity();
+			mProcedure = procedureListener.onProcedureRequested();
+			
+			TextView textView = new TextView(getActivity());
+			textView.setText("test");
+			getListView().addHeaderView(textView);
+			
+			if (mProcedure != null) {
+				SelfAssessmentListAdapter selfAssessmentListAdapterListAdapter = new SelfAssessmentListAdapter(getActivity(), R.layout.list_item_step_self_assessment, mProcedure.getSteps());
+		        setListAdapter(selfAssessmentListAdapterListAdapter);
+			}
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
+        }
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.self_assessment, menu);
-		return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	        case android.R.id.home:
-	        	
-	            return true;
-	        case R.id.action_reality_check:
-	        	Intent intent = new Intent(this, RealityCheckActivity.class);
-	        	intent.putExtra("procedure", mProcedure);
-	        	startActivity(intent);
-	        	finish();
-	            return true;
-	            
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
+	public void update() {
+		((ArrayAdapter<?>) getListAdapter()).notifyDataSetChanged();
 	}
 	
 	public static class SelfAssessmentListAdapter extends ArrayAdapter<Step> {
@@ -87,7 +69,7 @@ public class SelfAssessment extends ActionBarActivity {
                 holder.ratingBar = (RatingBar) row.findViewById(R.id.ratingBar);
                 row.setTag(holder);
             } else {
-                holder= (ViewHolder) row.getTag();
+                holder = (ViewHolder) row.getTag();
             }
             
             final Step step = this.getItem(position);

@@ -29,7 +29,7 @@ public class TrainingStepsFragment extends ListFragment {
 	public void onActivityCreated (Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		try {
-			TrainingProcedureListener trainingProcedureListener = (TrainingProcedureListener) getActivity();
+			ProcedureListener trainingProcedureListener = (ProcedureListener) getActivity();
 			mProcedure = trainingProcedureListener.onProcedureRequested();
 			update();
         } catch (ClassCastException e) {
@@ -76,23 +76,23 @@ public class TrainingStepsFragment extends ListFragment {
             holder.title.setText(step.getTitle());
             switch (step.getStatus()) {
             	case Step.STATUS_COMPLETED:
-            		holder.container.setBackgroundColor(Color.GREEN);
+            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_completed));
             		holder.status.setText(getContext().getText(R.string.step_status_completed));
             		break;
             	case Step.STATUS_SKIPPED:
-            		holder.container.setBackgroundColor(Color.RED);
+            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_skipped));
             		holder.status.setText(getContext().getText(R.string.step_status_skipped));
             		break;
             	case Step.STATUS_IN_PROGRESS:
-            		holder.container.setBackgroundColor(Color.CYAN);
+            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_in_progress));
             		holder.status.setText(getContext().getText(R.string.step_status_in_progress));
             		break;
             	case Step.STATUS_PENDING:
-            		holder.container.setBackgroundColor(Color.YELLOW);
+            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_pending));
             		holder.status.setText(getContext().getText(R.string.step_status_pending));
             		break;
             	case Step.STATUS_PAUSED:
-            		holder.container.setBackgroundColor(Color.LTGRAY);
+            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_paused));
             		holder.status.setText(getContext().getText(R.string.step_status_paused));
             		break;
             }

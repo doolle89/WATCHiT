@@ -11,8 +11,10 @@ public class Step implements Parcelable {
 	public static final int STATUS_PENDING = 4;
 	public static final int STATUS_PAUSED = 5;
 	
+	private long mTemplateId;
 	private String mTitle;
 	private String mDescription;
+	private String mPhotoUrl;
 	private int mStatus;
 	private long mDuration;
 	private long mStartTime;
@@ -27,6 +29,17 @@ public class Step implements Parcelable {
 	public Step(String title, String description) {
 		mTitle = title;
 		mDescription = description;
+		mStatus = STATUS_PENDING;
+		mDuration = 0;
+		mScore = 0;
+    }
+	
+	public Step(long templateId, String title, String description, String photoUrl, long optimalTime) {
+		mTemplateId = templateId;
+		mTitle = title;
+		mDescription = description;
+		mPhotoUrl = photoUrl;
+		mOptimalTime = optimalTime;
 		mStatus = STATUS_PENDING;
 		mDuration = 0;
 		mScore = 0;
@@ -91,12 +104,20 @@ public class Step implements Parcelable {
 		}
 	}
 	
+	public long getTemplateId() {
+		return mTemplateId;
+	}
+
 	public String getTitle() {
 		return mTitle;
 	}
 
 	public String getDescription() {
 		return mDescription;
+	}
+
+	public String getPhotoUrl() {
+		return mPhotoUrl;
 	}
 
 	public int getStatus() {

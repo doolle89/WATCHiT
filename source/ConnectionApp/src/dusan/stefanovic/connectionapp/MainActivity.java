@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
                 // disconnected (and then reconnected if it can be restarted)
                 // so there is no need to do anything here.
             }
-            Toast.makeText(MainActivity.this, R.string.remote_service_bound, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(MainActivity.this, R.string.remote_service_bound, Toast.LENGTH_SHORT).show();
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -146,7 +146,7 @@ public class MainActivity extends Activity {
 
 		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (bluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -204,7 +204,7 @@ public class MainActivity extends Activity {
         case REQUEST_CONNECT_DEVICE:
             if (resultCode == Activity.RESULT_OK) {
             	String address = data.getExtras().getString(WATCHiTServiceInterface.DEVICE_ADDRESS);
-                Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
+                // Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
     			Intent intent = new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SERVICE);
     			intent.putExtras(data);
                 doStartService(intent);
@@ -251,13 +251,13 @@ public class MainActivity extends Activity {
 		mDeviceConnectionState = deviceConnectionState;
 		switch (mDeviceConnectionState) {
 			case WATCHiTServiceInterface.DEVICE_DISCONNECTED:
-	        	imageView.setImageResource(R.drawable.circle_red);
+	        	imageView.setImageResource(R.drawable.ic_disconnected);
 		        break;
 			case WATCHiTServiceInterface.DEVICE_CONNECTING:
-	        	imageView.setImageResource(R.drawable.circle_yellow);
+	        	imageView.setImageResource(R.drawable.ic_connecting);
 	            break;
 	        case WATCHiTServiceInterface.DEVICE_CONNECTED:
-	        	imageView.setImageResource(R.drawable.circle_green);
+	        	imageView.setImageResource(R.drawable.ic_connected);
 	            break;
 		}
 	}
@@ -301,7 +301,7 @@ public class MainActivity extends Activity {
 		    // applications replace our component.
 		    bindService(new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SERVICE), mConnection, Context.BIND_AUTO_CREATE);
 		    mIsBindCalled = true;
-		    Toast.makeText(MainActivity.this, getText(R.string.remote_service_binding), Toast.LENGTH_SHORT).show();
+		    // Toast.makeText(MainActivity.this, getText(R.string.remote_service_binding), Toast.LENGTH_SHORT).show();
     	}
     }
     
@@ -324,7 +324,7 @@ public class MainActivity extends Activity {
             unbindService(mConnection);
             mIsBindCalled = false;
             setIsBound(false);
-            Toast.makeText(MainActivity.this, getText(R.string.remote_service_unbound), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(MainActivity.this, getText(R.string.remote_service_unbound), Toast.LENGTH_SHORT).show();
         }
     }
     

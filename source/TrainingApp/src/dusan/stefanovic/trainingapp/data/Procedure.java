@@ -12,8 +12,10 @@ public class Procedure implements Parcelable {
 	public static final int STATE_PAUSED = 2;
 	public static final int STATE_RUNNING = 3;
 
+	private long mTemplateId;
 	private String mTitle;
 	private String mDescription;
+	private String mPhotoUrl;
 	private List<Step> mSteps;
 	private int mState;
 	private int mCurrentStepIndex;
@@ -23,6 +25,17 @@ public class Procedure implements Parcelable {
 	public Procedure(String title, String description) {
 		mTitle = title;
 		mDescription = description;
+		mSteps = new ArrayList<Step>();
+		mState = STATE_STOPPED;
+		mCurrentStepIndex = -1;
+		lastStepInProgress = null;
+	}
+	
+	public Procedure(long templateId, String title, String description, String photoUrl) {
+		mTemplateId = templateId;
+		mTitle = title;
+		mDescription = description;
+		mPhotoUrl = photoUrl;
 		mSteps = new ArrayList<Step>();
 		mState = STATE_STOPPED;
 		mCurrentStepIndex = -1;
@@ -149,12 +162,20 @@ public class Procedure implements Parcelable {
 		mSteps.add(step);
 	}
 	
+	public long getTemplateId() {
+		return mTemplateId;
+	}
+
 	public String getTitle() {
 		return mTitle;
 	}
 	
 	public String getDescription() {
 		return mDescription;
+	}
+
+	public String getPhotoUrl() {
+		return mPhotoUrl;
 	}
 
 	public Step getCurrentStep() {

@@ -36,6 +36,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+import dusan.stefanovic.trainingapp.fragment.CreateProcedureFragment;
+import dusan.stefanovic.trainingapp.fragment.CreateProcedureInfoFragment;
 import dusan.stefanovic.trainingapp.fragment.DummyFragment;
 import dusan.stefanovic.trainingapp.fragment.SelectProcedureFragment;
 import dusan.stefanovic.treningapp.R;
@@ -164,6 +166,9 @@ public class MainMenuActivity extends ActionBarActivity {
         // update the main content by replacing fragments
     	Fragment fragment;
     	switch (position) {
+	    	case 1:
+	    		fragment = new CreateProcedureFragment();
+	            break;
 	    	case 2:
 	    		fragment = new SelectProcedureFragment();
 	            break;

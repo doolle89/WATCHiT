@@ -3,7 +3,11 @@
     android:id="@+id/step_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp" >
+    android:paddingLeft="6dip"
+    android:paddingTop="2dip"
+	android:paddingBottom="2dip"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight" >
 
     <LinearLayout
         android:layout_width="match_parent"

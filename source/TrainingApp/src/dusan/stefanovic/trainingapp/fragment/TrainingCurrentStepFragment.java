@@ -34,8 +34,8 @@ public class TrainingCurrentStepFragment extends Fragment {
 	public void onActivityCreated (Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		try {
-			TrainingProcedureListener trainingProcedureListener = (TrainingProcedureListener) getActivity();
-			mProcedure = trainingProcedureListener.onProcedureRequested();
+			ProcedureListener procedureListener = (ProcedureListener) getActivity();
+			mProcedure = procedureListener.onProcedureRequested();
 			update();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
