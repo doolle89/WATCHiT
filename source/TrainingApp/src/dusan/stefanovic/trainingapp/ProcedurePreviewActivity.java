@@ -123,8 +123,8 @@ public class ProcedurePreviewActivity extends ActionBarActivity {
             
             final Step step = this.getItem(position);
             holder.title.setText(step.getTitle());
-            holder.description.setText(step.getDescription());
-            
+            // holder.description.setText(step.getDescription());
+            holder.description.setText(getContext().getText(R.string.procedure_preview_activity_procedure_description));
             return row;
         }
     }

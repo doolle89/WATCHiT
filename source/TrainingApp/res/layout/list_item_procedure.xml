@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="6dip"
+    android:paddingRight="6dip"
     android:paddingTop="2dip"
 	android:paddingBottom="2dip"
     android:gravity="center_vertical"
@@ -22,7 +23,6 @@
 	    android:layout_toRightOf="@+id/image"
 	    android:layout_alignTop="@+id/image"
 	    android:layout_marginLeft="8dp"
-	    android:text="111111"
 	    android:textAppearance="?android:attr/textAppearanceLarge" />
 		
 	<TextView android:id="@+id/description"
@@ -30,7 +30,6 @@
 		android:layout_height="wrap_content"
 		android:layout_below="@+id/title"
         android:layout_alignLeft="@+id/title"
-		android:textAppearance="?android:attr/textAppearanceSmall"
-		android:text="2222222" />
+		android:textAppearance="?android:attr/textAppearanceSmall" />
 
 </RelativeLayout>

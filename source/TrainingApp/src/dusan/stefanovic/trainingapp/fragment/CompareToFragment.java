@@ -1,6 +1,7 @@
 package dusan.stefanovic.trainingapp.fragment;
 
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -17,6 +18,14 @@ import dusan.stefanovic.treningapp.R;
 public class CompareToFragment extends ListFragment {
 	
 	private Procedure mProcedure;
+	private View mHeaderView;
+	
+	@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        mHeaderView = inflater.inflate(R.layout.list_header_step_compare, null, false);
+        return rootView;
+	}
 	
 	@Override
 	public void onActivityCreated (Bundle savedInstanceState) {
@@ -25,10 +34,7 @@ public class CompareToFragment extends ListFragment {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();
 			mProcedure = procedureListener.onProcedureRequested();
 			
-			TextView textView = new TextView(getActivity());
-			textView.setText("test");
-			getListView().addHeaderView(textView);
-			
+			getListView().addHeaderView(mHeaderView);
 			if (mProcedure != null) {
 				CompareListAdapter compareToListAdapterListAdapter = new CompareListAdapter(getActivity(), R.layout.list_item_step_compare, mProcedure.getSteps());
 		        setListAdapter(compareToListAdapterListAdapter);
@@ -93,7 +99,7 @@ public static class CompareListAdapter extends ArrayAdapter<Step> {
     		long seconds = (milliseconds / 1000) % 60;
         	long minutes = (milliseconds / 60000) % 60;
         	long hours = (milliseconds / 3600000) % 24;
-        	return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        	return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     	}
     }
 

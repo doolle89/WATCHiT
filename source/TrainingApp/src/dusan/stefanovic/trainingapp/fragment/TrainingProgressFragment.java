@@ -1,5 +1,7 @@
 package dusan.stefanovic.trainingapp.fragment;
 
+import java.util.Locale;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -28,7 +30,7 @@ public class TrainingProgressFragment extends Fragment {
     }
     
     @Override
-	public void onActivityCreated (Bundle savedInstanceState) {
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		try {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();
@@ -51,7 +53,7 @@ public class TrainingProgressFragment extends Fragment {
 	    	long minutes = (milliseconds / 60000) % 60;
 	    	long hours = (milliseconds / 3600000) % 24;
 	    	
-	    	String time = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+	    	String time = String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
 	    	mTimerEditText.setText(time);
     	}
     }

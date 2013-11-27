@@ -13,6 +13,19 @@
     <string name="action_settings">Settings</string>
     <string name="action_reality_check">Reality check</string>
     <string name="action_create_procedure">Create procedure</string>
+    <string name="action_add_step">Add step</string>
+    
+    <string name="button_yes">Yes</string>
+    <string name="button_no">No</string>
+    <string name="button_ok">Ok</string>
+    <string name="button_start">start</string>
+    <string name="button_stop">stop</string>
+    <string name="button_resume">resume</string>
+    <string name="button_pause">pause</string>
+    <string name="button_train">train</string>
+    <string name="button_next">next</string>
+    <string name="button_finish">finish</string>
+    <string name="button_close">close</string>
     
     <!-- Main menu activity -->
     <string name="main_menu_activity_label">Main menu</string>
@@ -25,8 +38,9 @@
         <item>Settings</item>
     </string-array>
     
-    <!-- Main menu activity -->
+    <!-- Procedure preview activity -->
     <string name="procedure_preview_activity_label">Procedure preview</string>
+    <string name="procedure_preview_activity_procedure_description">Touch to see details</string>
     
     <!-- Training activity -->
     <string name="training_activity_label">Training</string>
@@ -35,9 +49,21 @@
     <string name="training_activity_tab_steps">steps</string>
     <string name="training_activity_tab_results">results</string>
     <string name="training_activity_tab_overview">overview</string>
+    <string name="training_activity_go">go</string>
+    <string name="training_activity_quit_dialog_title">Quit training</string>
+    <string name="training_activity_quit_dialog_message">Are you sure you want to quit training?</string>
+    <string name="training_activity_reflection_dialog_title">Reflection</string>
+    <string name="training_activity_reflection_dialog_message">Start self-assessment</string>
     
-    <!-- Self assessment activity -->
-    <string name="self_assessment_activity_label">Self-assessment</string>
+    <!-- Reflection activity -->
+    <string name="reflection_activity_label">Reflection</string>
+    <string name="reflection_activity_title_self_assessment">Self-assessment</string>
+    <string name="reflection_activity_title_reality_check">Reality check</string>
+    <string name="reflection_activity_title_compare_to_optimal">Optimal</string>
+    <string name="reflection_activity_title_reflection_question">Reflection</string>
+    <string name="reflection_activity_title_finish">Finish</string>
+    <string name="reflection_activity_quit_dialog_title">Quit reflection</string>
+    <string name="reflection_activity_quit_dialog_message">Are you sure you want to quit reflection?</string>
     
     <!-- Reality check activity -->
     <string name="reality_check_activity_label">Reality check</string>
@@ -45,6 +71,49 @@
         <item>Reality check</item>
         <item>Compare to optimal</item>
     </string-array>
+    
+    <!-- Create procedure fragment -->
+    <string name="create_procedure_fragment_title_info">info</string>
+    <string name="create_procedure_fragment_title_steps">steps</string>
+    <string name="create_procedure_fragment_title_success">success</string>
+    <string name="create_procedure_fragment_title_fail">fail</string>
+    
+    <!-- Create procedure info fragment -->
+    <string name="create_procedure_info_fragment_hint_title">Title</string>
+    <string name="create_procedure_info_fragment_hint_description">Description</string>
+    
+    <!-- Finish reflection fragment -->
+    <string name="finish_reflection_fragment_message">Thanks for using WATCHiT</string>
+    <string name="finish_reflection_fragment_id_message">Your ID is </string>
+    
+    <!-- Reflection question fragment -->
+    <string name="reflection_question_fragment_question">What could be improved and why?</string>
+    <string name="reflection_question_fragment_hint">Type an answer</string>
+    
+    <!-- Training overview fragment -->
+    <string name="training_overview_fragment_duration">Duration:</string>
+    <string name="training_overview_fragment_time">00:00:00</string>
+    
+    <!-- Training progress fragment -->
+    <string name="training_progress_fragment_duration">Duration:</string>
+    <string name="training_progress_fragment_time">00:00:00</string>
+    <string name="training_progress_fragment_progress">Progress:</string>
+    <string name="training_progress_fragment_progress_0">0%</string>
+    <string name="training_progress_fragment_progress_100">100%</string>
+    
+    <!-- Compare step list header -->
+    <string name="compare_step_list_header_step">Step</string>
+    <string name="compare_step_list_header_time">Your time</string>
+    <string name="compare_step_list_header_optimal">Optimal</string>
+    
+    <!-- Reality check step list header -->
+    <string name="reality_check_step_list_header_step">Step</string>
+    <string name="reality_check_step_list_header_time">Your time</string>
+    <string name="reality_check_step_list_header_rating">Rating</string>
+    
+    <!-- Self assessment step list header -->
+    <string name="self_assessment_step_list_header_step">Step</string>
+    <string name="self_assessment_step_list_header_rating">Rating</string>
     
     <!-- Training service -->
     <string name="training_service_started">Starting training</string>

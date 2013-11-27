@@ -14,7 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import dusan.stefanovic.trainingapp.database.WATCHiTProcedureTrainerDbAdapter;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.treningapp.R;
 
 public class CreateProcedureFragment extends Fragment {
@@ -31,8 +31,8 @@ public class CreateProcedureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mTabHost = (FragmentTabHost) inflater.inflate(R.layout.fragment_create_procedure, container, false);
         mTabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
-        mTabHost.addTab(mTabHost.newTabSpec("info").setIndicator("info"), CreateProcedureInfoFragment.class, null);
-        mTabHost.addTab(mTabHost.newTabSpec("steps").setIndicator("steps"), CreateProcedureStepsFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("info").setIndicator(getText(R.string.create_procedure_fragment_title_info)), CreateProcedureInfoFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec("steps").setIndicator(getText(R.string.create_procedure_fragment_title_steps)), CreateProcedureStepsFragment.class, null);
         return mTabHost;
     }
 
@@ -50,6 +50,9 @@ public class CreateProcedureFragment extends Fragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
+		    case R.id.action_add_step:
+	            
+	            return true;
 	        case R.id.action_create_procedure:
 	            createProcedure();
 	            return true;
@@ -83,7 +86,7 @@ public class CreateProcedureFragment extends Fragment {
 
 			@Override
 			protected Long doInBackground(String... args) {
-				WATCHiTProcedureTrainerDbAdapter dbAdapter = new WATCHiTProcedureTrainerDbAdapter(getActivity());
+				DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
 				dbAdapter.open();
 				long result = dbAdapter.createProcedureTemplate(args[0], args[1], args[2]);
 				dbAdapter.close();
@@ -94,9 +97,9 @@ public class CreateProcedureFragment extends Fragment {
 			protected void onPostExecute(Long result) {
 				String message;
 				if (result > -1) {
-					message = "Success";
+					message = getString(R.string.create_procedure_fragment_title_success);
 				} else {
-					message = "Fail";
+					message = getString(R.string.create_procedure_fragment_title_fail);
 				}
 				Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
 			}

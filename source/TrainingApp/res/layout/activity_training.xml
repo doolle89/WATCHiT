@@ -17,7 +17,7 @@
         android:layout_margin="20dp"
         android:visibility="gone"
         android:background="@drawable/button_round"
-        android:text="Start" />
+        android:text="@string/button_start" />
     <!-- android:enabled="false" -->
     
     <Button
@@ -29,7 +29,7 @@
         android:layout_margin="20dp"
         android:visibility="gone"
         android:background="@drawable/button_round"
-        android:text="Resume" />
+        android:text="@string/button_resume" />
     
     <Button
         android:id="@+id/pause_button"
@@ -40,6 +40,6 @@
         android:layout_margin="20dp"
         android:visibility="gone"
         android:background="@drawable/button_round"
-        android:text="Pause" />
+        android:text="@string/button_pause" />
 
 </RelativeLayout>

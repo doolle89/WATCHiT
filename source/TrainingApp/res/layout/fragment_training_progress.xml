@@ -26,7 +26,7 @@
             android:layout_alignTop="@+id/imageView"
             android:layout_marginTop="-5dp"
             android:textSize="16sp"
-            android:text="Duration:" />
+            android:text="@string/training_progress_fragment_duration" />
 
         <EditText
             android:id="@+id/timerEditText"
@@ -40,14 +40,17 @@
             android:enabled="false"
             android:inputType="time"
             android:textSize="48sp"
-            android:text="00:00:00" />
+            android:text="@string/training_progress_fragment_time" />
         
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_margin="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="70dp"
+	    android:layout_marginRight="20dp"
+	    android:layout_marginBottom="20dp"
         android:layout_weight="1" >
 
         <TextView
@@ -56,28 +59,30 @@
             android:layout_above="@+id/progressBar"
             android:layout_alignLeft="@+id/progressBar"
             android:layout_marginBottom="20dp"
-            android:text="Progress:" />
+            android:text="@string/training_progress_fragment_progress" />
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
+            android:progressDrawable="@drawable/progressbar" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/progressBar"
             android:layout_below="@+id/progressBar"
-            android:text="0%" />
+            android:text="@string/training_progress_fragment_progress_0" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignRight="@+id/progressBar"
             android:layout_below="@+id/progressBar"
-            android:text="100%" />
+            android:text="@string/training_progress_fragment_progress_100" />
     </RelativeLayout>
 
     <RelativeLayout

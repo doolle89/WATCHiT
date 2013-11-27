@@ -16,8 +16,14 @@
 
 package dusan.stefanovic.trainingapp;
 
+import java.io.ObjectInputStream.GetField;
+
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -31,12 +37,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import dusan.stefanovic.trainingapp.TrainingActivity.QuitDialogFragment;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.fragment.CompareToFragment;
-import dusan.stefanovic.trainingapp.fragment.DummyFragment;
+import dusan.stefanovic.trainingapp.fragment.FinishReflectionFragment;
 import dusan.stefanovic.trainingapp.fragment.ProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.RealityCheckFragment;
+import dusan.stefanovic.trainingapp.fragment.ReflectionQuestionFragment;
 import dusan.stefanovic.trainingapp.fragment.SelfAssessmentFragment;
+import dusan.stefanovic.trainingapp.service.TrainingService;
 import dusan.stefanovic.treningapp.R;
 
 public class ReflectionActivity extends ActionBarActivity implements ProcedureListener {
@@ -45,6 +54,7 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 
     ViewPager mViewPager;
     Button mNextButton;
+    Button mFinishButton;
     
     Procedure mProcedure;
 
@@ -75,12 +85,15 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 			@Override
 			public void onPageSelected(int position) {
 				if (mViewPager.getCurrentItem() == mViewPager.getAdapter().getCount() - 1) {
-					mNextButton.setEnabled(false);
+					mNextButton.setVisibility(View.GONE);
+					mFinishButton.setVisibility(View.VISIBLE);
 				}
+				
 				if (position == SectionPagerAdapter.STEP_2) {
 					RealityCheckFragment realityCheckFragment = (RealityCheckFragment) mViewPager.getAdapter().instantiateItem(mViewPager, SectionPagerAdapter.STEP_2);
 					realityCheckFragment.refresh();
 				}
+				
 			}
 
 			@Override
@@ -101,12 +114,24 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 			}
         	
         });
+        
+        mFinishButton = (Button) findViewById(R.id.finish_button);
+        mFinishButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finishReflection();
+			}
+        	
+        });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+            	tryToQuitReflectionActivity();
+            	/*
                 // This is called when the Home (Up) button is pressed in the action bar.
                 // Create a simple intent that starts the hierarchical parent activity and
                 // use NavUtils in the Support Package to ensure proper handling of Up.
@@ -124,14 +149,31 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
                     // navigate up to the hierarchical parent activity.
                     NavUtils.navigateUpTo(this, upIntent);
                 }
+                */
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    @Override
+    public void onBackPressed() {
+    	tryToQuitReflectionActivity();
     }
 
 	@Override
 	public Procedure onProcedureRequested() {
 		return mProcedure;
+	}
+	
+	private void tryToQuitReflectionActivity() {
+		DialogFragment dialog = new QuitDialogFragment();
+		dialog.show(getSupportFragmentManager(), "quit_dialog");
+	}
+	
+	private void finishReflection() {
+		Intent intent = new Intent(this, MainMenuActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
 	}
     
     public class SectionPagerAdapter extends FragmentStatePagerAdapter {
@@ -139,6 +181,9 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
     	static final int STEP_1 = 0;
     	static final int STEP_2 = 1;
     	static final int STEP_3 = 2;
+    	static final int STEP_4 = 3;
+    	static final int STEP_5 = 4;
+    	static final int STEP_6 = 5;
 
         public SectionPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -157,6 +202,12 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
         		case STEP_3:
         			fragment = new CompareToFragment();
         			break;
+        		case STEP_4:
+        			fragment = new ReflectionQuestionFragment();
+        			break;
+        		case STEP_5:
+        			fragment = new FinishReflectionFragment();
+        			break;
         			
         		default:
         			fragment = new RealityCheckFragment();
@@ -167,20 +218,52 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 
         @Override
         public int getCount() {
-            return 3;
+            return 5;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
         	switch (position) {
 	    		case STEP_1:
-	    			return getText(R.string.training_activity_tab_results);
+	    			return getText(R.string.reflection_activity_title_self_assessment);
 	    		case STEP_2:
-	    			return getText(R.string.training_activity_tab_results);
+	    			return getText(R.string.reflection_activity_title_reality_check);
 	    		case STEP_3:
-	    			return getText(R.string.training_activity_tab_results);
+	    			return getText(R.string.reflection_activity_title_compare_to_optimal);
+	    		case STEP_4:
+	    			return getText(R.string.reflection_activity_title_reflection_question);
+	    		case STEP_5:
+	    			return getText(R.string.reflection_activity_title_finish);
 	    	}
 	        return null;
         }
     }
+    
+    public static class QuitDialogFragment extends DialogFragment {
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    	builder.setTitle(getText(R.string.reflection_activity_quit_dialog_title));
+	    	builder.setMessage(getText(R.string.reflection_activity_quit_dialog_message));
+	    	builder.setPositiveButton(getText(R.string.button_yes), new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    			((ReflectionActivity) getActivity()).finishReflection();
+	            }
+	    		
+	    	});
+	        builder.setNegativeButton(getText(R.string.button_no), new DialogInterface.OnClickListener() {
+	        	
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+	        		
+	            }
+	        	
+	        });
+	        return builder.create();
+		}
+		 
+	}
 }

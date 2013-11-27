@@ -18,7 +18,14 @@ import dusan.stefanovic.treningapp.R;
 
 public class SelfAssessmentFragment extends ListFragment {
 
-	private Procedure mProcedure;
+	private Procedure mProcedure;private View mHeaderView;
+	
+	@Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = super.onCreateView(inflater, container, savedInstanceState);
+        mHeaderView = inflater.inflate(R.layout.list_header_step_self_assessment, null, false);
+        return rootView;
+	}
 	
 	@Override
 	public void onActivityCreated (Bundle savedInstanceState) {
@@ -27,10 +34,7 @@ public class SelfAssessmentFragment extends ListFragment {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();
 			mProcedure = procedureListener.onProcedureRequested();
 			
-			TextView textView = new TextView(getActivity());
-			textView.setText("test");
-			getListView().addHeaderView(textView);
-			
+			getListView().addHeaderView(mHeaderView);
 			if (mProcedure != null) {
 				SelfAssessmentListAdapter selfAssessmentListAdapterListAdapter = new SelfAssessmentListAdapter(getActivity(), R.layout.list_item_step_self_assessment, mProcedure.getSteps());
 		        setListAdapter(selfAssessmentListAdapterListAdapter);

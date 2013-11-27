@@ -1,6 +1,7 @@
 package dusan.stefanovic.trainingapp;
 
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.content.Intent;
@@ -163,7 +164,7 @@ public class RealityCheckActivity extends ActionBarActivity {
     		long seconds = (milliseconds / 1000) % 60;
         	long minutes = (milliseconds / 60000) % 60;
         	long hours = (milliseconds / 3600000) % 24;
-        	return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        	return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     	}
     }
 	
@@ -222,7 +223,7 @@ public class RealityCheckActivity extends ActionBarActivity {
     		long seconds = (milliseconds / 1000) % 60;
         	long minutes = (milliseconds / 60000) % 60;
         	long hours = (milliseconds / 3600000) % 24;
-        	return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        	return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     	}
     }
 }

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingLeft="6dip"
+    android:paddingRight="6dip"
     android:paddingTop="2dip"
 	android:paddingBottom="2dip"
     android:gravity="center_vertical"
@@ -38,19 +39,21 @@
             android:id="@+id/step_start_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp" />
+            android:visibility="gone"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/step_end_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp" />
+            android:visibility="gone"
+            android:textSize="16sp" />
         
         <TextView
             android:id="@+id/step_duration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
         
     </LinearLayout>

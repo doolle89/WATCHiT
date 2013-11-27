@@ -31,7 +31,7 @@ public class TrainingCurrentStepFragment extends Fragment {
     }
 	
 	@Override
-	public void onActivityCreated (Bundle savedInstanceState) {
+	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		try {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();

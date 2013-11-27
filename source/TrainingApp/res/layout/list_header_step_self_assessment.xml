@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/step_layout"
+   	android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="6dip"
+    android:paddingRight="6dip"
+    android:paddingTop="2dip"
+	android:paddingBottom="2dip"
+    android:gravity="center_vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/self_assessment_step_list_header_step" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="95dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/self_assessment_step_list_header_rating" />
+
+</RelativeLayout>

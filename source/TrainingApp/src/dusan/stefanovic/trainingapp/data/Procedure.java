@@ -22,9 +22,10 @@ public class Procedure implements Parcelable {
 	
 	private Step lastStepInProgress;
 	
-	public Procedure(String title, String description) {
+	public Procedure(String title, String description, String photoUrl) {
 		mTitle = title;
 		mDescription = description;
+		mPhotoUrl = photoUrl;
 		mSteps = new ArrayList<Step>();
 		mState = STATE_STOPPED;
 		mCurrentStepIndex = -1;

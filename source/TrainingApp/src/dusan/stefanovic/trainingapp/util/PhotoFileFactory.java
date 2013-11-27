@@ -21,7 +21,7 @@ public class PhotoFileFactory {
 			File albumFile = getAlbumDir();
 			imageFile = File.createTempFile(imageFileName, JPEG_FILE_SUFFIX, albumFile);
 		} catch (IOException e) {
-			
+			e.printStackTrace();
 		}
 		return imageFile;
 	}
@@ -39,12 +39,13 @@ public class PhotoFileFactory {
 			}
 		} else {
 			// External storage is not mounted READ/WRITE.
+			int k = 0; 
 		}
 		return storageDir;
 	}
 	
 	private static String getAlbumName() {
-		return "album name";
+		return "WATCHiTProcedureTrainer";
 	}
 
 }

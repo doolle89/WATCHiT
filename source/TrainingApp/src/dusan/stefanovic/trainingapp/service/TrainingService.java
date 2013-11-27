@@ -373,7 +373,7 @@ public class TrainingService extends Service {
     }
     
     public void processTag(String tagValue) {
-    	Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
+    	// Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
     	
     	/*
     	int tag = -1;

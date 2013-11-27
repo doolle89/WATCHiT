@@ -43,6 +43,6 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:background="@drawable/button_rounded_corner"
-        android:text="Close" />
+        android:text="@string/button_close" />
 
 </RelativeLayout>

@@ -632,9 +632,9 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    	builder.setTitle("Quit training?");
-	    	builder.setMessage("Are you sure you want to quit training?");
-	    	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	    	builder.setTitle(getText(R.string.training_activity_quit_dialog_title));
+	    	builder.setMessage(getText(R.string.training_activity_quit_dialog_message));
+	    	builder.setPositiveButton(getText(R.string.button_yes), new DialogInterface.OnClickListener() {
 	    		
 	    		@Override
 	    		public void onClick(DialogInterface dialog, int which) {
@@ -643,7 +643,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	            }
 	    		
 	    	});
-	        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+	        builder.setNegativeButton(getText(R.string.button_no), new DialogInterface.OnClickListener() {
 	        	
 	        	@Override
 	            public void onClick(DialogInterface dialog, int which) {
@@ -661,9 +661,9 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    	builder.setTitle("Start self-assessment?");
-	    	builder.setMessage("Do you want to start self-assessment?");
-	    	builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+	    	builder.setTitle(getText(R.string.training_activity_reflection_dialog_title));
+	    	builder.setMessage(getText(R.string.training_activity_reflection_dialog_message));
+	    	builder.setNeutralButton(getText(R.string.button_ok), new DialogInterface.OnClickListener() {
 	    		
 	    		@Override
 	    		public void onClick(DialogInterface dialog, int which) {
@@ -673,14 +673,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	            }
 	    		
 	    	});
-	        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-	        	
-	        	@Override
-	            public void onClick(DialogInterface dialog, int which) {
-	        		
-	            }
-	        	
-	        });
+	    	setCancelable(false);
 	        return builder.create();
 		}
 	}
@@ -717,7 +710,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
             		
             		@Override
             		public void onFinish() {
-            			mTextView.setText("GO");
+            			mTextView.setText(getText(R.string.training_activity_go));
             			mVibrator.vibrate(1500);
             			dismiss();
             		}
