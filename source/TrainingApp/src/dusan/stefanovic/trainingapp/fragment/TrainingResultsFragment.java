@@ -43,8 +43,10 @@ public class TrainingResultsFragment extends ListFragment {
 			
 			protected void onPostExecute(List<Procedure> result) {
 				mProcedures = result;
-		        ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
-		        setListAdapter(stepListAdapter);
+				if (mProcedures != null && mProcedures.size() > 0) {
+			        ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
+			        setListAdapter(stepListAdapter);
+				}
 			}
 			
 		};

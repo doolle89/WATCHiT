@@ -111,6 +111,11 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 				if (mViewPager.getCurrentItem() < mViewPager.getAdapter().getCount() - 1) {
 					mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
 				}
+				// izmeniti ovo
+				if (mViewPager.getCurrentItem() == SectionPagerAdapter.STEP_4) {
+					FinishReflectionFragment realityCheckFragment = (FinishReflectionFragment) mViewPager.getAdapter().instantiateItem(mViewPager, SectionPagerAdapter.STEP_5);
+					realityCheckFragment.save();
+				}
 			}
         	
         });

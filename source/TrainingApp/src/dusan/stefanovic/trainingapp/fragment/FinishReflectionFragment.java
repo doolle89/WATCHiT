@@ -34,27 +34,31 @@ public class FinishReflectionFragment extends Fragment {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();
 			mProcedure = procedureListener.onProcedureRequested();			
 			if (mProcedure != null) {
-				AsyncTask<Procedure, Void, Long> asyncTask = new AsyncTask<Procedure, Void, Long>() {
-
-					@Override
-					protected Long doInBackground(Procedure... args) {
-						DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
-						dbAdapter.open();
-						long result = dbAdapter.createProcedureResult(args[0]);
-						dbAdapter.close();
-						return result;
-					}
-					
-					protected void onPostExecute(Long result) {
-						mProcedureIdTextView.setText(mProcedureIdTextView.getText() + " " + result);
-					}
-					
-				};
-				asyncTask.execute(mProcedure);
+				// save();
 			}
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
         }
+	}
+	
+	public void save() {
+		AsyncTask<Procedure, Void, Long> asyncTask = new AsyncTask<Procedure, Void, Long>() {
+
+			@Override
+			protected Long doInBackground(Procedure... args) {
+				DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
+				dbAdapter.open();
+				long result = dbAdapter.createProcedureResult(args[0]);
+				dbAdapter.close();
+				return result;
+			}
+			
+			protected void onPostExecute(Long result) {
+				mProcedureIdTextView.setText(mProcedureIdTextView.getText() + " " + result);
+			}
+			
+		};
+		asyncTask.execute(mProcedure);
 	}
 
 }

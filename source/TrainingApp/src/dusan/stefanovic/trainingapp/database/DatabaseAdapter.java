@@ -137,11 +137,15 @@ public final class DatabaseAdapter {
 	    	
 	        public static final String TABLE_NAME = "procedure_result";
 	        public static final String COLUMN_NAME_TEMPLATE_ID = "template_id";
+	        public static final String COLUMN_NAME_NOTE = "note";
+	        public static final String COLUMN_NAME_RANDOM_ID = "random_id";
 	        
 	        public static final String SQL_CREATE_ENTRIE =
         	    "CREATE TABLE " + TABLE_NAME + " (" +
         	    _ID + " INTEGER PRIMARY KEY," +
         	    COLUMN_NAME_TEMPLATE_ID + " INTEGER NOT NULL" + COMMA_SEP +
+        	    COLUMN_NAME_NOTE + TEXT_TYPE + COMMA_SEP +
+        	    COLUMN_NAME_RANDOM_ID + INTEGER_TYPE + COMMA_SEP +
         	    "FOREIGN KEY (" + COLUMN_NAME_TEMPLATE_ID + ") REFERENCES " + ProcedureTemplateEntry.TABLE_NAME + "(" + ProcedureTemplateEntry._ID + ")" +
         	    " )";
 
@@ -472,14 +476,20 @@ public final class DatabaseAdapter {
     
     
     
-    public long createProcedureResult(long templateId) {
+    public long createProcedureResult(long templateId, String note) {
         ContentValues initialValues = new ContentValues();
         initialValues.put(ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID, templateId);
-        return mDb.insert(ProcedureResultEntry.TABLE_NAME, null, initialValues);
+        initialValues.put(ProcedureResultEntry.COLUMN_NAME_NOTE, note);
+        // hack
+        long randomId = (long) (Math.random() * 1000000);
+        initialValues.put(ProcedureResultEntry.COLUMN_NAME_RANDOM_ID, randomId);
+        long id = mDb.insert(ProcedureResultEntry.TABLE_NAME, null, initialValues);
+        randomId += id * 1000000000;
+        return randomId;
     }
     
     public long createProcedureResult(Procedure procedure) {
-    	long procedureId = createProcedureResult(procedure.getTemplateId());
+    	long procedureId = createProcedureResult(procedure.getTemplateId(), procedure.note);
     	for (Step step : procedure.getSteps()) {
     		long stepId = createStepResult(step);
     		connectProcedureResultStepResult(procedureId, stepId);

@@ -21,6 +21,8 @@ public class Procedure implements Parcelable {
 	private int mState;
 	private int mCurrentStepIndex;
 	
+	public String note;
+	
 	private Step lastStepInProgress;
 	
 	public Procedure(String title, String description, String photoUrl) {

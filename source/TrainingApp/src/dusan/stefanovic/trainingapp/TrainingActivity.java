@@ -298,7 +298,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	public void onTrainingStopped() {
 		changeTrainingView();
 		updateSteps();
-		showSelfAssessmentDialog();
+		showReflectionDialog();
 		showRestartOption();
 	}
 	
@@ -337,9 +337,12 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		}
 	}
 	
-	public void showSelfAssessmentDialog() {
-		DialogFragment dialog = new SelfAssessmentDialogFragment();
+	public void showReflectionDialog() {
+		DialogFragment dialog = new ReflectionDialogFragment();
 		dialog.show(getSupportFragmentManager(), "self_assessment_dialog");
+		
+		// privremeno!!!
+		stopService(new Intent(this, TrainingService.class));
 	}
 	
 	public void performCountDown() {
@@ -407,8 +410,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	    	if (mProcedure.isStarted()) {
 	    		// notifikacija ovde
 	    	}
-			// mStartButton.setEnabled(false);
-			// mResumeButton.setEnabled(false);
+			mStartButton.setEnabled(false);
+			mResumeButton.setEnabled(false);
 		} else {
 			mStartButton.setEnabled(true);
 			mResumeButton.setEnabled(true);
@@ -492,7 +495,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     private boolean isTrainingFinished() {
-    	return !mProcedure.isStarted() && mProcedure.getStep(0).getStatus() != Step.STATUS_PENDING;
+    	return false;
+    	//return !mProcedure.isStarted() && mProcedure.getStep(0).getStatus() != Step.STATUS_PENDING;
     }
     
     private void changeTrainingView() {
@@ -656,7 +660,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		 
 	}
     
-    public static class SelfAssessmentDialogFragment extends DialogFragment {
+    public static class ReflectionDialogFragment extends DialogFragment {
 		
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {

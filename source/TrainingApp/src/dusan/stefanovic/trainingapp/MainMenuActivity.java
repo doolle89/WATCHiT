@@ -121,9 +121,16 @@ public class MainMenuActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
          // The action bar home/up action should open or close the drawer.
          // ActionBarDrawerToggle will take care of this.
+    	
+    	
+    	// Onemoguci ovwaranje privremeno
+    	/*
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        */
+    	
+    	
         // Handle action buttons
         switch(item.getItemId()) {
         /*
