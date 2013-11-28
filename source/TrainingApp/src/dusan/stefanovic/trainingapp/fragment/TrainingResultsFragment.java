@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -11,12 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingResultsFragment extends ListFragment {
 	
-	List<Step> mSteps;
+	List<Procedure> mProcedures;
 
 	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,21 +27,38 @@ public class TrainingResultsFragment extends ListFragment {
         return rootView;
     }
 	
-	public void setStepsList(List<Step> steps) {
-		mSteps = steps;
-		StepListAdapter stepListAdapter = new StepListAdapter(getActivity(), R.layout.list_item_step_training, mSteps);
-        setListAdapter(stepListAdapter);
-	}
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		AsyncTask<Long, Void, List<Procedure>> asyncTask = new AsyncTask<Long, Void, List<Procedure>>() {
+
+			@Override
+			protected List<Procedure> doInBackground(Long... args) {
+				DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
+				dbAdapter.open();
+				List<Procedure> procedures = dbAdapter.getAllProcedureResults(1);
+				dbAdapter.close();
+				return procedures;
+			}
+			
+			protected void onPostExecute(List<Procedure> result) {
+				mProcedures = result;
+		        ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
+		        setListAdapter(stepListAdapter);
+			}
+			
+		};
+		asyncTask.execute();
+    }
 	
-	public static class StepListAdapter extends ArrayAdapter<Step> {
+	public static class ProcedureListAdapter extends ArrayAdapter<Procedure> {
     	
     	static class ViewHolder {
-    		View container;
     		TextView title;
-    		TextView status;
+    		TextView time;
     	}
     	
-    	public StepListAdapter(Context context, int resource, List<Step> objects) {
+    	public ProcedureListAdapter(Context context, int resource, List<Procedure> objects) {
     		super(context, resource, objects);
     	}
 
@@ -50,38 +70,16 @@ public class TrainingResultsFragment extends ListFragment {
                 LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 row = inflater.inflate(R.layout.list_item_step_training, null);
                 holder = new ViewHolder();
-                holder.container = row.findViewById(R.id.step_layout);
                 holder.title = (TextView) row.findViewById(R.id.step_title);
-                holder.status = (TextView) row.findViewById(R.id.step_status);
+                holder.time = (TextView) row.findViewById(R.id.step_status);
                 row.setTag(holder);
             } else {
                 holder = (ViewHolder) row.getTag();
             }
             
-            final Step step = this.getItem(position);
-            holder.title.setText(step.getTitle());
-            switch (step.getStatus()) {
-            	case Step.STATUS_COMPLETED:
-            		holder.container.setBackgroundColor(Color.GREEN);
-            		holder.status.setText(getContext().getText(R.string.step_status_completed));
-            		break;
-            	case Step.STATUS_SKIPPED:
-            		holder.container.setBackgroundColor(Color.RED);
-            		holder.status.setText(getContext().getText(R.string.step_status_skipped));
-            		break;
-            	case Step.STATUS_IN_PROGRESS:
-            		holder.container.setBackgroundColor(Color.CYAN);
-            		holder.status.setText(getContext().getText(R.string.step_status_in_progress));
-            		break;
-            	case Step.STATUS_PENDING:
-            		holder.container.setBackgroundColor(Color.YELLOW);
-            		holder.status.setText(getContext().getText(R.string.step_status_pending));
-            		break;
-            	case Step.STATUS_PAUSED:
-            		holder.container.setBackgroundColor(Color.LTGRAY);
-            		holder.status.setText(getContext().getText(R.string.step_status_paused));
-            		break;
-            }
+            final Procedure procedure = this.getItem(position);
+            holder.title.setText(procedure.getTitle());
+            holder.time.setText(String.valueOf(procedure.getDuraton()));
             return row;
         }
     }

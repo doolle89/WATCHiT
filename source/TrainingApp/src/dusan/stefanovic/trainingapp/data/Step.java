@@ -149,6 +149,10 @@ public class Step implements Parcelable {
 		return Math.round(mDuration * 0.000001);
 	}
 
+	public long getDurationNano() {
+		return mDuration;
+	}
+	
 	public long getStartTime() {
 		return mStartTime;
 	}
@@ -190,8 +194,11 @@ public class Step implements Parcelable {
 	
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
+		out.writeLong(mTemplateId);
+		out.writeLong(mId);
 		out.writeString(mTitle);
 		out.writeString(mDescription);
+		out.writeString(mPhotoUrl);
 		out.writeInt(mStatus);
 		out.writeLong(mDuration);
 		out.writeLong(mStartTime);
@@ -212,8 +219,11 @@ public class Step implements Parcelable {
     };
     
     private Step(Parcel in) {
+    	mTemplateId = in.readLong();
+    	mId = in.readLong();
 		mTitle = in.readString();
 		mDescription = in.readString();
+		mPhotoUrl = in.readString();
 		mStatus = in.readInt();
 		mDuration = in.readLong();
 		mStartTime = in.readLong();

@@ -1252,6 +1252,7 @@ containing a value of this type.
         public static final int action_settings=0x7f0a0015;
         public static final int action_stop_training=0x7f0a0013;
         /**  Application 
+ Application 
          */
         public static final int app_name=0x7f0a000d;
         public static final int button_close=0x7f0a0023;
@@ -1267,43 +1268,52 @@ containing a value of this type.
         public static final int button_yes=0x7f0a0019;
         public static final int compare_step_list_header_optimal=0x7f0a004e;
         /**  Compare step list header 
+ Compare step list header 
          */
         public static final int compare_step_list_header_step=0x7f0a004c;
         public static final int compare_step_list_header_time=0x7f0a004d;
         public static final int content_description=0x7f0a000e;
         public static final int create_procedure_fragment_title_fail=0x7f0a003e;
         /**  Create procedure fragment 
+ Create procedure fragment 
          */
         public static final int create_procedure_fragment_title_info=0x7f0a003b;
         public static final int create_procedure_fragment_title_steps=0x7f0a003c;
         public static final int create_procedure_fragment_title_success=0x7f0a003d;
         public static final int create_procedure_info_fragment_hint_description=0x7f0a0040;
         /**  Create procedure info fragment 
+ Create procedure info fragment 
          */
         public static final int create_procedure_info_fragment_hint_title=0x7f0a003f;
         public static final int drawer_close=0x7f0a0011;
         public static final int drawer_open=0x7f0a0010;
         public static final int finish_reflection_fragment_id_message=0x7f0a0042;
         /**  Finish reflection fragment 
+ Finish reflection fragment 
          */
         public static final int finish_reflection_fragment_message=0x7f0a0041;
         /**  Main menu activity 
+ Main menu activity 
          */
         public static final int main_menu_activity_label=0x7f0a0024;
         public static final int permission_label_watchit=0x7f0a000f;
         /**  Procedure preview activity 
+ Procedure preview activity 
          */
         public static final int procedure_preview_activity_label=0x7f0a0025;
         public static final int procedure_preview_activity_procedure_description=0x7f0a0026;
         /**  Reality check activity 
+ Reality check activity 
          */
         public static final int reality_check_activity_label=0x7f0a003a;
         public static final int reality_check_step_list_header_rating=0x7f0a0051;
         /**  Reality check step list header 
+ Reality check step list header 
          */
         public static final int reality_check_step_list_header_step=0x7f0a004f;
         public static final int reality_check_step_list_header_time=0x7f0a0050;
         /**  Reflection activity 
+ Reflection activity 
          */
         public static final int reflection_activity_label=0x7f0a0032;
         public static final int reflection_activity_quit_dialog_message=0x7f0a0039;
@@ -1315,13 +1325,16 @@ containing a value of this type.
         public static final int reflection_activity_title_self_assessment=0x7f0a0033;
         public static final int reflection_question_fragment_hint=0x7f0a0044;
         /**  Reflection question fragment 
+ Reflection question fragment 
          */
         public static final int reflection_question_fragment_question=0x7f0a0043;
         public static final int self_assessment_step_list_header_rating=0x7f0a0053;
         /**  Self assessment step list header 
+ Self assessment step list header 
          */
         public static final int self_assessment_step_list_header_step=0x7f0a0052;
         /**  Step 
+ Step 
          */
         public static final int step_status_completed=0x7f0a0057;
         public static final int step_status_in_progress=0x7f0a0059;
@@ -1330,6 +1343,7 @@ containing a value of this type.
         public static final int step_status_skipped=0x7f0a0058;
         public static final int training_activity_go=0x7f0a002d;
         /**  Training activity 
+ Training activity 
          */
         public static final int training_activity_label=0x7f0a0027;
         public static final int training_activity_quit_dialog_message=0x7f0a002f;
@@ -1342,10 +1356,12 @@ containing a value of this type.
         public static final int training_activity_tab_results=0x7f0a002b;
         public static final int training_activity_tab_steps=0x7f0a002a;
         /**  Training overview fragment 
+ Training overview fragment 
          */
         public static final int training_overview_fragment_duration=0x7f0a0045;
         public static final int training_overview_fragment_time=0x7f0a0046;
         /**  Training progress fragment 
+ Training progress fragment 
          */
         public static final int training_progress_fragment_duration=0x7f0a0047;
         public static final int training_progress_fragment_progress=0x7f0a0049;
@@ -1355,6 +1371,7 @@ containing a value of this type.
         public static final int training_service_context=0x7f0a0056;
         public static final int training_service_label=0x7f0a0055;
         /**  Training service 
+ Training service 
          */
         public static final int training_service_started=0x7f0a0054;
     }

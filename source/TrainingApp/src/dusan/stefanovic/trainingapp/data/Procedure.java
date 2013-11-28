@@ -13,6 +13,7 @@ public class Procedure implements Parcelable {
 	public static final int STATE_RUNNING = 3;
 
 	private long mTemplateId;
+	private long mId;
 	private String mTitle;
 	private String mDescription;
 	private String mPhotoUrl;
@@ -37,6 +38,18 @@ public class Procedure implements Parcelable {
 		mTitle = title;
 		mDescription = description;
 		mPhotoUrl = photoUrl;
+		mSteps = new ArrayList<Step>();
+		mState = STATE_STOPPED;
+		mCurrentStepIndex = -1;
+		lastStepInProgress = null;
+	}
+	
+	public Procedure(long templateId, String title, String description, String photoUrl, long resultId) {
+		mTemplateId = templateId;
+		mTitle = title;
+		mDescription = description;
+		mPhotoUrl = photoUrl;
+		mId = resultId;
 		mSteps = new ArrayList<Step>();
 		mState = STATE_STOPPED;
 		mCurrentStepIndex = -1;
@@ -167,6 +180,10 @@ public class Procedure implements Parcelable {
 		return mTemplateId;
 	}
 
+	public long getId() {
+		return mId;
+	}
+
 	public String getTitle() {
 		return mTitle;
 	}
@@ -195,6 +212,10 @@ public class Procedure implements Parcelable {
 		return mSteps;
 	}
 	
+	public void setSteps(List<Step> steps) {
+		mSteps = steps;
+	}
+
 	public int getStepsNumber() {
 		return mSteps.size();
 	}
@@ -236,8 +257,11 @@ public class Procedure implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
+		out.writeLong(mTemplateId);
+		out.writeLong(mId);
 		out.writeString(mTitle);
 		out.writeString(mDescription);
+		out.writeString(mPhotoUrl);
 		out.writeTypedList(mSteps);
 		out.writeInt(mState);
 		out.writeInt(mCurrentStepIndex);
@@ -254,8 +278,11 @@ public class Procedure implements Parcelable {
     };
     
     private Procedure(Parcel in) {
+    	mTemplateId = in.readLong();
+    	mId = in.readLong();
 		mTitle = in.readString();
 		mDescription = in.readString();
+		mPhotoUrl = in.readString();
 		mSteps = new ArrayList<Step>();
 		in.readTypedList(mSteps, Step.CREATOR);
 		mState = in.readInt();

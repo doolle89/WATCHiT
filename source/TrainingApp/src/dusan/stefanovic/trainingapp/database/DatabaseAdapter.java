@@ -5,6 +5,8 @@ import java.util.List;
 
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.ProcedureResultEntry;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.ProcedureResultStepResultConnection;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.ProcedureTemplateEntry;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.ProcedureTemplateStepTemplateConnection;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.StepResultEntry;
@@ -29,13 +31,19 @@ public final class DatabaseAdapter {
 		public static final String[] SQL_CREATE_ENTRIES = {
 			StepTemplateEntry.SQL_CREATE_ENTRIE,
 			ProcedureTemplateEntry.SQL_CREATE_ENTRIE,
-			ProcedureTemplateStepTemplateConnection.SQL_CREATE_ENTRIE
+			ProcedureTemplateStepTemplateConnection.SQL_CREATE_ENTRIE,
+			StepResultEntry.SQL_CREATE_ENTRIE,
+			ProcedureResultEntry.SQL_CREATE_ENTRIE,
+			ProcedureResultStepResultConnection.SQL_CREATE_ENTRIE,
 		};
 		
 		public static final String[] SQL_DELETE_ENTRIES = {
 			StepTemplateEntry.SQL_DELETE_ENTRIE,
 			ProcedureTemplateEntry.SQL_DELETE_ENTRIE,
-			ProcedureTemplateStepTemplateConnection.SQL_DELETE_ENTRIE
+			ProcedureTemplateStepTemplateConnection.SQL_DELETE_ENTRIE,
+			StepResultEntry.SQL_DELETE_ENTRIE,
+			ProcedureResultEntry.SQL_DELETE_ENTRIE,
+			ProcedureResultStepResultConnection.SQL_DELETE_ENTRIE
 		};
 		
 	    public static abstract class StepTemplateEntry implements BaseColumns {
@@ -328,22 +336,7 @@ public final class DatabaseAdapter {
 	        	String description = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION));
 	        	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL));
 	        	Procedure procedure = new Procedure(templateId, title, description, photoUrl);
-	        	
-	        	table = ProcedureTemplateStepTemplateConnection.TABLE_NAME;
-	        	columns = new String[] {ProcedureTemplateStepTemplateConnection.COLUMN_NAME_STEP_TEMPLATE_ID};
-	        	selection = ProcedureTemplateStepTemplateConnection.COLUMN_NAME_PROCEDURE_TEMPLATE_ID + "=" + templateId;
-	        	selectionArgs = null;
-	        	groupBy = null;
-	        	having = null;
-	        	orderBy = null;
-	        	Cursor stepCursor = mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
-	        	if (stepCursor != null) {
-	            	while (stepCursor.moveToNext()) {
-	            		long stepId = stepCursor.getLong(stepCursor.getColumnIndexOrThrow(ProcedureTemplateStepTemplateConnection.COLUMN_NAME_STEP_TEMPLATE_ID));
-	            		Step step = getStepTemplate(stepId);
-	            		procedure.addStep(step);
-	            	}
-	        	}
+	        	procedure.setSteps(getProcedureTemplateSteps(templateId));
 	        	procedures.add(procedure);
         	}
         }
@@ -366,24 +359,27 @@ public final class DatabaseAdapter {
         	String description = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION));
         	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL));
         	procedure = new Procedure(templateId, title, description, photoUrl);
-        	
-        	table = ProcedureTemplateStepTemplateConnection.TABLE_NAME;
-        	columns = new String[] {ProcedureTemplateStepTemplateConnection.COLUMN_NAME_STEP_TEMPLATE_ID};
-        	selection = ProcedureTemplateStepTemplateConnection.COLUMN_NAME_PROCEDURE_TEMPLATE_ID + "=" + templateId;
-        	selectionArgs = null;
-        	groupBy = null;
-        	having = null;
-        	orderBy = null;
-        	cursor = mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
-        	if (cursor != null) {
-            	while (cursor.moveToNext()) {
-            		long stepId = cursor.getLong(cursor.getColumnIndexOrThrow(ProcedureTemplateStepTemplateConnection.COLUMN_NAME_STEP_TEMPLATE_ID));
-            		Step step = getStepTemplate(stepId);
-            		procedure.addStep(step);
-            	}
-        	}
+        	procedure.setSteps(getProcedureTemplateSteps(templateId));
         }
         return procedure;
+    }
+    
+    public List<Step> getProcedureTemplateSteps(long templateId) {
+    	String query = "SELECT * FROM " + ProcedureTemplateStepTemplateConnection.TABLE_NAME + " INNER JOIN " + StepTemplateEntry.TABLE_NAME + " ON " + ProcedureTemplateStepTemplateConnection.TABLE_NAME + "." + ProcedureTemplateStepTemplateConnection.COLUMN_NAME_STEP_TEMPLATE_ID + "=" + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + " WHERE " + ProcedureTemplateStepTemplateConnection.TABLE_NAME + "." + ProcedureTemplateStepTemplateConnection.COLUMN_NAME_PROCEDURE_TEMPLATE_ID + "=" + templateId;
+    	ArrayList<Step> steps = new ArrayList<Step>();
+    	Cursor cursor = mDb.rawQuery(query, null);
+        if (cursor != null) {
+        	while (cursor.moveToNext()) {
+        		long stepTemplateId = cursor.getLong(cursor.getColumnIndexOrThrow(StepTemplateEntry._ID));
+        		String title = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_TITLE));
+	        	String description = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_DESCRIPTION));
+	        	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_PHOTO_URL));
+	        	long optimalTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME));
+	        	Step step = new Step(stepTemplateId, title, description, photoUrl, optimalTime);
+	        	steps.add(step);
+        	}
+        }
+        return steps;
     }
     
     public long connectProcedureTemplateStepTemplate(long procedureId, long stepId) {
@@ -410,7 +406,7 @@ public final class DatabaseAdapter {
     }
     
     public long createStepResult(Step step) {
-    	return createStepResult(step.getTemplateId(),step.getStatus(), step.getDuration(), step.getStartTime(), step.getEndTime(), step.getScore(), step.getSelfAssessment());
+    	return createStepResult(step.getTemplateId(),step.getStatus(), step.getDurationNano(), step.getStartTime(), step.getEndTime(), step.getScore(), step.getSelfAssessment());
     }
     
     public boolean deleteStepResult(long resultId) {
@@ -422,18 +418,8 @@ public final class DatabaseAdapter {
     }
     
     public List<Step> getAllStepResults(long templateId) {
-    	String table = StepResultEntry.TABLE_NAME;
-    	String[] columns = {StepResultEntry._ID, StepResultEntry.COLUMN_NAME_DURATION, StepResultEntry.COLUMN_NAME_START_TIME, StepResultEntry.COLUMN_NAME_END_TIME, StepResultEntry.COLUMN_NAME_SCORE, StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT};
-    	String selection = StepResultEntry.COLUMN_NAME_TEMPLATE_ID + "=" + templateId;
-    	String[] selectionArgs = null;
-    	String groupBy = null;
-    	String having = null;
-    	String orderBy = null;
-    	//Cursor cursor = mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
-    	
-    	String query = "SELECT * FROM " + StepTemplateEntry.TABLE_NAME + " INNER JOIN " + StepResultEntry.TABLE_NAME + " ON " + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + "=" + StepResultEntry.TABLE_NAME + "." + StepResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + StepTemplateEntry._ID + "=" + templateId;
+    	String query = "SELECT * FROM " + StepTemplateEntry.TABLE_NAME + " INNER JOIN " + StepResultEntry.TABLE_NAME + " ON " + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + "=" + StepResultEntry.TABLE_NAME + "." + StepResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + "=" + templateId;
     	Cursor cursor = mDb.rawQuery(query, null);
-    	
     	ArrayList<Step> steps = new ArrayList<Step>();
         if (cursor != null) {
         	while (cursor.moveToNext()) {
@@ -458,16 +444,8 @@ public final class DatabaseAdapter {
         return steps;
     }
     
-    public Step getStepResult(long resultId) {    	
-    	String table = StepTemplateEntry.TABLE_NAME;
-    	String[] columns = {StepTemplateEntry.COLUMN_NAME_TITLE, StepTemplateEntry.COLUMN_NAME_DESCRIPTION, StepTemplateEntry.COLUMN_NAME_PHOTO_URL, StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME};
-    	String selection = StepTemplateEntry._ID + "=" + resultId;
-    	String[] selectionArgs = null;
-    	String groupBy = null;
-    	String having = null;
-    	String orderBy = null;
-    	// Cursor cursor = mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
-    	String query = "SELECT * FROM " + StepTemplateEntry.TABLE_NAME + " INNER JOIN " + StepResultEntry.TABLE_NAME + " ON " + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + "=" + StepResultEntry.TABLE_NAME + "." + StepResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + StepResultEntry._ID + "=" + resultId;
+    public Step getStepResult(long resultId) {
+    	String query = "SELECT * FROM " + StepTemplateEntry.TABLE_NAME + " INNER JOIN " + StepResultEntry.TABLE_NAME + " ON " + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + "=" + StepResultEntry.TABLE_NAME + "." + StepResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + StepResultEntry.TABLE_NAME + "." + StepResultEntry._ID + "=" + resultId;
     	Cursor cursor = mDb.rawQuery(query, null);
     	Step step = null;
         if (cursor != null && cursor.moveToFirst()) {
@@ -494,4 +472,94 @@ public final class DatabaseAdapter {
     
     
     
+    public long createProcedureResult(long templateId) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID, templateId);
+        return mDb.insert(ProcedureResultEntry.TABLE_NAME, null, initialValues);
+    }
+    
+    public long createProcedureResult(Procedure procedure) {
+    	long procedureId = createProcedureResult(procedure.getTemplateId());
+    	for (Step step : procedure.getSteps()) {
+    		long stepId = createStepResult(step);
+    		connectProcedureResultStepResult(procedureId, stepId);
+    	}
+    	return procedureId;
+    }
+    
+    public boolean deleteProcedureResult(long resultId) {
+        return mDb.delete(ProcedureResultEntry.TABLE_NAME, ProcedureResultEntry._ID + "=" + resultId, null) > 0;
+    }
+    
+    public boolean deleteProcedureResult(Procedure procedure) {
+        return deleteProcedureResult(procedure.getId());
+    }
+    
+    public List<Procedure> getAllProcedureResults(long templateId) {
+    	String query = "SELECT * FROM " + ProcedureTemplateEntry.TABLE_NAME + " INNER JOIN " + ProcedureResultEntry.TABLE_NAME + " ON " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry._ID + "=" + ProcedureResultEntry.TABLE_NAME + "." + ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry._ID + "=" + templateId;
+    	Cursor cursor = mDb.rawQuery(query, null);
+    	ArrayList<Procedure> procedures = new ArrayList<Procedure>();
+        if (cursor != null) {
+        	while (cursor.moveToNext()) {
+	        	long resultId = cursor.getLong(cursor.getColumnIndexOrThrow(ProcedureResultEntry._ID));
+	        	String title = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_TITLE));
+	        	String description = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION));
+	        	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL));
+	        	Procedure procedure = new Procedure(templateId, title, description, photoUrl, resultId);
+	        	procedure.setSteps(getProcedureResultSteps(resultId));
+	        	
+	        	procedures.add(procedure);
+        	}
+        }
+        return procedures;
+    }
+    
+    public Procedure getProcedureResult(long resultId) {
+    	String query = "SELECT * FROM " + ProcedureTemplateEntry.TABLE_NAME + " INNER JOIN " + ProcedureResultEntry.TABLE_NAME + " ON " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry._ID + "=" + ProcedureResultEntry.TABLE_NAME + "." + ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + ProcedureResultEntry.TABLE_NAME + "." + ProcedureResultEntry._ID + "=" + resultId;
+    	Cursor cursor = mDb.rawQuery(query, null);
+    	Procedure procedure = null;
+        if (cursor != null && cursor.moveToFirst()) {
+        	long templateId = cursor.getLong(cursor.getColumnIndexOrThrow(StepTemplateEntry._ID));
+        	String title = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_TITLE));
+        	String description = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION));
+        	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL));
+        	procedure = new Procedure(templateId, title, description, photoUrl, resultId);
+        	procedure.setSteps(getProcedureResultSteps(resultId));
+        }
+        return procedure;
+    }
+    
+    public List<Step> getProcedureResultSteps(long resultId) {
+    	String query = "SELECT * FROM " + ProcedureResultStepResultConnection.TABLE_NAME + " INNER JOIN " + StepResultEntry.TABLE_NAME + " ON " + ProcedureResultStepResultConnection.TABLE_NAME + "." + ProcedureResultStepResultConnection.COLUMN_NAME_STEP_RESULT_ID + "=" + StepResultEntry.TABLE_NAME + "." + StepResultEntry._ID + " INNER JOIN " + StepTemplateEntry.TABLE_NAME + " ON " + StepResultEntry.TABLE_NAME + "." + StepResultEntry.COLUMN_NAME_TEMPLATE_ID + "=" + StepTemplateEntry.TABLE_NAME + "." + StepTemplateEntry._ID + " WHERE " + ProcedureResultStepResultConnection.TABLE_NAME + "." + ProcedureResultStepResultConnection.COLUMN_NAME_PROCEDURE_RESULT_ID + "=" + resultId;
+    	ArrayList<Step> steps = new ArrayList<Step>();
+    	Cursor cursor = mDb.rawQuery(query, null);
+        if (cursor != null) {
+        	while (cursor.moveToNext()) {
+        		long templateId = cursor.getLong(cursor.getColumnIndexOrThrow(StepTemplateEntry._ID));
+            	String title = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_TITLE));
+            	String description = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_DESCRIPTION));
+            	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_PHOTO_URL));
+            	long optimalTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME));
+            	
+            	long stepResultId = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry._ID));
+            	int status = cursor.getInt(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_STATUS));
+            	long duration = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_DURATION));
+            	long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_START_TIME));
+            	long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_END_TIME));
+            	int score = cursor.getInt(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SCORE));
+            	float selfAssessment = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT));
+            	
+            	Step step = new Step(templateId, title, description, photoUrl, optimalTime, stepResultId, status, duration, startTime, endTime, score, selfAssessment);
+            	steps.add(step);
+        	}
+        }
+        return steps;
+    }
+    
+    public long connectProcedureResultStepResult(long procedureId, long stepId) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_PROCEDURE_RESULT_ID, procedureId);
+        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_STEP_RESULT_ID, stepId);
+        return mDb.insert(ProcedureResultStepResultConnection.TABLE_NAME, null, initialValues);
+    }
 }
