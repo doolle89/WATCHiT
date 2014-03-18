@@ -54,6 +54,7 @@ public class RealityCheckFragment extends ListFragment {
     	static class ViewHolder {
     		TextView title;
     		TextView status;
+    		TextView errors;
     		TextView startTime;
     		TextView endTime;
     		TextView duration;
@@ -74,6 +75,7 @@ public class RealityCheckFragment extends ListFragment {
                 holder = new ViewHolder();
                 holder.title = (TextView) row.findViewById(R.id.step_title);
                 holder.status = (TextView) row.findViewById(R.id.step_status);
+                holder.errors = (TextView) row.findViewById(R.id.step_errors);
                 holder.startTime = (TextView) row.findViewById(R.id.step_start_time);
                 holder.endTime = (TextView) row.findViewById(R.id.step_end_time);
                 holder.duration = (TextView) row.findViewById(R.id.step_duration);
@@ -93,6 +95,7 @@ public class RealityCheckFragment extends ListFragment {
 	        		holder.status.setText(getContext().getText(R.string.step_status_skipped));
 	        		break;
         	}
+            holder.errors.setText(step.getErrors() + " " + getContext().getResources().getQuantityString(R.plurals.training_steps_fragment_errors, step.getErrors()));
             holder.startTime.setText(formatTime(step.getStartTime()));
             holder.endTime.setText(formatTime(step.getEndTime()));
             holder.duration.setText(formatTime(step.getDuration()));

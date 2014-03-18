@@ -49,6 +49,7 @@ public static class CompareListAdapter extends ArrayAdapter<Step> {
     	static class ViewHolder {
     		TextView title;
     		TextView status;
+    		TextView errors;
     		TextView startTime;
     		TextView endTime;
     		TextView duration;
@@ -69,6 +70,7 @@ public static class CompareListAdapter extends ArrayAdapter<Step> {
                 holder = new ViewHolder();
                 holder.title = (TextView) row.findViewById(R.id.step_title);
                 holder.status = (TextView) row.findViewById(R.id.step_status);
+                holder.errors = (TextView) row.findViewById(R.id.step_errors);
                 holder.startTime = (TextView) row.findViewById(R.id.step_start_time);
                 holder.endTime = (TextView) row.findViewById(R.id.step_end_time);
                 holder.duration = (TextView) row.findViewById(R.id.step_duration);
@@ -88,6 +90,7 @@ public static class CompareListAdapter extends ArrayAdapter<Step> {
 	        		holder.status.setText(getContext().getText(R.string.step_status_skipped));
 	        		break;
         	}
+            holder.errors.setText(step.getErrors() + " " + getContext().getResources().getQuantityString(R.plurals.training_steps_fragment_errors, step.getErrors()));
             holder.startTime.setText(formatTime(step.getStartTime()));
             holder.endTime.setText(formatTime(step.getEndTime()));
             holder.duration.setText(formatTime(step.getDuration()));
@@ -96,9 +99,9 @@ public static class CompareListAdapter extends ArrayAdapter<Step> {
         }
     	
     	private String formatTime(long milliseconds) {
-    		long seconds = (milliseconds / 1000) % 60;
-        	long minutes = (milliseconds / 60000) % 60;
-        	long hours = (milliseconds / 3600000) % 24;
+    		int seconds = (int) (milliseconds / 1000) % 60;
+        	int minutes = (int) (milliseconds / 60000) % 60;
+        	int hours = (int) (milliseconds / 3600000) % 24;
         	return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
     	}
     }

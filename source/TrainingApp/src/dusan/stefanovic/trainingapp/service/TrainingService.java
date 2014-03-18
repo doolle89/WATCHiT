@@ -20,7 +20,7 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
-import android.widget.Toast;
+import dusan.stefanovic.connectionapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.trainingapp.TrainingActivity;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.util.Timer;
@@ -98,8 +98,9 @@ public class TrainingService extends Service {
 		            	service.update(message.getData());
 		            	break;
 		            case WATCHiTServiceInterface.TAG_READ:
-		            	String tag = message.getData().getString(WATCHiTServiceInterface.TAG_VALUE);
-		            	service.processTag(tag);
+		            	byte[] data = message.getData().getByteArray(WATCHiTServiceInterface.TAG_DATA_CONTENT);
+		            	int length = message.getData().getInt(WATCHiTServiceInterface.TAG_DATA_LENGTH);
+		            	service.processData(data, length);
 		            	break;
 		            	
 		            default:
@@ -372,35 +373,29 @@ public class TrainingService extends Service {
     	mProcedure.reset();
     }
     
-    public void processTag(String tagValue) {
-    	// Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
+    public void processData(byte[] data, int length) {
+    	String tagValue = new String(data, 0, length);
     	
-    	/*
-    	int tag = -1;
-    	if (tagValue.equalsIgnoreCase("I rescued someone")) {
-    		tag = 0;
-    	} else if (tagValue.equalsIgnoreCase("I'm sad")) {
-    		tag = 1;
-    	} else if (tagValue.equalsIgnoreCase("I'm so and so")) {
-    		tag = 2;
-    	} else if (tagValue.equalsIgnoreCase("I'm happy")) {
-    		tag = 3;
+    	//Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
+    	
+    	
+    	if (tagValue.contains("rescued someone")) {
+    		tagValue = "c";
+    	} else if (tagValue.contains("sad")) {
+    		tagValue = "e";
+    	} else if (tagValue.contains("so and so")) {
+    		tagValue = "s";
+    	} else if (tagValue.contains("happy")) {
+    		tagValue = "s";
     	}
-    	boolean updateProcedure = false;
-    	updateProcedure = mProcedure.completeStepAtIndex(tag);
-    	if (updateProcedure) {
-			progressUpdated();
-	    	if(!mProcedure.isStarted()) {
-	    		mTimer.stop(false);
-		    	stopForeground(true);
-	    	}
-		}
-		*/
+    	
     	
     	
     	boolean updateProcedure = false;
     	if (tagValue.equalsIgnoreCase("c")) {
     		updateProcedure = mProcedure.completeCurrentStep();
+    	} else if (tagValue.equalsIgnoreCase("e")) {
+    		updateProcedure = mProcedure.addErrorToCurrentStep();
     	} else if (tagValue.equalsIgnoreCase("s")) {
     		updateProcedure = mProcedure.skipCurrentStep();
     	} else {

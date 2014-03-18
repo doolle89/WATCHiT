@@ -16,8 +16,6 @@
 
 package dusan.stefanovic.trainingapp;
 
-import java.io.ObjectInputStream.GetField;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -27,17 +25,12 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import dusan.stefanovic.trainingapp.TrainingActivity.QuitDialogFragment;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.fragment.CompareToFragment;
 import dusan.stefanovic.trainingapp.fragment.FinishReflectionFragment;
@@ -45,16 +38,14 @@ import dusan.stefanovic.trainingapp.fragment.ProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.RealityCheckFragment;
 import dusan.stefanovic.trainingapp.fragment.ReflectionQuestionFragment;
 import dusan.stefanovic.trainingapp.fragment.SelfAssessmentFragment;
-import dusan.stefanovic.trainingapp.service.TrainingService;
 import dusan.stefanovic.treningapp.R;
 
 public class ReflectionActivity extends ActionBarActivity implements ProcedureListener {
 
     SectionPagerAdapter mSectionPagerAdapter;
 
+    Menu mMenu;
     ViewPager mViewPager;
-    Button mNextButton;
-    Button mFinishButton;
     
     Procedure mProcedure;
 
@@ -85,8 +76,8 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 			@Override
 			public void onPageSelected(int position) {
 				if (mViewPager.getCurrentItem() == mViewPager.getAdapter().getCount() - 1) {
-					mNextButton.setVisibility(View.GONE);
-					mFinishButton.setVisibility(View.VISIBLE);
+					setMeniOptionVisibility(R.id.action_next_reflection, false);
+					setMeniOptionVisibility(R.id.action_finish_reflection, true);
 				}
 				
 				if (position == SectionPagerAdapter.STEP_2) {
@@ -102,59 +93,30 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 			}
         	
         });
-        
-        mNextButton = (Button) findViewById(R.id.next_button);
-        mNextButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (mViewPager.getCurrentItem() < mViewPager.getAdapter().getCount() - 1) {
-					mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
-				}
-				// izmeniti ovo
-				if (mViewPager.getCurrentItem() == SectionPagerAdapter.STEP_4) {
-					FinishReflectionFragment realityCheckFragment = (FinishReflectionFragment) mViewPager.getAdapter().instantiateItem(mViewPager, SectionPagerAdapter.STEP_5);
-					realityCheckFragment.save();
-				}
-			}
-        	
-        });
-        
-        mFinishButton = (Button) findViewById(R.id.finish_button);
-        mFinishButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				finishReflection();
-			}
-        	
-        });
     }
+    
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+    	mMenu = menu;
+		getMenuInflater().inflate(R.menu.reflection, menu);
+		return true;
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
             	tryToQuitReflectionActivity();
-            	/*
-                // This is called when the Home (Up) button is pressed in the action bar.
-                // Create a simple intent that starts the hierarchical parent activity and
-                // use NavUtils in the Support Package to ensure proper handling of Up.
-                Intent upIntent = new Intent(this, MainActivity.class);
-                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
-                    // This activity is not part of the application's task, so create a new task
-                    // with a synthesized back stack.
-                    TaskStackBuilder.from(this)
-                            // If there are ancestor activities, they should be added here.
-                            .addNextIntent(upIntent)
-                            .startActivities();
-                    finish();
-                } else {
-                    // This activity is part of the application's task, so simply
-                    // navigate up to the hierarchical parent activity.
-                    NavUtils.navigateUpTo(this, upIntent);
-                }
-                */
+                return true;
+            case R.id.action_next_reflection:
+            	if (mViewPager.getCurrentItem() < mViewPager.getAdapter().getCount() - 1) {
+					mViewPager.setCurrentItem(mViewPager.getCurrentItem() + 1, true);
+				}
+                return true;
+            case R.id.action_finish_reflection:
+            	FinishReflectionFragment finishReflectionFragment = (FinishReflectionFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
+            	finishReflectionFragment.save();
+            	finishReflection(true);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -175,11 +137,22 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 		dialog.show(getSupportFragmentManager(), "quit_dialog");
 	}
 	
-	private void finishReflection() {
-		Intent intent = new Intent(this, MainMenuActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
+	private void finishReflection(boolean showResults) {
+		if (showResults) {
+			finish();
+		} else {
+			Intent intent = new Intent(this, MainMenuActivity.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+		}
 	}
+	
+	private void setMeniOptionVisibility(int id, boolean isVisible) {
+    	if (mMenu != null) {
+    		MenuItem menuItem = mMenu.findItem(id);
+    		menuItem.setVisible(isVisible);
+    	}
+    }
     
     public class SectionPagerAdapter extends FragmentStatePagerAdapter {
     	
@@ -255,7 +228,7 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 	    		
 	    		@Override
 	    		public void onClick(DialogInterface dialog, int which) {
-	    			((ReflectionActivity) getActivity()).finishReflection();
+	    			((ReflectionActivity) getActivity()).finishReflection(false);
 	            }
 	    		
 	    	});

@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:ems="10"
+            android:minLines="2"
             android:hint="@string/reflection_question_fragment_hint"
             android:inputType="textMultiLine" >
         </EditText>

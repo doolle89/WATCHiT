@@ -7,7 +7,8 @@
     <string name="permission_label_watchit">Start WATCHiT service</string>
     
     <!--  MainActivity -->
-    <string name="bt_not_enabled">Bluetooth was not enabled</string>
+    <string name="button">Select device</string>
+    <string name="bluetooth_not_enabled">Bluetooth was not enabled</string>
     <string name="remote_service_binding">Binding to WATCHiT service</string>
     <string name="remote_service_bound">Bound to WATCHiT service</string>
     <string name="remote_service_unbound">Unbound from WATCHiT service</string>

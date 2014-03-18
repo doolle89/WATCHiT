@@ -1,36 +1,39 @@
 package dusan.stefanovic.trainingapp.fragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import dusan.stefanovic.trainingapp.MainActivity;
+import dusan.stefanovic.trainingapp.CreateProcedureActivity;
 import dusan.stefanovic.trainingapp.ProcedurePreviewActivity;
-import dusan.stefanovic.trainingapp.TrainingActivity;
 import dusan.stefanovic.trainingapp.data.Procedure;
-import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.treningapp.R;
 
 public class SelectProcedureFragment extends ListFragment {
 	
-	List<Procedure> mProcedures;
+	public static final int ACTION_GET_PROCEDURE = 537;
+	
+	private List<Procedure> mProcedures;
+	private ProcedureListAdapter mProcedureListAdapter;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
-	    
-	    
+	    setHasOptionsMenu(true);	    
 	}
 
 	@Override
@@ -49,8 +52,8 @@ public class SelectProcedureFragment extends ListFragment {
 			
 			protected void onPostExecute(List<Procedure> result) {
 				mProcedures = result;
-		        ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
-		        setListAdapter(stepListAdapter);
+				mProcedureListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
+		        setListAdapter(mProcedureListAdapter);
 			}
 			
 		};
@@ -58,11 +61,38 @@ public class SelectProcedureFragment extends ListFragment {
     }
 	
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+	    inflater.inflate(R.menu.select_procedure, menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    switch (item.getItemId()) {
+	        case R.id.action_create_procedure:
+	            startActivityForResult(new Intent(getActivity(), CreateProcedureActivity.class), ACTION_GET_PROCEDURE);
+	            return true;
+	            
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
+	}
+	
+	@Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
 		Intent intent = new Intent(getActivity(), ProcedurePreviewActivity.class);
         intent.putExtra("procedure", mProcedures.get(position));
         startActivity(intent);
     }
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == ACTION_GET_PROCEDURE) {
+			if (resultCode == Activity.RESULT_OK) {
+				Procedure procedure = data.getParcelableExtra(CreateProcedureActivity.EXTRA_PROCEDURE_DATA);
+				mProcedureListAdapter.add(procedure);
+			}
+		}
+	}
 	
 	public void setProceduresList(List<Procedure> procedures) {
 		mProcedures = procedures;

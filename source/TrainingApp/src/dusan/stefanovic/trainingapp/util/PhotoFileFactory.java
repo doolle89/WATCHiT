@@ -39,7 +39,6 @@ public class PhotoFileFactory {
 			}
 		} else {
 			// External storage is not mounted READ/WRITE.
-			int k = 0; 
 		}
 		return storageDir;
 	}

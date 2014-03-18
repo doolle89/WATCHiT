@@ -30,23 +30,25 @@
                 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
             <intent-filter>
-                <action android:name="dusan.stefanovic.connectionapp.Settings" />
-                
+                <action android:name="dusan.stefanovic.connectionapp.SETTINGS" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         
         <activity 
-            android:name="dusan.stefanovic.connectionapp.DeviceListActivity"
+            android:name="dusan.stefanovic.connectionapp.BluetoothDeviceListActivity"
             android:label="@string/select_device"
             android:configChanges="orientation|keyboardHidden" >
+            <intent-filter>
+                <action android:name="dusan.stefanovic.connectionapp.CHOOSE_BLUETOOTH_DEVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
         
         <service 
-            android:name="dusan.stefanovic.connectionapp.service.WATCHiTService"
-             >
-                 <!-- android:permission="dusan.stefanovic.connectionapp.permission.WATCHiT" -->
+            android:name="dusan.stefanovic.connectionapp.service.WATCHiTService">
             <intent-filter>
                 <action android:name="dusan.stefanovic.connectionapp.service.WATCHiT_SERVICE" />
             </intent-filter>

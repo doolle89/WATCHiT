@@ -12,12 +12,16 @@
     <string name="action_reset_training">Reset training</string>
     <string name="action_settings">Settings</string>
     <string name="action_reality_check">Reality check</string>
+    <string name="action_next_reflection">Next</string>
+    <string name="action_finish_reflection">Finish</string>
     <string name="action_create_procedure">Create procedure</string>
     <string name="action_add_step">Add step</string>
+    <string name="action_save_step">Save step to library</string>
+    <string name="action_use_template_step">Use template</string>
     
     <string name="button_yes">Yes</string>
     <string name="button_no">No</string>
-    <string name="button_ok">Ok</string>
+    <string name="button_ok">OK</string>
     <string name="button_start">start</string>
     <string name="button_stop">stop</string>
     <string name="button_resume">resume</string>
@@ -31,16 +35,24 @@
     <string name="main_menu_activity_label">Main menu</string>
     <string-array name="main_menu_items_array">
         <item>News feed</item>
-        <item>Create procedure</item>
-        <item>Select procedure</item>
+        <item>Training</item>
         <item>Achievements</item>
-        <item>Profile</item>
-        <item>Settings</item>
+        <item>About</item>
     </string-array>
     
-    <!-- Procedure preview activity -->
+    <!-- Preview procedure activity -->
     <string name="procedure_preview_activity_label">Procedure preview</string>
     <string name="procedure_preview_activity_procedure_description">Touch to see details</string>
+    
+    <!-- Create procedure activity -->
+    <string name="create_procedure_activity_label">Create procedure</string>
+    <string name="create_procedure_activity_title_info">info</string>
+    <string name="create_procedure_activity_title_steps">steps</string>
+    
+    <!-- Add new step activity -->
+    <string name="add_new_step_activity_label">Add step</string>
+    <string name="add_new_step_activity_title_new">new</string>
+    <string name="add_new_step_activity_title_library">library</string>
     
     <!-- Training activity -->
     <string name="training_activity_label">Training</string>
@@ -54,6 +66,9 @@
     <string name="training_activity_quit_dialog_message">Are you sure you want to quit training?</string>
     <string name="training_activity_reflection_dialog_title">Reflection</string>
     <string name="training_activity_reflection_dialog_message">Start self-assessment</string>
+    <string name="training_activity_user_info_dialog_user_id">Your ID is:</string>
+    <string name="training_activity_user_info_dialog_enter_username">Please enter username:</string>
+    <string name="training_activity_user_info_dialog_username">username</string>
     
     <!-- Reflection activity -->
     <string name="reflection_activity_label">Reflection</string>
@@ -72,15 +87,14 @@
         <item>Compare to optimal</item>
     </string-array>
     
-    <!-- Create procedure fragment -->
-    <string name="create_procedure_fragment_title_info">info</string>
-    <string name="create_procedure_fragment_title_steps">steps</string>
-    <string name="create_procedure_fragment_title_success">success</string>
-    <string name="create_procedure_fragment_title_fail">fail</string>
-    
     <!-- Create procedure info fragment -->
     <string name="create_procedure_info_fragment_hint_title">Title</string>
     <string name="create_procedure_info_fragment_hint_description">Description</string>
+    
+    <!-- Create step fragment -->
+    <string name="create_step_fragment_hint_title">Title</string>
+    <string name="create_step_fragment_hint_description">Description</string>
+    <string name="create_step_fragment_optimal_time">Optimal time</string>
     
     <!-- Finish reflection fragment -->
     <string name="finish_reflection_fragment_message">Thanks for using WATCHiT</string>
@@ -99,7 +113,7 @@
     <string name="training_progress_fragment_time">00:00:00</string>
     <string name="training_progress_fragment_progress">Progress:</string>
     <string name="training_progress_fragment_progress_0">0%</string>
-    <string name="training_progress_fragment_progress_100">100%</string>
+    <string name="training_progress_fragment_progress_100">100%</string> 
     
     <!-- Compare step list header -->
     <string name="compare_step_list_header_step">Step</string>
@@ -126,5 +140,10 @@
     <string name="step_status_in_progress">In progress</string>
     <string name="step_status_pending">Pending</string>
     <string name="step_status_paused">Paused</string>
+    
+    <plurals name="training_steps_fragment_errors">
+        <item quantity="one">error</item>
+        <item quantity="other">errors</item>
+    </plurals> 
     
 </resources>

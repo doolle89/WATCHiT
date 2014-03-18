@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:treningApp="http://schemas.android.com/apk/res-auto" >
+    
+    <item android:id="@+id/action_next_reflection"
+          android:title="@string/action_next_reflection"
+          treningApp:showAsAction="always" />
+    
+    <item android:id="@+id/action_finish_reflection"
+          android:title="@string/action_finish_reflection"
+          treningApp:showAsAction="always"
+          android:visible="false" />
+    
+</menu>

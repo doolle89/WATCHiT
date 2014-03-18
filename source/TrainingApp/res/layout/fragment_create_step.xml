@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+    	android:focusableInTouchMode="true"
+        android:padding="10dp" >
+
+        <EditText
+            android:id="@+id/step_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/create_step_fragment_hint_title"
+            android:inputType="textCapSentences" />
+
+        <ImageView
+            android:id="@+id/step_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="20dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/content_description"
+            android:src="@drawable/camera_photo_placeholder" />
+
+        <EditText
+            android:id="@+id/step_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="@string/create_step_fragment_hint_description"
+            android:inputType="textMultiLine|textCapSentences" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="15dp"
+            android:textColor="#888888"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="@string/create_step_fragment_optimal_time" />
+        
+        <dusan.stefanovic.trainingapp.view.TimePicker
+	        android:id="@+id/timePicker"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" />
+        
+    </LinearLayout>
+
+</ScrollView>

@@ -1,6 +1,7 @@
 package dusan.stefanovic.trainingapp;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -31,10 +33,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import dusan.stefanovic.connectionapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.trainingapp.fragment.ProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.TrainingCurrentStepFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingOverviewFragment;
@@ -43,7 +52,6 @@ import dusan.stefanovic.trainingapp.fragment.TrainingResultsFragment;
 import dusan.stefanovic.trainingapp.fragment.TrainingStepsFragment;
 import dusan.stefanovic.trainingapp.service.TrainingService;
 import dusan.stefanovic.trainingapp.service.TrainingService.TrainingServiceListener;
-import dusan.stefanovic.trainingapp.service.WATCHiTServiceInterface;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingActivity extends ActionBarActivity implements TabListener, ProcedureListener, TrainingServiceListener {
@@ -123,6 +131,11 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         //actionBar.setHomeButtonEnabled(true);
         mActionBar.setDisplayHomeAsUpEnabled(true);
         mActionBar.setTitle(mProcedure.getTitle());
+        
+        // Add padding to icon
+        ImageView view = (ImageView) findViewById(android.R.id.home);
+        view.setPadding(12, 0, 12, 0);
+        
         // Specify that we will be displaying tabs in the action bar.
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -183,6 +196,9 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 				}
 			}
 		});
+        
+        UserInfoDialogFragment dialog = new UserInfoDialogFragment();
+		dialog.show(getSupportFragmentManager(), "user_info_dialog");
     }
     
     @Override
@@ -228,6 +244,30 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 					changeTrainingView();
 					updateProgress();
 					updateTimer(0);
+					AsyncTask<Void, Void, String> asyncTask = new AsyncTask<Void, Void, String>() {
+
+						@Override
+						protected String doInBackground(Void... args) {
+							String result = null;
+							if (TrainingActivity.this != null) {
+								DatabaseAdapter dbAdapter = new DatabaseAdapter(TrainingActivity.this);
+								dbAdapter.open();
+								result = dbAdapter.getNewProcedureId();
+								dbAdapter.close();
+							}
+							return result;
+						}
+						
+						@Override
+						protected void onPostExecute(String result) {
+							if (TrainingActivity.this != null) {
+								mProcedure.setId(result);
+								getSupportActionBar().setTitle(mProcedure.getUserId() + (mProcedure.getUserId().equalsIgnoreCase("") ? "" : ": ") + mProcedure.getId());
+							}
+						}
+						
+					};
+					asyncTask.execute();
 				} else {
 					setIsBound(false);
 				}
@@ -341,7 +381,6 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 		DialogFragment dialog = new ReflectionDialogFragment();
 		dialog.show(getSupportFragmentManager(), "self_assessment_dialog");
 		
-		// privremeno!!!
 		stopService(new Intent(this, TrainingService.class));
 	}
 	
@@ -376,7 +415,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     		mProcedure = mBoundService.getProcedure();
     		updateProgress();
     		updateSteps();
-    		updateState();
+    		updateTrainingState();
 	        updateTimer(mBoundService.getElapsedTime());
 	        setDeviceConnectionState(mBoundService.getDeviceConnectionState());
 	        updateCurrentStep();
@@ -446,7 +485,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         }
     }
     
-    private void updateState() {
+    private void updateTrainingState() {
     	if (isTrainingFinished()) {
     		showRestartOption();
     	} else if (!mProcedure.isStarted()) {
@@ -495,8 +534,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     }
     
     private boolean isTrainingFinished() {
-    	return false;
-    	//return !mProcedure.isStarted() && mProcedure.getStep(0).getStatus() != Step.STATUS_PENDING;
+    	//return false;
+    	return !mProcedure.isStarted() && mProcedure.getStep(0).getStatus() != Step.STATUS_PENDING;
     }
     
     private void changeTrainingView() {
@@ -592,7 +631,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
             	}
             }
             return null;
-	        }
+	    }
         
         public TrainingStepsFragment getTrainingStepsFragment() {
         	List<Fragment> fragments = getSupportFragmentManager().getFragments();
@@ -693,6 +732,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
             super.onCreate(savedInstanceState);
             setStyle(DialogFragment.STYLE_NO_FRAME, android.R.style.Theme_Translucent);
             setRetainInstance(true);
+            setCancelable(false);
         }
 		
     	@Override
@@ -738,5 +778,94 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     		super.show(manager, tag);
     		mShouldStart = true;
     	}
+    }
+    
+    public static class UserInfoDialogFragment extends DialogFragment {
+    	
+    	TextView mTextView;
+    	AutoCompleteTextView mAutoCompleteTextView;
+    	
+    	@Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+        }
+    	
+    	@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			final Procedure procedure = ((TrainingActivity) getActivity()).mProcedure;
+			
+    		LayoutInflater inflater = getActivity().getLayoutInflater();
+    		View view = inflater.inflate(R.layout.dialog_fragment_user_info, null, false);
+            mTextView = (TextView) view.findViewById(R.id.textView);
+            mAutoCompleteTextView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+            mAutoCompleteTextView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                
+            	@Override
+                public void onFocusChange(View view, boolean hasFocus) {
+            		if (hasFocus) {
+            			((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            		}
+                }
+            });
+            mAutoCompleteTextView.requestFocus();
+            
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    	builder.setTitle(getText(R.string.training_activity_reflection_dialog_title));
+	    	builder.setView(view);
+	    	builder.setPositiveButton(getText(R.string.button_ok), new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    			procedure.setUserId(mAutoCompleteTextView.getText().toString().trim());
+	    			((TrainingActivity) getActivity()).getSupportActionBar().setTitle(procedure.getUserId() + (procedure.getUserId().equalsIgnoreCase("") ? "" : ": ") + procedure.getId());
+	    			getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+	    			dismiss();
+	            }
+	    		
+	    	});
+	    	builder.setNegativeButton(getText(R.string.button_no), new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    			((InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, 0);
+	    			((TrainingActivity) getActivity()).tryToQuitTrainingActivity();
+	            }
+	    		
+	    	});
+	    	setCancelable(false);
+	        AlertDialog dialog = builder.create();
+	        
+			AsyncTask<Void, Void, ArrayList<String>> asyncTask = new AsyncTask<Void, Void, ArrayList<String> >() {
+
+				@Override
+				protected ArrayList<String> doInBackground(Void... args) {
+					ArrayList<String> results = new ArrayList<String>();
+					if (getActivity() != null) {
+						DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
+						dbAdapter.open();
+						results.add(dbAdapter.getNewProcedureId());
+						results.addAll(dbAdapter.getAllUserIds());
+						dbAdapter.close();
+					}
+					return results;
+				}
+				
+				@Override
+				protected void onPostExecute(ArrayList<String> results) {
+					if (getActivity() != null) {
+						procedure.setId(results.remove(0));
+						mTextView.setText(procedure.getId());
+						if (results.size() > 0) {
+							ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_dropdown_item_1line, results);
+				            mAutoCompleteTextView.setAdapter(adapter);
+						}
+					}
+				}
+				
+			};
+			asyncTask.execute();
+	        
+	        return dialog;
+		}
     }
 }

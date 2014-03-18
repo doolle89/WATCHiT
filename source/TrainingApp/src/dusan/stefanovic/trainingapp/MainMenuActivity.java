@@ -16,8 +16,6 @@
 
 package dusan.stefanovic.trainingapp;
 
-import android.app.SearchManager;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
@@ -35,9 +33,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
-import dusan.stefanovic.trainingapp.fragment.CreateProcedureFragment;
-import dusan.stefanovic.trainingapp.fragment.CreateProcedureInfoFragment;
 import dusan.stefanovic.trainingapp.fragment.DummyFragment;
 import dusan.stefanovic.trainingapp.fragment.SelectProcedureFragment;
 import dusan.stefanovic.treningapp.R;
@@ -98,7 +93,7 @@ public class MainMenuActivity extends ActionBarActivity {
         
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         if (savedInstanceState == null) {
-            selectItem(2);
+            selectItem(1);
         }
     }
 
@@ -112,8 +107,9 @@ public class MainMenuActivity extends ActionBarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        // boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
         //menu.findItem(R.id.action_search).setVisible(!drawerOpen);
+    	mDrawerLayout.isDrawerOpen(mDrawerList);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -123,12 +119,12 @@ public class MainMenuActivity extends ActionBarActivity {
          // ActionBarDrawerToggle will take care of this.
     	
     	
-    	// Onemoguci ovwaranje privremeno
-    	/*
+    	// Onemoguci otvaranje privremeno
+    	
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-        */
+        
     	
     	
         // Handle action buttons
@@ -174,9 +170,6 @@ public class MainMenuActivity extends ActionBarActivity {
     	Fragment fragment;
     	switch (position) {
 	    	case 1:
-	    		fragment = new CreateProcedureFragment();
-	            break;
-	    	case 2:
 	    		fragment = new SelectProcedureFragment();
 	            break;
             default:

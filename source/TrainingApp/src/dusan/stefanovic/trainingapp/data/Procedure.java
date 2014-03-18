@@ -12,18 +12,26 @@ public class Procedure implements Parcelable {
 	public static final int STATE_PAUSED = 2;
 	public static final int STATE_RUNNING = 3;
 
-	private long mTemplateId;
-	private long mId;
+	private String mTemplateId;
+	private String mId;
+	private String mUserId;
 	private String mTitle;
 	private String mDescription;
 	private String mPhotoUrl;
+	private String mNotes;
 	private List<Step> mSteps;
 	private int mState;
+	
 	private int mCurrentStepIndex;
 	
-	public String note;
-	
 	private Step lastStepInProgress;
+	
+	public Procedure() {
+		mSteps = new ArrayList<Step>();
+		mState = STATE_STOPPED;
+		mCurrentStepIndex = -1;
+		lastStepInProgress = null;
+	}
 	
 	public Procedure(String title, String description, String photoUrl) {
 		mTitle = title;
@@ -35,7 +43,7 @@ public class Procedure implements Parcelable {
 		lastStepInProgress = null;
 	}
 	
-	public Procedure(long templateId, String title, String description, String photoUrl) {
+	public Procedure(String templateId, String title, String description, String photoUrl) {
 		mTemplateId = templateId;
 		mTitle = title;
 		mDescription = description;
@@ -46,12 +54,14 @@ public class Procedure implements Parcelable {
 		lastStepInProgress = null;
 	}
 	
-	public Procedure(long templateId, String title, String description, String photoUrl, long resultId) {
+	public Procedure(String templateId, String title, String description, String photoUrl, String resultId, String userId, String notes) {
 		mTemplateId = templateId;
 		mTitle = title;
 		mDescription = description;
 		mPhotoUrl = photoUrl;
 		mId = resultId;
+		mUserId = userId;
+		mNotes = notes;
 		mSteps = new ArrayList<Step>();
 		mState = STATE_STOPPED;
 		mCurrentStepIndex = -1;
@@ -106,6 +116,14 @@ public class Procedure implements Parcelable {
 		if(mState == STATE_RUNNING) {
 			mSteps.get(mCurrentStepIndex).skip();
 			startNextStep();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean addErrorToCurrentStep() {
+		if(mState == STATE_RUNNING) {
+			mSteps.get(mCurrentStepIndex).addError();
 			return true;
 		}
 		return false;
@@ -178,24 +196,60 @@ public class Procedure implements Parcelable {
 		mSteps.add(step);
 	}
 	
-	public long getTemplateId() {
+	public String getTemplateId() {
 		return mTemplateId;
 	}
+	
+	public void setTemplateId(String templateId) {
+		mTemplateId = templateId;
+	}
 
-	public long getId() {
+	public String getId() {
 		return mId;
+	}
+	
+	public void setId(String id) {
+		mId = id;
+	}
+	
+	public String getUserId() {
+		return mUserId;
+	}
+	
+	public void setUserId(String userId) {
+		mUserId = userId;
 	}
 
 	public String getTitle() {
 		return mTitle;
 	}
 	
+	public void setTitle(String title) {
+		mTitle = title;
+	}
+	
 	public String getDescription() {
 		return mDescription;
+	}
+	
+	public void setDescription(String description) {
+		mDescription = description;
 	}
 
 	public String getPhotoUrl() {
 		return mPhotoUrl;
+	}
+	
+	public void setPhotoUrl(String photoUrl) {
+		mPhotoUrl = photoUrl;
+	}
+
+	public String getNotes() {
+		return mNotes;
+	}
+
+	public void setNotes(String notes) {
+		mNotes = notes;
 	}
 
 	public Step getCurrentStep() {
@@ -259,11 +313,13 @@ public class Procedure implements Parcelable {
 
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
-		out.writeLong(mTemplateId);
-		out.writeLong(mId);
+		out.writeString(mTemplateId);
+		out.writeString(mId);
+		out.writeString(mUserId);
 		out.writeString(mTitle);
 		out.writeString(mDescription);
 		out.writeString(mPhotoUrl);
+		out.writeString(mNotes);
 		out.writeTypedList(mSteps);
 		out.writeInt(mState);
 		out.writeInt(mCurrentStepIndex);
@@ -280,11 +336,13 @@ public class Procedure implements Parcelable {
     };
     
     private Procedure(Parcel in) {
-    	mTemplateId = in.readLong();
-    	mId = in.readLong();
+    	mTemplateId = in.readString();
+    	mId = in.readString();
+    	mUserId = in.readString();
 		mTitle = in.readString();
 		mDescription = in.readString();
 		mPhotoUrl = in.readString();
+		mNotes = in.readString();
 		mSteps = new ArrayList<Step>();
 		in.readTypedList(mSteps, Step.CREATOR);
 		mState = in.readInt();

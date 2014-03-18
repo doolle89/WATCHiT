@@ -2,9 +2,10 @@
 <resources>
     
     <color name="step_completed">#49d235</color>
+    <color name="step_completed_with_errors">#fff366</color>
     <color name="step_skipped">#db3939</color>
     <color name="step_in_progress">#00c2e2</color>
-    <color name="step_pending">#fff366</color>
+    <color name="step_pending">#f0f0f0</color>
     <color name="step_paused">#d4d4d4</color>
     
 </resources>

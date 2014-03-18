@@ -21,8 +21,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import dusan.stefanovic.trainingapp.util.PhotoFileFactory;
 import dusan.stefanovic.treningapp.R;
 
@@ -33,8 +33,8 @@ public class CreateProcedureInfoFragment extends Fragment {
 	private String mTempPhotoFileUrl;
 	private String mPhotoFileUrl;
 	
-	private TextView mTitleTextView;
-	private TextView mDescriptionTextView;
+	private EditText mTitleEditText;
+	private EditText mDescriptionEditText;
 	private ImageView mImageView;
 	
 	@Override
@@ -42,10 +42,9 @@ public class CreateProcedureInfoFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_create_procedure_info, container, false);
         //Bundle args = getArguments();
         
-        mTitleTextView = (TextView) rootView.findViewById(R.id.procedure_title);
-        mDescriptionTextView = (TextView) rootView.findViewById(R.id.procedure_description);
+        mTitleEditText = (EditText) rootView.findViewById(R.id.procedure_title);
+        mDescriptionEditText = (EditText) rootView.findViewById(R.id.procedure_description);
         mImageView = (ImageView) rootView.findViewById(R.id.procedure_image);
-        
         mImageView.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -60,9 +59,9 @@ public class CreateProcedureInfoFragment extends Fragment {
         	@SuppressWarnings("deprecation")
 			@Override
         	public void onGlobalLayout() {
-		    	showPhotoFile(mPhotoFileUrl);
         		ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
         		viewTreeObserver.removeGlobalOnLayoutListener(this);
+        		showPhotoFile(mPhotoFileUrl);
         	}
         	
         });
@@ -72,7 +71,7 @@ public class CreateProcedureInfoFragment extends Fragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);        
+		super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
         	mPhotoFileUrl = savedInstanceState.getString("photo_file_url");
         }
@@ -150,11 +149,11 @@ public class CreateProcedureInfoFragment extends Fragment {
 	}
 	
 	public String getTitle() {
-		return mTitleTextView.getText().toString();
+		return mTitleEditText.getText().toString();
 	}
 	
 	public String getDescripton() {
-		return mDescriptionTextView.getText().toString();
+		return mDescriptionEditText.getText().toString();
 	}
 	
 	public String getPhotoUrl() {

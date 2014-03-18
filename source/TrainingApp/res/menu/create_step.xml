@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:treningApp="http://schemas.android.com/apk/res-auto" >
+    
+    <item android:id="@+id/action_save_step"
+          android:icon="@drawable/ic_action_save"
+          android:title="@string/action_save_step"
+          treningApp:showAsAction="always" />
+    
+    <item android:id="@+id/action_add_step"
+          android:icon="@drawable/ic_action_new_event"
+          android:title="@string/action_add_step"
+          treningApp:showAsAction="always" />
+    
+    <item android:id="@+id/action_use_template_step"
+          android:title="@string/action_use_template_step"
+          treningApp:showAsAction="never" />
+    
+</menu>

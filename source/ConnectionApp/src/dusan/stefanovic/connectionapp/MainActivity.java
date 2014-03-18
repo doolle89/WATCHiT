@@ -3,9 +3,10 @@ package dusan.stefanovic.connectionapp;
 import java.lang.ref.WeakReference;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -18,9 +19,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import dusan.stefanovic.connectionapp.connection.Connection;
 import dusan.stefanovic.connectionapp.service.WATCHiTServiceInterface;
 
 public class MainActivity extends Activity {
@@ -31,14 +34,15 @@ public class MainActivity extends Activity {
 	
     // Intent request codes
 	private static final int REQUEST_CONNECT_DEVICE = 1;
-    private static final int REQUEST_ENABLE_BT = 2;
+    private static final int REQUEST_ENABLE_DEVICE = 2;
 
 	// Layout Views
-	private ToggleButton toggleButton;
-	private ImageView imageView;
+	private ToggleButton mToggleButton;
+	private ImageView mImageView;
+	private Button mButton;
 
     // Member fields
-	private BluetoothAdapter bluetoothAdapter;
+	//private BluetoothAdapter bluetoothAdapter;
 	
 	// Messenger for communicating with service
     Messenger mServiceMessenger = null;
@@ -51,6 +55,9 @@ public class MainActivity extends Activity {
     // Device connection state
     int mDeviceConnectionState;
     
+    // Device availability status
+    boolean mIsDeviceAvailable;
+    boolean mIsDeviceEnabled;
     
     /**
      * Handler of incoming messages from service.
@@ -76,7 +83,6 @@ public class MainActivity extends Activity {
 			            break;
 		            case WATCHiTServiceInterface.CLIENT_REGISTERED:
 		            	activity.setIsBound(true);
-		            	// activity.requestUpdate();
 		                break;
 		            case WATCHiTServiceInterface.CLIENT_UNREGISTERED:
 		            	activity.setIsBound(false);
@@ -93,6 +99,7 @@ public class MainActivity extends Activity {
 		            case WATCHiTServiceInterface.UPDATE:
 		            	activity.update(message.getData());
 		            	break;
+		            	
 		            default:
 		                super.handleMessage(message);
 	            }
@@ -142,46 +149,42 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (bluetoothAdapter == null) {
-            // Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
+		setContentView(R.layout.activity_settings);
 		
-		toggleButton = (ToggleButton) findViewById(R.id.toggleButton);
-		toggleButton.setOnClickListener(new OnClickListener() {
+		mToggleButton = (ToggleButton) findViewById(R.id.toggleButton);
+		mToggleButton.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View view) {
-				if (toggleButton.isChecked()) {
-					if (bluetoothAdapter.isEnabled()) {
+				if (mToggleButton.isChecked()) {
+					if (mIsDeviceEnabled) {
 						startDeviceListActivity();
 					}
 					else {
-					    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-					    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+					    startActivityForResult(Connection.Factory.getEnableDeviceIntent(), REQUEST_ENABLE_DEVICE);
 					}
 				}
 				else {
 					doStopService();
 					//doUnbindService();
 				}
-				toggleButton.setChecked(false);
+				mToggleButton.setChecked(false);
 			}
 		});
 		
-		imageView = (ImageView) findViewById(R.id.imageView);
+		mImageView = (ImageView) findViewById(R.id.imageView);
+		
+		mButton = (Button) findViewById(R.id.button);
+		mButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View view) {
+        		startDeviceListActivity();
+			}
+		});
+		
 		
 		doBindService();
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		requestUpdate();
 	}
 	
 	@Override
@@ -203,8 +206,7 @@ public class MainActivity extends Activity {
         switch (requestCode) {
         case REQUEST_CONNECT_DEVICE:
             if (resultCode == Activity.RESULT_OK) {
-            	String address = data.getExtras().getString(WATCHiTServiceInterface.DEVICE_ADDRESS);
-                // Toast.makeText(this, address, Toast.LENGTH_SHORT).show();
+        		doStopService();
     			Intent intent = new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SERVICE);
     			intent.putExtras(data);
                 doStartService(intent);
@@ -215,8 +217,8 @@ public class MainActivity extends Activity {
                 Toast.makeText(this, "canceled", Toast.LENGTH_SHORT).show();
             }
             break;
-        case REQUEST_ENABLE_BT:
-            // When the request to enable Bluetooth returns
+        case REQUEST_ENABLE_DEVICE:
+            // When the request to enable device returns
             if (resultCode == Activity.RESULT_OK) {
             	if (!mIsStarted) {
             		startDeviceListActivity();
@@ -224,7 +226,7 @@ public class MainActivity extends Activity {
             } 
             else {
             	doStopService();
-                Toast.makeText(this, R.string.bt_not_enabled, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.bluetooth_not_enabled, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -238,12 +240,12 @@ public class MainActivity extends Activity {
 	
 	private void setIsStarted(boolean isStarted) {
 		mIsStarted = isStarted;
-		toggleButton.setChecked(mIsStarted);
+		mToggleButton.setChecked(mIsStarted);
+		mButton.setEnabled(mIsStarted);
 		if (!mIsStarted) {
             setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_DISCONNECTED);
-		} else if (!bluetoothAdapter.isEnabled()) {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		} else if (!mIsDeviceEnabled) {
+		    startActivityForResult(Connection.Factory.getEnableDeviceIntent(), REQUEST_ENABLE_DEVICE);
 		}
 	}
 
@@ -251,21 +253,42 @@ public class MainActivity extends Activity {
 		mDeviceConnectionState = deviceConnectionState;
 		switch (mDeviceConnectionState) {
 			case WATCHiTServiceInterface.DEVICE_DISCONNECTED:
-	        	imageView.setImageResource(R.drawable.ic_disconnected);
+	        	mImageView.setImageResource(R.drawable.ic_disconnected);
 		        break;
 			case WATCHiTServiceInterface.DEVICE_CONNECTING:
-	        	imageView.setImageResource(R.drawable.ic_connecting);
+	        	mImageView.setImageResource(R.drawable.ic_connecting);
 	            break;
 	        case WATCHiTServiceInterface.DEVICE_CONNECTED:
-	        	imageView.setImageResource(R.drawable.ic_connected);
+	        	mImageView.setImageResource(R.drawable.ic_connected);
 	            break;
 		}
 	}
+	
+	private void setDeviceAvaliability(boolean isDeviceAvailable, boolean isDeviceEnabled) {
+    	mIsDeviceAvailable = isDeviceAvailable;
+    	mIsDeviceEnabled = isDeviceEnabled;
+		if (!mIsDeviceAvailable) {
+			new AlertDialog.Builder(this)
+		    .setTitle(android.R.string.dialog_alert_title)
+		    .setMessage("Device unavailable")
+		    .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+		    	
+		    	@Override
+		        public void onClick(DialogInterface dialog, int which) { 
+		    		doStopService();
+		            finish();
+		        }
+		    	
+		     })
+		    .setIcon(android.R.drawable.ic_dialog_alert)
+		    .setCancelable(false)
+		    .show();
+        }
+    }
 
 	private void startDeviceListActivity() {
 		// Launch the DeviceListActivity to see devices and do scan
-		Intent intent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(intent, REQUEST_CONNECT_DEVICE); 
+        startActivityForResult(Connection.Factory.getChooseDeviceIntent(), REQUEST_CONNECT_DEVICE); 
 	}
 	
 	private void doStartService(Intent intent) {
@@ -324,26 +347,16 @@ public class MainActivity extends Activity {
             unbindService(mConnection);
             mIsBindCalled = false;
             setIsBound(false);
-            // Toast.makeText(MainActivity.this, getText(R.string.remote_service_unbound), Toast.LENGTH_SHORT).show();
         }
-    }
-    
-    private void requestUpdate() {
-	    if (mServiceMessenger != null) {
-	        try {
-	        	Message message = Message.obtain(null, WATCHiTServiceInterface.REQUEST_UPDATE);
-				message.replyTo = mMessenger;
-	        	mServiceMessenger.send(message);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
     }
     
     private void update(Bundle data) {
     	data.setClassLoader(getClassLoader());
+    	setDeviceAvaliability(data.getBoolean(WATCHiTServiceInterface.IS_DEVICE_AVAILABLE, false), data.getBoolean(WATCHiTServiceInterface.IS_DEVICE_ENABLED, false));
     	setIsStarted(data.getBoolean(WATCHiTServiceInterface.IS_CONNECTING_TO_DEVICE, false));
     	setDeviceConnectionState(data.getInt(WATCHiTServiceInterface.DEVICE_CONNECTION_STATUS, WATCHiTServiceInterface.DEVICE_DISCONNECTED));
     }
+    
+    
 
 }

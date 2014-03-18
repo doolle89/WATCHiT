@@ -3,7 +3,7 @@ package dusan.stefanovic.connectionapp.service;
 public class WATCHiTServiceInterface {
 	
 	public static final String ACTION_START_WATCHiT_SERVICE = "dusan.stefanovic.connectionapp.service.WATCHiT_SERVICE";
-	public static final String ACTION_START_WATCHiT_SETTINGS = "dusan.stefanovic.connectionapp.Settings";
+	public static final String ACTION_START_WATCHiT_SETTINGS = "dusan.stefanovic.connectionapp.SETTINGS";
 	
 	// Call
     public static final int REGISTER_CLIENT = 1;
@@ -26,7 +26,10 @@ public class WATCHiTServiceInterface {
     // Data
     public static final String DEVICE_ADDRESS = "device_address";
     public static final String RECONNECTING_AFTER = "reconnecting_after";
+    public static final String IS_DEVICE_AVAILABLE = "is_device_available";
+    public static final String IS_DEVICE_ENABLED = "is_device_enabled";
     public static final String IS_CONNECTING_TO_DEVICE = "is_connecting_to_device";
     public static final String DEVICE_CONNECTION_STATUS = "device_connection_status";
-    public static final String TAG_VALUE = "tag_value";
+    public static final String TAG_DATA_CONTENT = "tag_data_content";
+    public static final String TAG_DATA_LENGTH = "tag_data_length";
 }

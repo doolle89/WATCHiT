@@ -68,6 +68,7 @@ public class ProcedurePreviewActivity extends ActionBarActivity {
 				Intent intent = new Intent(ProcedurePreviewActivity.this, TrainingActivity.class);
 		        intent.putExtra("procedure", mProcedure);
 		        startActivity(intent);
+		        finish();
 			}
 		});
 	}

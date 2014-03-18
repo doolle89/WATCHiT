@@ -11,8 +11,8 @@ public class Step implements Parcelable {
 	public static final int STATUS_PENDING = 4;
 	public static final int STATUS_PAUSED = 5;
 	
-	private long mTemplateId;
-	private long mId;
+	private String mTemplateId;
+	private String mId;
 	private String mTitle;
 	private String mDescription;
 	private String mPhotoUrl;
@@ -21,7 +21,8 @@ public class Step implements Parcelable {
 	private long mStartTime;
 	private long mEndTime;
 	
-	private int mScore;
+	private int mErrors;
+	private float mScore;
 	private long mOptimalTime;
 	private float mSelfAssessment;
 	
@@ -33,10 +34,22 @@ public class Step implements Parcelable {
 		mPhotoUrl = photoUrl;
 		mStatus = STATUS_PENDING;
 		mDuration = 0;
+		mErrors = 0;
 		mScore = 0;
     }
 	
-	public Step(long templateId, String title, String description, String photoUrl, long optimalTime) {
+	public Step(String title, String description, String photoUrl, long optimalTime) {
+		mTitle = title;
+		mDescription = description;
+		mPhotoUrl = photoUrl;
+		mOptimalTime = optimalTime;
+		mStatus = STATUS_PENDING;
+		mDuration = 0;
+		mErrors = 0;
+		mScore = 0;
+    }
+	
+	public Step(String templateId, String title, String description, String photoUrl, long optimalTime) {
 		mTemplateId = templateId;
 		mTitle = title;
 		mDescription = description;
@@ -44,10 +57,11 @@ public class Step implements Parcelable {
 		mOptimalTime = optimalTime;
 		mStatus = STATUS_PENDING;
 		mDuration = 0;
+		mErrors = 0;
 		mScore = 0;
     }
 	
-	public Step(long templateId, String title, String description, String photoUrl, long optimalTime, long resultId, int status, long duration, long startTime, long endTime, int score, float selfAssessment) {
+	public Step(String templateId, String title, String description, String photoUrl, long optimalTime, String resultId, int status, long duration, long startTime, long endTime, int errors, float score, float selfAssessment) {
 		mTemplateId = templateId;
 		mTitle = title;
 		mDescription = description;
@@ -58,6 +72,7 @@ public class Step implements Parcelable {
 		mDuration = duration;
 		mStartTime = startTime;
 		mEndTime = endTime;
+		mErrors = errors;
 		mScore = score;
 		mSelfAssessment = selfAssessment;
     }
@@ -111,7 +126,7 @@ public class Step implements Parcelable {
 			mDuration += System.nanoTime() - mStartMeasuring;
 			mEndTime = System.currentTimeMillis();
 			mStatus = STATUS_SKIPPED;
-		} else if (mStatus == STATUS_PAUSED) {
+		} else if (mStatus == STATUS_PAUSED) { //proveriti ovo
 			mEndTime = System.currentTimeMillis();
 			mStatus = STATUS_SKIPPED;
 		} else if (mStatus == STATUS_PENDING) {
@@ -121,12 +136,26 @@ public class Step implements Parcelable {
 		}
 	}
 	
-	public long getTemplateId() {
+	public void addError() {
+		if (mStatus == STATUS_IN_PROGRESS) {
+			mErrors++;
+		}
+	}
+	
+	public String getTemplateId() {
 		return mTemplateId;
 	}
+	
+	public void setTemplateId(String templateId) {
+		mTemplateId = templateId;;
+	}
 
-	public long getId() {
+	public String getId() {
 		return mId;
+	}
+	
+	public void setId(String id) {
+		mId = id;
 	}
 
 	public String getTitle() {
@@ -161,11 +190,19 @@ public class Step implements Parcelable {
 		return mEndTime;
 	}
 
-	public int getScore() {
+	public int getErrors() {
+		return mErrors;
+	}
+
+	public void setErrors(int errors) {
+		mErrors = errors;
+	}
+
+	public float getScore() {
 		return mScore;
 	}
 
-	public void setScore(int score) {
+	public void setScore(float score) {
 		mScore = score;
 	}
 
@@ -194,8 +231,8 @@ public class Step implements Parcelable {
 	
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
-		out.writeLong(mTemplateId);
-		out.writeLong(mId);
+		out.writeString(mTemplateId);
+		out.writeString(mId);
 		out.writeString(mTitle);
 		out.writeString(mDescription);
 		out.writeString(mPhotoUrl);
@@ -203,7 +240,8 @@ public class Step implements Parcelable {
 		out.writeLong(mDuration);
 		out.writeLong(mStartTime);
 		out.writeLong(mEndTime);
-		out.writeInt(mScore);
+		out.writeInt(mErrors);
+		out.writeFloat(mScore);
 		out.writeLong(mOptimalTime);
 		out.writeFloat(mSelfAssessment);
 	}
@@ -219,8 +257,8 @@ public class Step implements Parcelable {
     };
     
     private Step(Parcel in) {
-    	mTemplateId = in.readLong();
-    	mId = in.readLong();
+    	mTemplateId = in.readString();
+    	mId = in.readString();
 		mTitle = in.readString();
 		mDescription = in.readString();
 		mPhotoUrl = in.readString();
@@ -228,7 +266,8 @@ public class Step implements Parcelable {
 		mDuration = in.readLong();
 		mStartTime = in.readLong();
 		mEndTime = in.readLong();
-		mScore = in.readInt();
+		mErrors = in.readInt();
+		mScore = in.readFloat();
 		mOptimalTime = in.readLong();
 		mSelfAssessment = in.readFloat();
     }

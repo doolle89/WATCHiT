@@ -3,7 +3,7 @@ package dusan.stefanovic.trainingapp.fragment;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -11,14 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import dusan.stefanovic.trainingapp.ProcedureResultPreviewActivity;
 import dusan.stefanovic.trainingapp.data.Procedure;
-import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingResultsFragment extends ListFragment {
 	
+	Procedure mProcedure;
 	List<Procedure> mProcedures;
 
 	@Override
@@ -30,20 +32,30 @@ public class TrainingResultsFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		try {
+			ProcedureListener trainingProcedureListener = (ProcedureListener) getActivity();
+			mProcedure = trainingProcedureListener.onProcedureRequested();
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
+        }
 		AsyncTask<Long, Void, List<Procedure>> asyncTask = new AsyncTask<Long, Void, List<Procedure>>() {
 
 			@Override
 			protected List<Procedure> doInBackground(Long... args) {
-				DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
-				dbAdapter.open();
-				List<Procedure> procedures = dbAdapter.getAllProcedureResults(1);
-				dbAdapter.close();
+				List<Procedure> procedures = null;
+				if (getActivity() != null) {
+					DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
+					if (dbAdapter.open()) {
+						procedures = dbAdapter.getAllProcedureResults(mProcedure.getTemplateId());
+						dbAdapter.close();
+					}
+				}
 				return procedures;
 			}
 			
 			protected void onPostExecute(List<Procedure> result) {
 				mProcedures = result;
-				if (mProcedures != null && mProcedures.size() > 0) {
+				if (getActivity() != null && mProcedures != null && mProcedures.size() > 0) {
 			        ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
 			        setListAdapter(stepListAdapter);
 				}
@@ -51,6 +63,13 @@ public class TrainingResultsFragment extends ListFragment {
 			
 		};
 		asyncTask.execute();
+    }
+	
+	@Override
+    public void onListItemClick(ListView listView, View view, int position, long id) {
+		Intent intent = new Intent(getActivity(), ProcedureResultPreviewActivity.class);
+        intent.putExtra("procedure", mProcedures.get(position));
+        startActivity(intent);
     }
 	
 	public static class ProcedureListAdapter extends ArrayAdapter<Procedure> {

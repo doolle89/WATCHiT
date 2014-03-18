@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.treningapp.R;
@@ -14,7 +13,7 @@ public class TrainingCurrentStepFragment extends Fragment {
 	
 	private TextView mTitleTextView;
 	private TextView mDescriptionTextView;
-	private ImageView mImageView;
+	//private ImageView mImageView;
 	
 	private Procedure mProcedure;
 
@@ -25,7 +24,7 @@ public class TrainingCurrentStepFragment extends Fragment {
         
         mTitleTextView = (TextView) rootView.findViewById(R.id.step_title);
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.step_description);
-        mImageView = (ImageView) rootView.findViewById(R.id.step_image);
+        //mImageView = (ImageView) rootView.findViewById(R.id.step_image);
         
         return rootView;
     }

@@ -3,7 +3,6 @@ package dusan.stefanovic.trainingapp.fragment;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -50,6 +49,7 @@ public class TrainingStepsFragment extends ListFragment {
     		View container;
     		TextView title;
     		TextView status;
+    		TextView errors;
     	}
     	
     	public StepListAdapter(Context context, int resource, List<Step> objects) {
@@ -67,6 +67,7 @@ public class TrainingStepsFragment extends ListFragment {
                 holder.container = row.findViewById(R.id.step_layout);
                 holder.title = (TextView) row.findViewById(R.id.step_title);
                 holder.status = (TextView) row.findViewById(R.id.step_status);
+                holder.errors = (TextView) row.findViewById(R.id.step_errors);
                 row.setTag(holder);
             } else {
                 holder = (ViewHolder) row.getTag();
@@ -76,7 +77,11 @@ public class TrainingStepsFragment extends ListFragment {
             holder.title.setText(step.getTitle());
             switch (step.getStatus()) {
             	case Step.STATUS_COMPLETED:
-            		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_completed));
+            		if (step.getErrors() == 0) {
+            			holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_completed));
+            		} else {
+            			holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_completed_with_errors));
+            		}
             		holder.status.setText(getContext().getText(R.string.step_status_completed));
             		break;
             	case Step.STATUS_SKIPPED:
@@ -95,6 +100,9 @@ public class TrainingStepsFragment extends ListFragment {
             		holder.container.setBackgroundColor(getContext().getResources().getColor(R.color.step_paused));
             		holder.status.setText(getContext().getText(R.string.step_status_paused));
             		break;
+            }
+            if (step.getStatus() != Step.STATUS_PENDING) {
+            	holder.errors.setText("(" + step.getErrors() + " " + getContext().getResources().getQuantityString(R.plurals.training_steps_fragment_errors, step.getErrors()) + ")");
             }
             return row;
         }

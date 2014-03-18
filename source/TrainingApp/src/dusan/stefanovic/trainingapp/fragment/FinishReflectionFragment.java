@@ -1,12 +1,5 @@
 package dusan.stefanovic.trainingapp.fragment;
 
-import java.util.List;
-
-import dusan.stefanovic.trainingapp.data.Procedure;
-import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
-import dusan.stefanovic.trainingapp.fragment.RealityCheckFragment.RealityCheckListAdapter;
-import dusan.stefanovic.trainingapp.fragment.SelectProcedureFragment.ProcedureListAdapter;
-import dusan.stefanovic.treningapp.R;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import dusan.stefanovic.trainingapp.data.Procedure;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
+import dusan.stefanovic.treningapp.R;
 
 public class FinishReflectionFragment extends Fragment {
 	
@@ -34,7 +30,7 @@ public class FinishReflectionFragment extends Fragment {
 			ProcedureListener procedureListener = (ProcedureListener) getActivity();
 			mProcedure = procedureListener.onProcedureRequested();			
 			if (mProcedure != null) {
-				// save();
+				mProcedureIdTextView.setText(mProcedureIdTextView.getText() + " " + mProcedure.getId());
 			}
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
@@ -42,19 +38,23 @@ public class FinishReflectionFragment extends Fragment {
 	}
 	
 	public void save() {
-		AsyncTask<Procedure, Void, Long> asyncTask = new AsyncTask<Procedure, Void, Long>() {
+		AsyncTask<Procedure, Void, String> asyncTask = new AsyncTask<Procedure, Void, String>() {
 
 			@Override
-			protected Long doInBackground(Procedure... args) {
-				DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
-				dbAdapter.open();
-				long result = dbAdapter.createProcedureResult(args[0]);
-				dbAdapter.close();
+			protected String doInBackground(Procedure... args) {
+				String result = null;
+				if (getActivity() != null) {
+					DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
+					dbAdapter.open();
+					result = dbAdapter.createProcedureResult(args[0]);
+					dbAdapter.close();
+				}
 				return result;
 			}
 			
-			protected void onPostExecute(Long result) {
-				mProcedureIdTextView.setText(mProcedureIdTextView.getText() + " " + result);
+			@Override
+			protected void onPostExecute(String result) {
+				
 			}
 			
 		};
