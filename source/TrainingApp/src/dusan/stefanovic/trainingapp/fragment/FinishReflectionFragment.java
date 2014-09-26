@@ -1,5 +1,8 @@
 package dusan.stefanovic.trainingapp.fragment;
 
+import java.util.List;
+import java.util.UUID;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,8 +10,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import de.imc.mirror.sdk.ConnectionConfiguration;
+import de.imc.mirror.sdk.DataObject;
+import de.imc.mirror.sdk.Space;
+import de.imc.mirror.sdk.OfflineModeHandler.Mode;
+import de.imc.mirror.sdk.android.ConnectionConfigurationBuilder;
+import de.imc.mirror.sdk.android.ConnectionHandler;
+import de.imc.mirror.sdk.android.DataHandler;
+import de.imc.mirror.sdk.android.DataObjectBuilder;
+import de.imc.mirror.sdk.android.PrivateSpace;
+import de.imc.mirror.sdk.android.SpaceHandler;
+import de.imc.mirror.sdk.exceptions.ConnectionStatusException;
+import de.imc.mirror.sdk.exceptions.InvalidDataException;
+import de.imc.mirror.sdk.exceptions.SpaceManagementException;
+import de.imc.mirror.sdk.exceptions.UnknownEntityException;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
+import dusan.stefanovic.trainingapp.util.MSFHelper;
 import dusan.stefanovic.treningapp.R;
 
 public class FinishReflectionFragment extends Fragment {
@@ -36,29 +54,4 @@ public class FinishReflectionFragment extends Fragment {
             throw new ClassCastException(getActivity().toString() + " must implement TrainingProcedureListener");
         }
 	}
-	
-	public void save() {
-		AsyncTask<Procedure, Void, String> asyncTask = new AsyncTask<Procedure, Void, String>() {
-
-			@Override
-			protected String doInBackground(Procedure... args) {
-				String result = null;
-				if (getActivity() != null) {
-					DatabaseAdapter dbAdapter = new DatabaseAdapter(getActivity());
-					dbAdapter.open();
-					result = dbAdapter.createProcedureResult(args[0]);
-					dbAdapter.close();
-				}
-				return result;
-			}
-			
-			@Override
-			protected void onPostExecute(String result) {
-				
-			}
-			
-		};
-		asyncTask.execute(mProcedure);
-	}
-
 }

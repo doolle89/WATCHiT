@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minHeight="50dp"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+    	android:focusableInTouchMode="true" >
+
+        <AutoCompleteTextView
+            android:id="@+id/spinner_filter"
+            android:layout_width="0dp"
+	        android:layout_height="0dp"
+	        android:layout_alignRight="@+id/center"
+	        android:layout_alignTop="@+id/spinner_sort"
+	        android:layout_alignBottom="@+id/spinner_sort"
+	        android:layout_alignParentLeft="true"
+	        android:singleLine="true"
+	        android:completionThreshold="1" />
+        
+        <View 
+            android:id="@+id/center"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerInParent="true"
+            android:visibility="invisible" />
+        
+        <Spinner
+            android:id="@+id/spinner_sort"
+            android:layout_width="0dp"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/center"
+	        android:layout_alignParentRight="true"
+            />
+        
+    </RelativeLayout>
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+    </ListView>
+
+</LinearLayout>

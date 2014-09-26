@@ -8,14 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import dusan.stefanovic.trainingapp.data.Procedure;
+import dusan.stefanovic.trainingapp.util.ImageHelper;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingProgressFragment extends Fragment {
 
 	private EditText mTimerEditText;
 	private ProgressBar mProgressBar;
+	private ImageView mImageView;
 	
 	private Procedure mProcedure;
 
@@ -26,6 +29,7 @@ public class TrainingProgressFragment extends Fragment {
         mTimerEditText = (EditText) rootView.findViewById(R.id.timerEditText);
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         mProgressBar.setMax(100);
+        mImageView = (ImageView) rootView.findViewById(R.id.stepImageView);
         return rootView;
     }
     
@@ -44,6 +48,25 @@ public class TrainingProgressFragment extends Fragment {
 	public void update() {
 		if (getView() != null && mProcedure != null) {
 			mProgressBar.setProgress(mProcedure.getProgress());
+			if (mProcedure.getCurrentStep() != null) {
+				String photoUrl = mProcedure.getCurrentStep().getPhotoUrl();
+				if (photoUrl != null && !photoUrl.contentEquals("")) {
+					ImageHelper.loadImageFromFile(mImageView, photoUrl);
+					mImageView.setVisibility(View.VISIBLE);
+				} else {
+					mImageView.setImageResource(R.drawable.default_photo);
+					mImageView.setVisibility(View.VISIBLE);
+				}
+			} else {
+				String photoUrl = mProcedure.getPhotoUrl();
+				if (photoUrl != null && !photoUrl.contentEquals("")) {
+					ImageHelper.loadImageFromFile(mImageView, photoUrl);
+					mImageView.setVisibility(View.VISIBLE);
+				} else {
+					mImageView.setImageResource(R.drawable.default_photo);
+					mImageView.setVisibility(View.VISIBLE);
+				}
+			}
 		}
 	}
     

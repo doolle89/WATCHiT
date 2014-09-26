@@ -44,7 +44,7 @@ public class CompareToFragment extends ListFragment {
         }
 	}
 	
-public static class CompareListAdapter extends ArrayAdapter<Step> {
+	public static class CompareListAdapter extends ArrayAdapter<Step> {
     	
     	static class ViewHolder {
     		TextView title;

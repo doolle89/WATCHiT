@@ -95,11 +95,12 @@
 
         <ImageView
             android:id="@+id/stepImageView"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
+	        android:maxHeight="150dp"
 	        android:scaleType="centerInside"
 	        android:adjustViewBounds="true"
-	        android:src="@drawable/procedure1"
+	        android:src="@drawable/camera_photo_placeholder"
         	android:background="@drawable/image_border"
             android:contentDescription="@string/content_description"/>
         

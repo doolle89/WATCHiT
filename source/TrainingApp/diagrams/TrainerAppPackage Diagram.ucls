@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<class-diagram version="1.1.6" icons="true" always-add-relationships="false" generalizations="true" realizations="true" 
+  associations="true" dependencies="false" nesting-relationships="true">  
+  <package id="1" language="java" name="dusan.stefanovic.trainingapp.service" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/service" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="161" y="356"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="2" language="java" name="dusan.stefanovic.trainingapp.fragment" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/fragment" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="166" y="192"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="3" language="java" name="dusan.stefanovic.trainingapp.database" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/database" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="640" y="356"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="4" language="java" name="dusan.stefanovic.trainingapp.data" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/data" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="654" y="186"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="5" language="java" name="dusan.stefanovic.trainingapp.app" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/app" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="656" y="281"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="6" language="java" name="dusan.stefanovic.trainingapp.util" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/util" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="149" y="283"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="7" language="java" name="dusan.stefanovic.trainingapp.view" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/view" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="153" y="106"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="8" language="java" name="dusan.stefanovic.trainingapp" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="400" y="356"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <package id="9" language="java" name="dusan.stefanovic.trainingapp.dialog" project="TrainingApp" 
+    file="/TrainingApp/src/dusan/stefanovic/trainingapp/dialog" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="453" y="106"/>    
+    <display autosize="true" stereotype="true" accessors="true"/>  
+  </package>  
+  <dependency id="10">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="11">    
+    <bendpoint x="498" y="258"/>    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="12">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="13">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="14">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="15">    
+    <bendpoint x="331" y="221"/>    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="16">    
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="17">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="18">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="19">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="20">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="21">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <dependency id="22">    
+    <bendpoint x="521" y="302"/>    
+    <bendpoint x="520" y="257"/>    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="23">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="24">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="4"/>  
+  </dependency>  
+  <dependency id="25">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="26">    
+    <end type="SOURCE" refId="1"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="27">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="28">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="29">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="2"/>  
+  </dependency>  
+  <dependency id="30">    
+    <bendpoint x="321" y="273"/>    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="8"/>  
+  </dependency>  
+  <dependency id="31">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="32">    
+    <end type="SOURCE" refId="5"/>    
+    <end type="TARGET" refId="6"/>  
+  </dependency>  
+  <dependency id="33">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="7"/>  
+  </dependency>  
+  <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+    accessors="true" visibility="true">    
+    <attributes public="true" package="true" protected="true" private="true" static="true"/>    
+    <operations public="true" package="true" protected="true" private="true" static="true"/>  
+  </classifier-display>  
+  <association-display labels="true" multiplicity="true"/>
+</class-diagram>

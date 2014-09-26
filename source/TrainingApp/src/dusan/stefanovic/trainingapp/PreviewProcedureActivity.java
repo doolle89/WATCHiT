@@ -3,6 +3,7 @@ package dusan.stefanovic.trainingapp;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -11,43 +12,49 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.dialog.StepDialogFragment;
+import dusan.stefanovic.trainingapp.util.ImageHelper;
 import dusan.stefanovic.treningapp.R;
 
-public class ProcedureResultPreviewActivity extends ActionBarActivity {
+public class PreviewProcedureActivity extends ActionBarActivity {
 	
 	ActionBar mActionBar;
-    TextView mIdTextView;
-    TextView mUserIdTextView;
-    TextView mNotesTextView;
+    ImageView mImageView;
     ListView mListView;
+    Button mStartButton;
     
     Procedure mProcedure;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_procedure_result_preview);
+		setContentView(R.layout.activity_procedure_preview);
 		
 		mProcedure = getIntent().getParcelableExtra("procedure");
 		
 		mActionBar = getSupportActionBar(); 
 		mActionBar.setDisplayHomeAsUpEnabled(true);
+		mActionBar.setHomeButtonEnabled(true);
 		mActionBar.setTitle(mProcedure.getTitle());
 		
-		mIdTextView = (TextView) findViewById(R.id.textView_id);
-		mIdTextView.setText(mProcedure.getId());
-		mUserIdTextView = (TextView) findViewById(R.id.textView_user_id);
-		mUserIdTextView.setText(mProcedure.getUserId());
-		mNotesTextView = (TextView) findViewById(R.id.textView_notes);
-		mNotesTextView.setText(mProcedure.getNotes());
+		mImageView = (ImageView) findViewById(R.id.imageView);
+		if (mProcedure.getPhotoUrl() != null && !mProcedure.getPhotoUrl().contentEquals("")) {
+			ImageHelper.loadImageFromFile(mImageView, mProcedure.getPhotoUrl());
+			mImageView.setVisibility(View.VISIBLE);
+		} else {
+			mImageView.setImageResource(R.drawable.default_photo);
+			mImageView.setVisibility(View.GONE);
+		}
 		
 		mListView = (ListView) findViewById(R.id.listView);
 		StepListAdapter stepListAdapter = new StepListAdapter(this, android.R.layout.simple_list_item_1, mProcedure.getSteps());
@@ -61,6 +68,18 @@ public class ProcedureResultPreviewActivity extends ActionBarActivity {
 			}
         	
         });
+		
+		mStartButton = (Button) findViewById(R.id.start_button);
+        mStartButton.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View view) {
+				Intent intent = new Intent(PreviewProcedureActivity.this, TrainingActivity.class);
+		        intent.putExtra("procedure", mProcedure);
+		        startActivity(intent);
+		        finish();
+			}
+		});
 	}
 
 	@Override
@@ -76,9 +95,6 @@ public class ProcedureResultPreviewActivity extends ActionBarActivity {
 	    switch (item.getItemId()) {
 		    case android.R.id.home:
 	        	finish();
-	            return true;
-	        case R.id.action_settings:
-	            // openSettings();
 	            return true;
 	            
 	        default:

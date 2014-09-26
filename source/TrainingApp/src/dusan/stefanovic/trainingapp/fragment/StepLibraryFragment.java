@@ -10,11 +10,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
+import dusan.stefanovic.trainingapp.dialog.StepDialogFragment;
 import dusan.stefanovic.treningapp.R;
 
 public class StepLibraryFragment extends ListFragment {
@@ -41,6 +44,15 @@ public class StepLibraryFragment extends ListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+		getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+				StepDialogFragment dialogFragment = StepDialogFragment.getInstance(mSteps.get(position));
+				dialogFragment.show(getChildFragmentManager(), "step_dialog_fragment");
+				return false;
+			}
+	    });
 		if (mStepListAdapter == null) {
 			AsyncTask<Void, Void, List<Step>> asyncTask = new AsyncTask<Void, Void, List<Step>>() {
 
@@ -77,6 +89,8 @@ public class StepLibraryFragment extends ListFragment {
 		}
     }
 	
+	
+	
 	@Override
 	public void setUserVisibleHint(boolean isVisibleToUser) {
 	    super.setUserVisibleHint(isVisibleToUser);
@@ -93,6 +107,14 @@ public class StepLibraryFragment extends ListFragment {
 	
 	public void addStep(Step step) {
 		mStepListAdapter.add(step);
+		getListView().postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				getListView().smoothScrollToPosition(mStepListAdapter.getCount() - 1);
+			}
+			
+		}, 300);
 	}
 	
 	public static class StepListAdapter extends ArrayAdapter<Step> {
@@ -124,7 +146,7 @@ public class StepLibraryFragment extends ListFragment {
             final Step step = this.getItem(position);
             holder.title.setText(step.getTitle());
             // holder.description.setText(step.getDescription());
-            holder.description.setText(getContext().getText(R.string.procedure_preview_activity_procedure_description));
+            holder.description.setText(getContext().getText(R.string.procedure_preview_activity_procedure_description2));
             return row;
         }
     }

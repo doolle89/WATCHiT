@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -41,6 +45,7 @@ public class CreateProcedureActivity extends ActionBarActivity implements Action
 		// Set up the action bar.
 		final ActionBar actionBar = getSupportActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayHomeAsUpEnabled(true);
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the activity.
@@ -82,18 +87,21 @@ public class CreateProcedureActivity extends ActionBarActivity implements Action
 		getMenuInflater().inflate(R.menu.create_procedure, menu);
 		return true;
 	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_create_procedure) {
-			createAndPublishProcedure();
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+	    // Handle presses on the action bar items
+	    switch (item.getItemId()) {
+		    case android.R.id.home:
+		    	showQuitDialog();
+	            return true;
+		    case R.id.action_create_procedure:
+		    	createAndPublishProcedure();
+	            return true;
+	            
+	        default:
+	            return super.onOptionsItemSelected(item);
+	    }
 	}
 
 	@Override
@@ -116,6 +124,16 @@ public class CreateProcedureActivity extends ActionBarActivity implements Action
 	@Override
 	public Procedure onProcedureRequested() {
 		return mProcedure;
+	}
+	
+	@Override
+    public void onBackPressed() {
+		showQuitDialog();
+    }
+	
+	protected void showQuitDialog() {
+		DialogFragment dialog = new QuitDialogFragment();
+		dialog.show(getSupportFragmentManager(), "quit_dialog");
 	}
 	
 	public void createAndPublishProcedure() {
@@ -212,6 +230,34 @@ public class CreateProcedureActivity extends ActionBarActivity implements Action
         	}
         	return null;
         }
+	}
+	
+	public static class QuitDialogFragment extends DialogFragment {
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	    	builder.setTitle(getText(R.string.create_procedure_activity_quit_dialog_title));
+	    	builder.setMessage(getText(R.string.create_procedure_activity_quit_dialog_message));
+	    	builder.setPositiveButton(getText(R.string.button_yes), new DialogInterface.OnClickListener() {
+	    		
+	    		@Override
+	    		public void onClick(DialogInterface dialog, int which) {
+	    	        getActivity().finish();
+	            }
+	    		
+	    	});
+	        builder.setNegativeButton(getText(R.string.button_no), new DialogInterface.OnClickListener() {
+	        	
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+	        		
+	            }
+	        	
+	        });
+	        return builder.create();
+		}
+		 
 	}
 
 }

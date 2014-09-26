@@ -14,27 +14,40 @@
         android:layout_margin="20dp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
     
-    <ImageView
-        android:id="@+id/step_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/step_title"
-        android:layout_centerHorizontal="true"
-        android:scaleType="centerInside"
-        android:adjustViewBounds="true"
-        android:src="@drawable/procedure1"
-        android:background="@drawable/image_border"
-        android:contentDescription="@string/content_description" />
-    
-    <TextView
-        android:id="@+id/step_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/step_image"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:singleLine="false"
-        android:gravity="fill_horizontal" />
+    <ScrollView 
+        android:id="@+id/scrollView"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_below="@+id/step_title"
+	    android:layout_above="@+id/step_close_button" >
+	    
+	    <RelativeLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content" >
+		    
+		    <ImageView
+		        android:id="@+id/step_image"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_centerHorizontal="true"
+		        android:scaleType="centerInside"
+		        android:adjustViewBounds="true"
+		        android:src="@drawable/camera_photo_placeholder"
+		        android:background="@drawable/image_border"
+		        android:contentDescription="@string/content_description" />
+		    
+		    <TextView
+		        android:id="@+id/step_description"
+		        android:layout_width="match_parent"
+		        android:layout_height="wrap_content"
+		        android:layout_below="@+id/step_image"
+		        android:layout_centerHorizontal="true"
+		        android:layout_marginTop="20dp"
+		        android:singleLine="false"
+		        android:gravity="fill_horizontal" />
+	    
+	    </RelativeLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/step_close_button"
@@ -42,6 +55,7 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
         android:background="@drawable/button_rounded_corner"
         android:text="@string/button_close" />
 

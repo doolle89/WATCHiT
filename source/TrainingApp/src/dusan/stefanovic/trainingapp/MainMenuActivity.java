@@ -18,6 +18,7 @@ package dusan.stefanovic.trainingapp;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -33,7 +34,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.trainingapp.fragment.DummyFragment;
+import dusan.stefanovic.trainingapp.fragment.LeaderboardFragment;
+import dusan.stefanovic.trainingapp.fragment.ResultsProcedureFragment;
 import dusan.stefanovic.trainingapp.fragment.SelectProcedureFragment;
 import dusan.stefanovic.treningapp.R;
 
@@ -47,6 +52,10 @@ public class MainMenuActivity extends ActionBarActivity {
     private CharSequence mActivityTitle;
     private CharSequence mDrawerTitle;
     private String[] mMenuTitles;
+    
+    private boolean mBackPressed;
+	private int mSelectedPosition;
+    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +77,7 @@ public class MainMenuActivity extends ActionBarActivity {
            
         	@Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
+    			selectItem(position);
             }
         	
         });
@@ -93,7 +102,11 @@ public class MainMenuActivity extends ActionBarActivity {
         
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         if (savedInstanceState == null) {
-            selectItem(1);
+        	FragmentManager fragmentManager = getSupportFragmentManager();
+	        fragmentManager.beginTransaction().replace(R.id.content_frame, new SelectProcedureFragment()).commit();
+            selectItem(0);
+            mDrawerLayout.openDrawer(mDrawerList);
+            mDrawerToggle.onDrawerOpened(mDrawerLayout); // hack
         }
     }
 
@@ -129,21 +142,9 @@ public class MainMenuActivity extends ActionBarActivity {
     	
         // Handle action buttons
         switch(item.getItemId()) {
-        /*
-        case R.id.action_search:
-            // create intent to perform web search for this planet
-            Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-            intent.putExtra(SearchManager.QUERY, mActionBar.getTitle());
-            // catch event that there's no activity to handle intent
-            if (intent.resolveActivity(getPackageManager()) != null) {
-                startActivity(intent);
-            } else {
-                Toast.makeText(this, "Not available", Toast.LENGTH_LONG).show();
-            }
-            return true;
-        */
-        default:
-            return super.onOptionsItemSelected(item);
+        
+	        default:
+	            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -165,20 +166,46 @@ public class MainMenuActivity extends ActionBarActivity {
         mActionBar.setTitle(mActivityTitle);
     }
     
+    @Override
+    public void onBackPressed() {
+        if (mBackPressed) {
+            super.onBackPressed();
+        } else {
+	        mBackPressed = true;
+	        mHandler.postDelayed(new Runnable() {
+	
+	            @Override
+	            public void run() {
+	                mBackPressed = false;                       
+	            }
+	        }, 2000);
+	        Toast.makeText(this, "Press back again to exit", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
     private void selectItem(int position) {
-        // update the main content by replacing fragments
-    	Fragment fragment;
-    	switch (position) {
-	    	case 1:
-	    		fragment = new SelectProcedureFragment();
-	            break;
-            default:
-            	fragment = new DummyFragment();
-    	}
-    	FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
-
-        // update selected item and title, then close the drawer
+    	if (mSelectedPosition != position) {
+	        // update the main content by replacing fragments
+    		mSelectedPosition = position;
+	    	Fragment fragment;
+	    	switch (position) {
+	    		case 0:
+		    		fragment = new SelectProcedureFragment();
+		            break;
+		    	case 1:
+		    		fragment = new ResultsProcedureFragment();
+		            break;
+		    	case 2:
+		    		fragment = new LeaderboardFragment();
+		            break;
+		            
+	            default:
+	            	fragment = new DummyFragment();
+	    	}
+	    	FragmentManager fragmentManager = getSupportFragmentManager();
+	        fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+	    }
+    	// update selected item and title, then close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(mMenuTitles[position]);
         mDrawerLayout.closeDrawer(mDrawerList);

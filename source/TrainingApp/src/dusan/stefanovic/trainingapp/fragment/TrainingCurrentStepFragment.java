@@ -5,15 +5,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Procedure;
+import dusan.stefanovic.trainingapp.util.ImageHelper;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingCurrentStepFragment extends Fragment {
 	
 	private TextView mTitleTextView;
 	private TextView mDescriptionTextView;
-	//private ImageView mImageView;
+	private ImageView mImageView;
 	
 	private Procedure mProcedure;
 
@@ -24,7 +26,7 @@ public class TrainingCurrentStepFragment extends Fragment {
         
         mTitleTextView = (TextView) rootView.findViewById(R.id.step_title);
         mDescriptionTextView = (TextView) rootView.findViewById(R.id.step_description);
-        //mImageView = (ImageView) rootView.findViewById(R.id.step_image);
+        mImageView = (ImageView) rootView.findViewById(R.id.step_image);
         
         return rootView;
     }
@@ -46,11 +48,25 @@ public class TrainingCurrentStepFragment extends Fragment {
 			if (mProcedure.getCurrentStep() != null) {
 				mTitleTextView.setText(mProcedure.getCurrentStep().getTitle());
 		        mDescriptionTextView.setText(mProcedure.getCurrentStep().getDescription());
-		        // mImageView.setImageResource(R.drawable.ic_launcher);
+		        String photoUrl = mProcedure.getCurrentStep().getPhotoUrl();
+				if (photoUrl != null && !photoUrl.contentEquals("")) {
+					ImageHelper.loadImageFromFile(mImageView, photoUrl);
+					mImageView.setVisibility(View.VISIBLE);
+				} else {
+					mImageView.setImageResource(R.drawable.default_photo);
+					mImageView.setVisibility(View.VISIBLE);
+				}
 			} else {	 
 				mTitleTextView.setText(mProcedure.getTitle());
 		        mDescriptionTextView.setText(mProcedure.getDescription());
-		        // mImageView.setImageResource(R.drawable.ic_launcher);
+		        String photoUrl = mProcedure.getPhotoUrl();
+				if (photoUrl != null && !photoUrl.contentEquals("")) {
+					ImageHelper.loadImageFromFile(mImageView, photoUrl);
+					mImageView.setVisibility(View.VISIBLE);
+				} else {
+					mImageView.setImageResource(R.drawable.default_photo);
+					mImageView.setVisibility(View.VISIBLE);
+				}
 			}
 		}
 	}

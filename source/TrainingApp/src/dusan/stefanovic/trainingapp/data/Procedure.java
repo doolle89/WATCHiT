@@ -1,6 +1,7 @@
 package dusan.stefanovic.trainingapp.data;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import android.os.Parcel;
@@ -251,6 +252,38 @@ public class Procedure implements Parcelable {
 	public void setNotes(String notes) {
 		mNotes = notes;
 	}
+	
+	public float getScore() {
+		float score = 0;
+		for (Step step : mSteps) {
+			score += step.getScore();
+		}
+		return score;
+	}
+	
+	public float getMaxScore() {
+		float score = 0;
+		for (Step step : mSteps) {
+			score += step.getMaxScore();
+		}
+		return score;
+	}
+	
+	public long getOptimalTime() {
+		long time = 0;
+		for (Step step : mSteps) {
+			time += step.getOptimalTime();
+		}
+		return time;
+	}
+	
+	public int getErrors() {
+		int errors = 0;
+		for (Step step : mSteps) {
+			errors += step.getErrors();
+		}
+		return errors;
+	}
 
 	public Step getCurrentStep() {
 		Step currentStep = null;
@@ -276,7 +309,7 @@ public class Procedure implements Parcelable {
 		return mSteps.size();
 	}
 	
-	public long getDuraton() {
+	public long getDuration() {
 		long duration = 0;
 		for (Step step : mSteps) {
 			duration += step.getDuration();
@@ -348,4 +381,31 @@ public class Procedure implements Parcelable {
 		mState = in.readInt();
 		mCurrentStepIndex = in.readInt();
     }
+    
+    public static final Comparator<Procedure> SCORE_COMPARATOR = new Comparator<Procedure>() {
+
+		@Override
+		public int compare(Procedure lhs, Procedure rhs) {
+			return Float.compare(rhs.getScore(), lhs.getScore());
+		}
+    	
+    };
+    
+    public static final Comparator<Procedure> TIME_COMPARATOR = new Comparator<Procedure>() {
+
+		@Override
+		public int compare(Procedure lhs, Procedure rhs) {
+			return (int) (lhs.getDuration() - rhs.getDuration());
+		}
+    	
+    };
+    
+    public static final Comparator<Procedure> DATE_COMPARATOR = new Comparator<Procedure>() {
+
+		@Override
+		public int compare(Procedure lhs, Procedure rhs) {
+			return (int) (rhs.getStartTime() - lhs.getStartTime());
+		}
+    	
+    };
 }

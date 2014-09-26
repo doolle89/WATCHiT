@@ -25,6 +25,7 @@ public class WATCHiTServiceInterface {
     
     // Data
     public static final String DEVICE_ADDRESS = "device_address";
+    public static final String DEVICE_NAME = "device_name";
     public static final String RECONNECTING_AFTER = "reconnecting_after";
     public static final String IS_DEVICE_AVAILABLE = "is_device_available";
     public static final String IS_DEVICE_ENABLED = "is_device_enabled";

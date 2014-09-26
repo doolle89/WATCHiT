@@ -11,6 +11,7 @@ import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTra
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.ProcedureTemplateStepTemplateConnection;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.StepResultEntry;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter.WATCHiTProcedureTrainerContract.StepTemplateEntry;
+import dusan.stefanovic.trainingapp.util.TextFileWriter;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -122,7 +123,6 @@ public final class DatabaseAdapter {
 	        public static final String COLUMN_NAME_START_TIME = "start_time";
 	        public static final String COLUMN_NAME_END_TIME = "end_time";
 	        public static final String COLUMN_NAME_ERRORS = "errors";
-	        public static final String COLUMN_NAME_SCORE = "score";
 	        public static final String COLUMN_NAME_SELF_ASSESSMENT = "self_assessment";
 	        
 	        public static final String SQL_CREATE_ENTRIE =
@@ -135,7 +135,6 @@ public final class DatabaseAdapter {
         	    COLUMN_NAME_START_TIME + INTEGER_TYPE + COMMA_SEP +
         	    COLUMN_NAME_END_TIME + INTEGER_TYPE + COMMA_SEP +
         	    COLUMN_NAME_ERRORS + INTEGER_TYPE + COMMA_SEP +
-        	    COLUMN_NAME_SCORE + REAL_TYPE + COMMA_SEP +
         	    COLUMN_NAME_SELF_ASSESSMENT + REAL_TYPE + COMMA_SEP +
         	    "FOREIGN KEY (" + COLUMN_NAME_TEMPLATE_ID + ") REFERENCES " + StepTemplateEntry.TABLE_NAME + "(" + StepTemplateEntry.COLUMN_NAME_GLOBAL_ID + ")" +
         	    " )";
@@ -401,6 +400,18 @@ public final class DatabaseAdapter {
         return procedures;
     }
     
+    public boolean isProcedureTemplate(String templateId) {    	
+    	String table = ProcedureTemplateEntry.TABLE_NAME;
+    	String[] columns = {ProcedureTemplateEntry.COLUMN_NAME_TITLE};
+    	String selection = ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID + "=?";
+    	String[] selectionArgs = {templateId};
+    	String groupBy = null;
+    	String having = null;
+    	String orderBy = null;
+    	Cursor cursor = mDb.query(table, columns, selection, selectionArgs, groupBy, having, orderBy);
+        return cursor != null && cursor.moveToFirst();
+    }
+    
     public Procedure getProcedureTemplate(String templateId) {    	
     	String table = ProcedureTemplateEntry.TABLE_NAME;
     	String[] columns = {ProcedureTemplateEntry.COLUMN_NAME_TITLE, ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION, ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL};
@@ -451,7 +462,7 @@ public final class DatabaseAdapter {
     
     
     
-    public String createStepResult(String templateId, int status, long duration, long startTime, long endTime, int errors, float score, float selfAssessment) {
+    public String createStepResult(String templateId, int status, long duration, long startTime, long endTime, int errors, float selfAssessment) {
     	String globalId = androidId + (ID_SEPARATOR + lastId(StepResultEntry.TABLE_NAME) + 1);
     	ContentValues initialValues = new ContentValues();
     	initialValues.put(StepResultEntry.COLUMN_NAME_GLOBAL_ID, globalId);
@@ -460,7 +471,7 @@ public final class DatabaseAdapter {
         initialValues.put(StepResultEntry.COLUMN_NAME_DURATION, duration);
         initialValues.put(StepResultEntry.COLUMN_NAME_START_TIME, startTime);
         initialValues.put(StepResultEntry.COLUMN_NAME_END_TIME, endTime);
-        initialValues.put(StepResultEntry.COLUMN_NAME_SCORE, score);
+        initialValues.put(StepResultEntry.COLUMN_NAME_ERRORS, errors);
         initialValues.put(StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT, selfAssessment);
         long result = mDb.insert(StepResultEntry.TABLE_NAME, null, initialValues);
         if (result == -1) {
@@ -470,7 +481,7 @@ public final class DatabaseAdapter {
     }
     
     public String createStepResult(Step step) {
-    	String stepId = createStepResult(step.getTemplateId(),step.getStatus(), step.getDurationNano(), step.getStartTime(), step.getEndTime(), step.getErrors(), step.getScore(), step.getSelfAssessment());
+    	String stepId = createStepResult(step.getTemplateId(),step.getStatus(), step.getDurationNano(), step.getStartTime(), step.getEndTime(), step.getErrors(), step.getSelfAssessment());
     	if (stepId != null) {
     		step.setId(stepId);
     	}
@@ -502,10 +513,9 @@ public final class DatabaseAdapter {
 	        	long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_START_TIME));
 	        	long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_END_TIME));
 	        	int errors = cursor.getInt(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_ERRORS));
-	        	float score = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SCORE));
 	        	float selfAssessment = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT));
 	        	
-	        	Step step = new Step(templateId, title, description, photoUrl, optimalTime, resultId, status, duration, startTime, endTime, errors, score, selfAssessment);
+	        	Step step = new Step(templateId, title, description, photoUrl, optimalTime, resultId, status, duration, startTime, endTime, errors, selfAssessment);
 	        	steps.add(step);
         	}
         }
@@ -528,10 +538,9 @@ public final class DatabaseAdapter {
         	long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_START_TIME));
         	long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_END_TIME));
         	int errors = cursor.getInt(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_ERRORS));
-        	float score = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SCORE));
         	float selfAssessment = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT));
         	
-        	step = new Step(templateId, title, description, photoUrl, optimalTime, resultId, status, duration, startTime, endTime, errors, score, selfAssessment);
+        	step = new Step(templateId, title, description, photoUrl, optimalTime, resultId, status, duration, startTime, endTime, errors, selfAssessment);
         }
         return step;
     }
@@ -598,7 +607,30 @@ public final class DatabaseAdapter {
         return deleteProcedureResult(procedure.getId());
     }
     
-    public List<Procedure> getAllProcedureResults(String templateId) {
+    public List<Procedure> getAllProcedureResults() {
+    	String query = "SELECT * FROM " + ProcedureTemplateEntry.TABLE_NAME + " INNER JOIN " + ProcedureResultEntry.TABLE_NAME + " ON " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID + "=" + ProcedureResultEntry.TABLE_NAME + "." + ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID;
+    	Cursor cursor = mDb.rawQuery(query, null);
+    	ArrayList<Procedure> procedures = new ArrayList<Procedure>();
+        if (cursor != null) {
+        	while (cursor.moveToNext()) {
+        		String templateId = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID));
+	        	String title = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_TITLE));
+	        	String description = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION));
+	        	String photoUrl = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL));
+	        	
+	        	String resultId = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureResultEntry.COLUMN_NAME_GLOBAL_ID));
+	        	String userId = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureResultEntry.COLUMN_NAME_USER_ID));
+	        	String notes = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureResultEntry.COLUMN_NAME_NOTES));
+	        	
+	        	Procedure procedure = new Procedure(templateId, title, description, photoUrl, resultId, userId, notes);
+	        	procedure.setSteps(getProcedureResultSteps(resultId));
+	        	procedures.add(procedure);
+        	}
+        }
+        return procedures;
+    }
+    
+    public List<Procedure> getAllProcedureResultsForTemplate(String templateId) {
     	String query = "SELECT * FROM " + ProcedureTemplateEntry.TABLE_NAME + " INNER JOIN " + ProcedureResultEntry.TABLE_NAME + " ON " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID + "=" + ProcedureResultEntry.TABLE_NAME + "." + ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID + " WHERE " + ProcedureTemplateEntry.TABLE_NAME + "." + ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID + "=?";
     	Cursor cursor = mDb.rawQuery(query, new String[] {templateId});
     	ArrayList<Procedure> procedures = new ArrayList<Procedure>();
@@ -657,22 +689,13 @@ public final class DatabaseAdapter {
             	long startTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_START_TIME));
             	long endTime = cursor.getLong(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_END_TIME));
             	int errors = cursor.getInt(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_ERRORS));
-            	float score = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SCORE));
             	float selfAssessment = cursor.getFloat(cursor.getColumnIndexOrThrow(StepResultEntry.COLUMN_NAME_SELF_ASSESSMENT));
             	
-            	Step step = new Step(templateId, title, description, photoUrl, optimalTime, stepResultId, status, duration, startTime, endTime, errors, score, selfAssessment);
+            	Step step = new Step(templateId, title, description, photoUrl, optimalTime, stepResultId, status, duration, startTime, endTime, errors, selfAssessment);
             	steps.add(step);
         	}
         }
         return steps;
-    }
-    
-    public long connectProcedureResultStepResult(String procedureId, String stepId, int position) {
-        ContentValues initialValues = new ContentValues();
-        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_PROCEDURE_RESULT_GLOBAL_ID, procedureId);
-        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_STEP_RESULT_GLOBAL_ID, stepId);
-        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_STEP_INDEX, position);
-        return mDb.insert(ProcedureResultStepResultConnection.TABLE_NAME, null, initialValues);
     }
     
     public List<String> getAllUserIds() {
@@ -688,5 +711,132 @@ public final class DatabaseAdapter {
         	}
         }
         return userIds;
+    }
+    
+    public List<String> getAllUserIdsForProcedure(String templateId) {
+    	String query = "SELECT DISTINCT " + ProcedureResultEntry.COLUMN_NAME_USER_ID + " FROM " + ProcedureResultEntry.TABLE_NAME + " WHERE " + ProcedureResultEntry.COLUMN_NAME_TEMPLATE_ID + "=?";
+    	Cursor cursor = mDb.rawQuery(query, new String[] {templateId});
+    	ArrayList<String> userIds = new ArrayList<String>();
+        if (cursor != null) {
+        	while (cursor.moveToNext()) {
+        		String userId = cursor.getString(cursor.getColumnIndexOrThrow(ProcedureResultEntry.COLUMN_NAME_USER_ID));
+        		if (userId != null && !userId.equalsIgnoreCase("")) {
+        			userIds.add(userId);
+        		}
+        	}
+        }
+        return userIds;
+    }
+    
+    public long connectProcedureResultStepResult(String procedureId, String stepId, int position) {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_PROCEDURE_RESULT_GLOBAL_ID, procedureId);
+        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_STEP_RESULT_GLOBAL_ID, stepId);
+        initialValues.put(ProcedureResultStepResultConnection.COLUMN_NAME_STEP_INDEX, position);
+        return mDb.insert(ProcedureResultStepResultConnection.TABLE_NAME, null, initialValues);
+    }
+    
+    public void exportAllProcedureResults() {
+    	List<Procedure> procedures = getAllProcedureResults();
+    	StringBuilder stringBuilder = new StringBuilder();
+    	for (Procedure procedure : procedures) {
+    		stringBuilder.append("Id: " + procedure.getId() + "\n");
+    		stringBuilder.append("User: " + procedure.getUserId() + "\n");
+    		stringBuilder.append("Title: " + procedure.getTitle() + "\n");
+    		stringBuilder.append("Description: " + procedure.getDescription() + "\n");
+    		stringBuilder.append("Total errors: " + procedure.getErrors() + "\n");
+    		stringBuilder.append("Total time: " + Math.round(procedure.getDuration() * 1e-3) + "s\n");
+    		stringBuilder.append("Optimal total time: " + Math.round(procedure.getOptimalTime() * 1e-3) + "s\n");
+    		stringBuilder.append("Total score: " + Math.round(procedure.getScore() * 1e-3) + "\n");
+    		stringBuilder.append("Max score: " + Math.round(procedure.getMaxScore() * 1e-3) + "\n\n");
+    		for (Step step : procedure.getSteps()) {
+    			stringBuilder.append("\tTitle: " + step.getTitle() + "\n");
+    			stringBuilder.append("\tDescription: " + step.getDescription() + "\n");
+    			stringBuilder.append("\tStatus: " + step.getStatus() + "\n");
+    			stringBuilder.append("\tErrors: " + step.getErrors() + "\n");
+    			stringBuilder.append("\tScore: " + Math.round(step.getScore() * 1e-3) + "\n");
+    			stringBuilder.append("\tMax score: " + Math.round(step.getMaxScore() * 1e-3) + "\n");
+    			stringBuilder.append("\tTime: " + Math.round(step.getDuration() * 1e-3) + "s\n");
+    			stringBuilder.append("\tOptimal time: " + Math.round(step.getOptimalTime() * 1e-3) + "s\n");
+        		stringBuilder.append("\tSelf assessment: " + step.getSelfAssessment() + "\n\n");
+    		}
+    		stringBuilder.append("Id: " + procedure.getId() + "\n");
+    		stringBuilder.append("User: " + procedure.getUserId() + "\n");
+    		stringBuilder.append("Notes: " + procedure.getNotes() + "\n");
+    		stringBuilder.append("\n\n----------------------------------------\n\n");
+    		
+    		TextFileWriter.writeToFile(stringBuilder.toString(), "TrainingAppResults.txt");
+    	}
+    }
+    
+    
+    
+    public void createDefaultData() {
+        ContentValues initialValues = new ContentValues();
+        initialValues.put(ProcedureTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1");
+        initialValues.put(ProcedureTemplateEntry.COLUMN_NAME_TITLE, "Procedura Percorso Trauma");
+        initialValues.put(ProcedureTemplateEntry.COLUMN_NAME_DESCRIPTION, "");
+        initialValues.put(ProcedureTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+        long result = mDb.insert(ProcedureTemplateEntry.TABLE_NAME, null, initialValues);
+        if (result != -1) {
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S1");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 1");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "Sicurezza ambientale e personale");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 3000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues); 
+            connectProcedureTemplateStepTemplate("P1", "P1S1", 0);
+            
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S2");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 2");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "Soccorritore B con approccio frontale immobilizza manualmente il capo del soggetto. Soccorritore A (leader) immobilizza il capo dalla parte posteriore, liberando cosi il soccorritore B, e si prepara A coordinare il soccorso. I soccorritori B e C si posizionano lateralmente e si preparano ad effettuare il logg roll coordinati dal soccorritore A");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 25000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues);
+            connectProcedureTemplateStepTemplate("P1", "P1S2", 0);
+            
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S3");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 3");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "Una volta che il soggetto si trova in posizione supina, i soccorritori B e C posizionano il collare cervicale. B e C preparano la barella atraumatica (cucchiaio) presentandola a lato del soggetto, per poter misurare la lunghezza. B eC aprono il cucchiaio e posizionano una parte della stessa a lato dx e sx del soggetto");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 30000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues);
+            connectProcedureTemplateStepTemplate("P1", "P1S3", 0);
+            
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S4");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 4");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "B e C eseguono un log roll con escursione minima, per poter inserire un lato del cucchiaio effettuano la stessa procedura dal lato opposto agganciano il cucchiaio posizionano le cinghie e le stringono trasferiscono il soggetto sulla tavola spinale, sempre coordinati dal leader tolgono le cinghie aprono il cucchiaio sganciando prima la parte dei piedi.");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 115000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues);
+            connectProcedureTemplateStepTemplate("P1", "P1S4", 0);
+            
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S5");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 5");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "B e C eseguono protezione termica coprendo il soggetto con la coperta termica ”metallina”, posizionano il ragno srotolandolo dalle spalle verso i piedi posizionano i velcri in modo simmetrico partendo dalle spalle (fissare subito i velcri spalle). Un soccorritore stringe il ragno partendo dai piedi, avendo cura di non tirare eccessivamente la cinghia toracica; questo e’ l’unico momento dove e’ consentito passare sopra il soggetto; sempre i soccorritori B e C posizionano i cuscini laterali ed i fermacapo.");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 110000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues);
+            connectProcedureTemplateStepTemplate("P1", "P1S5", 0);
+            
+            initialValues = new ContentValues();
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_GLOBAL_ID, "P1S6");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_TITLE, "Passo 6");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_DESCRIPTION, "B e C coordinati dal leader, come in tutte le operazioni, trasferiscono il soggetto sulla barella autocaricante, precedentemente estratta dal vano sanitario dell’ambulanza; i soccorritori B C salgono sull’ ambulanza mentre il soccorritore A (autista) provvede ad assicurarsi della corretta chiusura dei portelloni del mezzo di soccorso poi sale in ambulanza, controlla che nel vano sanitario siano tutti posizionati correttamente (cintura di sicurezza allacciate, ecc. ecc.) e ricevuto il benestare dal responsabile del vano sanitario, parte per l’ospedale di competenza.");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_PHOTO_URL, "");
+            initialValues.put(StepTemplateEntry.COLUMN_NAME_OPTIMAL_TIME, 60000);
+            mDb.insert(StepTemplateEntry.TABLE_NAME, null, initialValues);
+            connectProcedureTemplateStepTemplate("P1", "P1S6", 0);
+        }
+        
+        
+        
+        
+        
     }
 }

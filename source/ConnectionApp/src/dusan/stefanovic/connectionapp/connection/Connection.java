@@ -18,8 +18,8 @@ public interface Connection {
     
     public static class Factory {
     	
-    	static Intent mEnableDeviceIntent;
-    	static Intent mChooseDeviceIntent;
+    	static Intent mEnableDeviceIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE); // default
+    	static Intent mChooseDeviceIntent = new Intent(BluetoothDeviceListActivity.ACTION_START); // default
     	
     	public static Connection createBluetoothConnection(Handler handler) {
     		mEnableDeviceIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);

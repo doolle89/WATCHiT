@@ -51,9 +51,9 @@ public class MainActivity extends Activity {
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     
     // WATCHiT signal messages
-    private static final String SIGNAL_COMPLETE = "c";
-    private static final String SIGNAL_ERROR = "e";
-    private static final String SIGNAL_SKIP = "s";
+    private static final String SIGNAL_COMPLETE = "en-c";
+    private static final String SIGNAL_ERROR = "en-e";
+    private static final String SIGNAL_SKIP = "en-s";
 
     private Button mCompleteButton;
     private Button mErrorButton;

@@ -134,7 +134,9 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         
         // Add padding to icon
         ImageView view = (ImageView) findViewById(android.R.id.home);
-        view.setPadding(12, 0, 12, 0);
+        if (view != null) {
+        	view.setPadding(12, 0, 12, 0);
+        }
         
         // Specify that we will be displaying tabs in the action bar.
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -144,6 +146,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         //mViewPager.setOffscreenPageLimit(2);
         mViewPager.setAdapter(mTabPagerAdapter);
+        mViewPager.setOffscreenPageLimit(2);
         mViewPager.setOnPageChangeListener(new SimpleOnPageChangeListener() {
             
         	@Override
@@ -318,8 +321,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     
     @Override
 	public void onTrainingStarted() {
-    	updateSteps();
-    	updateCurrentStep();
+    	onProgressUpdated();
 	}
 
 	@Override
@@ -413,12 +415,10 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     private void doSynchronization() {
     	if (mBoundService != null) {
     		mProcedure = mBoundService.getProcedure();
-    		updateProgress();
-    		updateSteps();
+    		onProgressUpdated();
     		updateTrainingState();
 	        updateTimer(mBoundService.getElapsedTime());
 	        setDeviceConnectionState(mBoundService.getDeviceConnectionState());
-	        updateCurrentStep();
     	} else {
     		setIsBound(false);
     	}
@@ -449,7 +449,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
 	    	if (mProcedure.isStarted()) {
 	    		// notifikacija ovde
 	    	}
-			mStartButton.setEnabled(false);
+			//mStartButton.setEnabled(false);
 			mResumeButton.setEnabled(false);
 		} else {
 			mStartButton.setEnabled(true);
@@ -488,6 +488,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     private void updateTrainingState() {
     	if (isTrainingFinished()) {
     		showRestartOption();
+    		mTabPagerAdapter.getTrainingResultsFragment().loadList();
     	} else if (!mProcedure.isStarted()) {
     		showStartButton();
     	} else if (mProcedure.isPaused()) {
@@ -549,9 +550,6 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
     	static final int TAB_1 = 0;
     	static final int TAB_2 = 1;
     	static final int TAB_3 = 2;
-    	
-    	TrainingResultsFragment mTrainingResultsFragment;
-    	TrainingOverviewFragment mTrainingOverviewFragment;
 
         public TabPagerAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
@@ -568,7 +566,8 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
                 	}
                 case TAB_2:
                 	if (isTrainingFinished()) {
-                		return new TrainingOverviewFragment();
+                		// return new TrainingOverviewFragment();
+                		return new TrainingProgressFragment();
                 	} else {
 	                	return new TrainingProgressFragment();
                 	}
@@ -810,7 +809,7 @@ public class TrainingActivity extends ActionBarActivity implements TabListener, 
             mAutoCompleteTextView.requestFocus();
             
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-	    	builder.setTitle(getText(R.string.training_activity_reflection_dialog_title));
+	    	builder.setTitle(getText(R.string.training_activity_user_info_dialog_title));
 	    	builder.setView(view);
 	    	builder.setPositiveButton(getText(R.string.button_ok), new DialogInterface.OnClickListener() {
 	    		

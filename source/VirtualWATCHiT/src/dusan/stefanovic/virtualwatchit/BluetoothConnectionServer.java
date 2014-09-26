@@ -51,9 +51,10 @@ public class BluetoothConnectionServer {
     // Member fields
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
-    private AcceptThread mSecureAcceptThread;
-    private ConnectedThread mConnectedThread;
-    private int mState;
+    private volatile AcceptThread mSecureAcceptThread;
+    private volatile ConnectedThread mConnectedThread;
+    private volatile int mState;
+    private boolean isStarted = false; 
 
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing
@@ -95,6 +96,7 @@ public class BluetoothConnectionServer {
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start() {
         if (D) Log.d(TAG, "start");
+        isStarted = true;
 
         // Cancel any thread currently running a connection
         if (mConnectedThread != null) {mConnectedThread.cancel(); mConnectedThread = null;}
@@ -144,6 +146,8 @@ public class BluetoothConnectionServer {
      */
     public synchronized void stop() {
         if (D) Log.d(TAG, "stop");
+        
+        isStarted = false;
 
         if (mConnectedThread != null) {
             mConnectedThread.cancel();
@@ -187,7 +191,9 @@ public class BluetoothConnectionServer {
         mHandler.sendMessage(msg);
 
         // Start the service over to restart listening mode
-        BluetoothConnectionServer.this.start();
+        if (isStarted) {
+        	BluetoothConnectionServer.this.start();
+        }
     }
 
     /**
@@ -262,6 +268,7 @@ public class BluetoothConnectionServer {
             } catch (IOException e) {
                 Log.e(TAG, "close() of server failed", e);
             }
+            interrupt();
         }
     }
 
@@ -312,8 +319,6 @@ public class BluetoothConnectionServer {
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
-                    // Start the service over to restart listening mode
-                    BluetoothConnectionServer.this.start();
                     break;
                 }
             }
@@ -341,6 +346,7 @@ public class BluetoothConnectionServer {
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
+            this.interrupt();
         }
     }
 }

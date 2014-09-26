@@ -7,10 +7,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +28,7 @@ import dusan.stefanovic.trainingapp.data.Step;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.trainingapp.dialog.StepLibraryDialogFragment;
 import dusan.stefanovic.trainingapp.fragment.StepLibraryFragment.StepLibraryFragmentListener;
+import dusan.stefanovic.trainingapp.util.ImageHelper;
 import dusan.stefanovic.trainingapp.util.PhotoFileFactory;
 import dusan.stefanovic.trainingapp.view.TimePicker;
 import dusan.stefanovic.treningapp.R;
@@ -68,6 +65,7 @@ public class CreateStepFragment extends Fragment {
         mTitleEditText = (EditText) rootView.findViewById(R.id.step_title);
         mDescriptionEditText = (EditText) rootView.findViewById(R.id.step_description);
         mImageView = (ImageView) rootView.findViewById(R.id.step_image);
+        mImageView.setTag(false);
         mTimePicker = (TimePicker) rootView.findViewById(R.id.timePicker);
         
         mImageView.setOnClickListener(new OnClickListener() {
@@ -86,7 +84,7 @@ public class CreateStepFragment extends Fragment {
         	public void onGlobalLayout() {
         		ViewTreeObserver viewTreeObserver = rootView.getViewTreeObserver();
         		viewTreeObserver.removeGlobalOnLayoutListener(this);
-        		showPhotoFile(mPhotoFileUrl);
+        		ImageHelper.loadImageFromFile(mImageView, mPhotoFileUrl);
         	}
         	
         });
@@ -141,7 +139,7 @@ public class CreateStepFragment extends Fragment {
 	    if (requestCode == ACTION_TAKE_PHOTO) {
 	    	if (resultCode == Activity.RESULT_OK) {
 	    		mPhotoFileUrl = mTempPhotoFileUrl;
-		    	showPhotoFile(mPhotoFileUrl);
+	    		ImageHelper.loadImageFromFile(mImageView, mPhotoFileUrl);
 	    	}
 	    }
 	}
@@ -158,47 +156,6 @@ public class CreateStepFragment extends Fragment {
 		    	startActivityForResult(intent, ACTION_TAKE_PHOTO);
 	    	}
 	    }
-	}
-	
-	private void showPhotoFile(String photoFileUrl) {
-		if (photoFileUrl != null) {
-			/* There isn't enough memory to open up more than a couple camera photos */
-			/* So pre-scale the target bitmap into which the file is decoded */
-	
-			/* Get the size of the ImageView */
-			int targetWidth = mImageView.getWidth();
-			int targetHeight = mImageView.getHeight();
-	
-			/* Get the size of the image */
-			BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-			bitmapOptions.inJustDecodeBounds = true;
-			BitmapFactory.decodeFile(photoFileUrl, bitmapOptions);
-			int photoWidth = bitmapOptions.outWidth;
-			int photoHeight = bitmapOptions.outHeight;
-			
-			boolean min = (photoWidth > photoHeight) == (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT);
-			/* Figure out which way needs to be reduced less */
-			int scaleFactor = 1;
-			if (((targetWidth > 0) || (targetHeight > 0)) && min) {
-				scaleFactor = Math.min(photoWidth/targetWidth, photoHeight/targetHeight);	
-			} else if (((targetWidth > 0) || (targetHeight > 0)) && !min) {
-				scaleFactor = Math.max(photoWidth/targetWidth, photoHeight/targetHeight);
-			}
-			
-			// scaleFactor mora da bude najmanje 2 inace ne radi iz nekog raloga
-			if (scaleFactor == 1) {
-				scaleFactor = 2;
-			}
-	
-			/* Set bitmap options to scale the image decode target */
-			bitmapOptions.inJustDecodeBounds = false;
-			bitmapOptions.inSampleSize = scaleFactor;
-			bitmapOptions.inPurgeable = true;
-			/* Decode the JPEG file into a Bitmap */
-			((BitmapDrawable) mImageView.getDrawable()).getBitmap().recycle();
-			Bitmap bitmap = BitmapFactory.decodeFile(photoFileUrl, bitmapOptions);
-			mImageView.setImageBitmap(bitmap);
-		}
 	}
 	
 	private long getOptimalTime() {
@@ -292,6 +249,12 @@ public class CreateStepFragment extends Fragment {
 			public void onStepSelected(Step step) {
 				mTitleEditText.setText(step.getTitle());
 				mDescriptionEditText.setText(step.getDescription());
+				mPhotoFileUrl = step.getPhotoUrl();
+				if (mPhotoFileUrl != null && !mPhotoFileUrl.contentEquals("")) {
+					ImageHelper.loadImageFromFile(mImageView, mPhotoFileUrl);
+				} else {
+					mImageView.setImageResource(R.drawable.camera_photo_placeholder);
+				}
 				setOptimalTime(step.getOptimalTime());
 				stepLibraryDialogFragment.dismiss();
 			}

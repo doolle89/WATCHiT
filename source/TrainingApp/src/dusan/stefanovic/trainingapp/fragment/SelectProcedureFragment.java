@@ -18,7 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.CreateProcedureActivity;
-import dusan.stefanovic.trainingapp.ProcedurePreviewActivity;
+import dusan.stefanovic.trainingapp.PreviewProcedureActivity;
 import dusan.stefanovic.trainingapp.data.Procedure;
 import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.treningapp.R;
@@ -79,7 +79,7 @@ public class SelectProcedureFragment extends ListFragment {
 	
 	@Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
-		Intent intent = new Intent(getActivity(), ProcedurePreviewActivity.class);
+		Intent intent = new Intent(getActivity(), PreviewProcedureActivity.class);
         intent.putExtra("procedure", mProcedures.get(position));
         startActivity(intent);
     }
@@ -92,12 +92,6 @@ public class SelectProcedureFragment extends ListFragment {
 				mProcedureListAdapter.add(procedure);
 			}
 		}
-	}
-	
-	public void setProceduresList(List<Procedure> procedures) {
-		mProcedures = procedures;
-		ProcedureListAdapter stepListAdapter = new ProcedureListAdapter(getActivity(), R.layout.list_item_step_training, mProcedures);
-        setListAdapter(stepListAdapter);
 	}
 	
 	public static class ProcedureListAdapter extends ArrayAdapter<Procedure> {

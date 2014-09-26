@@ -18,8 +18,10 @@ package dusan.stefanovic.trainingapp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -31,13 +33,16 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import dusan.stefanovic.trainingapp.data.Procedure;
+import dusan.stefanovic.trainingapp.database.DatabaseAdapter;
 import dusan.stefanovic.trainingapp.fragment.CompareToFragment;
 import dusan.stefanovic.trainingapp.fragment.FinishReflectionFragment;
 import dusan.stefanovic.trainingapp.fragment.ProcedureListener;
 import dusan.stefanovic.trainingapp.fragment.RealityCheckFragment;
 import dusan.stefanovic.trainingapp.fragment.ReflectionQuestionFragment;
 import dusan.stefanovic.trainingapp.fragment.SelfAssessmentFragment;
+import dusan.stefanovic.trainingapp.util.MSFHelper;
 import dusan.stefanovic.treningapp.R;
 
 public class ReflectionActivity extends ActionBarActivity implements ProcedureListener {
@@ -114,9 +119,7 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
 				}
                 return true;
             case R.id.action_finish_reflection:
-            	FinishReflectionFragment finishReflectionFragment = (FinishReflectionFragment) mViewPager.getAdapter().instantiateItem(mViewPager, mViewPager.getCurrentItem());
-            	finishReflectionFragment.save();
-            	finishReflection(true);
+            	saveProcedureAndFinish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -153,6 +156,49 @@ public class ReflectionActivity extends ActionBarActivity implements ProcedureLi
     		menuItem.setVisible(isVisible);
     	}
     }
+	
+	public void saveProcedureAndFinish() {
+		AsyncTask<Procedure, Void, String> asyncTask = new AsyncTask<Procedure, Void, String>() {
+			
+			ProgressDialog progressDialog;
+
+			@Override
+			protected void onPreExecute() {
+				progressDialog = new ProgressDialog(ReflectionActivity.this);
+				progressDialog.setCancelable(false);
+				progressDialog.setMessage("Saving...");
+				progressDialog.show();
+			}
+
+			@Override
+			protected String doInBackground(Procedure... args) {
+				String result = null;
+				if (ReflectionActivity.this != null) {
+					DatabaseAdapter dbAdapter = new DatabaseAdapter(ReflectionActivity.this);
+					dbAdapter.open();
+					result = dbAdapter.createProcedureResult(args[0]);
+					dbAdapter.close();
+					
+					if (result != null) {
+						MSFHelper msfHelper = new MSFHelper(ReflectionActivity.this);
+						msfHelper.publishProcedureResult(args[0]);
+					}
+				}
+				return result;
+			}
+			
+			@Override
+			protected void onPostExecute(String result) {
+				finishReflection(true);
+				progressDialog.dismiss();
+				if (result != null) {
+					Toast.makeText(ReflectionActivity.this, "Result saved", Toast.LENGTH_SHORT).show();
+				}
+			}
+			
+		};
+		asyncTask.execute(mProcedure);
+	}
     
     public class SectionPagerAdapter extends FragmentStatePagerAdapter {
     	

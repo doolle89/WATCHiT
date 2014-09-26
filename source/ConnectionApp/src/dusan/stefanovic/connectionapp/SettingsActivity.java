@@ -21,12 +21,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 import dusan.stefanovic.connectionapp.connection.Connection;
 import dusan.stefanovic.connectionapp.service.WATCHiTServiceInterface;
 
-public class MainActivity extends Activity {
+public class SettingsActivity extends Activity {
 	
 	// Debugging
     private static final String TAG = "MainActivity";
@@ -40,6 +41,8 @@ public class MainActivity extends Activity {
 	private ToggleButton mToggleButton;
 	private ImageView mImageView;
 	private Button mButton;
+	private TextView mDeviceNameTextView;
+	private TextView mDeviceAddressTextView;
 
     // Member fields
 	//private BluetoothAdapter bluetoothAdapter;
@@ -55,6 +58,8 @@ public class MainActivity extends Activity {
     // Device connection state
     int mDeviceConnectionState;
     
+    boolean mSwitching;
+    
     // Device availability status
     boolean mIsDeviceAvailable;
     boolean mIsDeviceEnabled;
@@ -64,15 +69,15 @@ public class MainActivity extends Activity {
      */
 	static class IncomingHandler extends Handler {
 		
-		private final WeakReference<MainActivity> mWeakReference; 
+		private final WeakReference<SettingsActivity> mWeakReference; 
 
-		IncomingHandler(MainActivity activity) {
-			mWeakReference = new WeakReference<MainActivity>(activity);
+		IncomingHandler(SettingsActivity activity) {
+			mWeakReference = new WeakReference<SettingsActivity>(activity);
 	    }
 		
         @Override
         public void handleMessage(Message message) {
-        	final MainActivity activity = mWeakReference.get();
+        	final SettingsActivity activity = mWeakReference.get();
         	if (activity != null) {
 	            switch (message.what) {
 		            case WATCHiTServiceInterface.SERVICE_STARTED:
@@ -183,6 +188,8 @@ public class MainActivity extends Activity {
 			}
 		});
 		
+		mDeviceNameTextView = (TextView) findViewById(R.id.textView_name);
+		mDeviceAddressTextView = (TextView) findViewById(R.id.textView_address);
 		
 		doBindService();
 	}
@@ -210,6 +217,8 @@ public class MainActivity extends Activity {
     			Intent intent = new Intent(WATCHiTServiceInterface.ACTION_START_WATCHiT_SERVICE);
     			intent.putExtras(data);
                 doStartService(intent);
+                setDeviceAddress(data.getStringExtra(WATCHiTServiceInterface.DEVICE_ADDRESS), data.getStringExtra(WATCHiTServiceInterface.DEVICE_NAME));
+                switching();
             }
             else {
                 // Device not selected
@@ -241,7 +250,7 @@ public class MainActivity extends Activity {
 	private void setIsStarted(boolean isStarted) {
 		mIsStarted = isStarted;
 		mToggleButton.setChecked(mIsStarted);
-		mButton.setEnabled(mIsStarted);
+		mButton.setEnabled(mIsStarted && !mSwitching);
 		if (!mIsStarted) {
             setDeviceConnectionState(WATCHiTServiceInterface.DEVICE_DISCONNECTED);
 		} else if (!mIsDeviceEnabled) {
@@ -285,6 +294,15 @@ public class MainActivity extends Activity {
 		    .show();
         }
     }
+	
+	private void setDeviceAddress(String deviceAddress, String deviceName) {
+		if (deviceAddress != null) {
+			mDeviceAddressTextView.setText(deviceAddress);
+		}
+		if (deviceName != null) {
+			mDeviceNameTextView.setText(deviceName);
+		}
+	}
 
 	private void startDeviceListActivity() {
 		// Launch the DeviceListActivity to see devices and do scan
@@ -351,12 +369,26 @@ public class MainActivity extends Activity {
     }
     
     private void update(Bundle data) {
-    	data.setClassLoader(getClassLoader());
     	setDeviceAvaliability(data.getBoolean(WATCHiTServiceInterface.IS_DEVICE_AVAILABLE, false), data.getBoolean(WATCHiTServiceInterface.IS_DEVICE_ENABLED, false));
     	setIsStarted(data.getBoolean(WATCHiTServiceInterface.IS_CONNECTING_TO_DEVICE, false));
     	setDeviceConnectionState(data.getInt(WATCHiTServiceInterface.DEVICE_CONNECTION_STATUS, WATCHiTServiceInterface.DEVICE_DISCONNECTED));
+    	setDeviceAddress(data.getString(WATCHiTServiceInterface.DEVICE_ADDRESS), data.getString(WATCHiTServiceInterface.DEVICE_NAME));
     }
     
-    
+    private void switching() {
+    	
+    	mSwitching = true;
+    	mButton.setEnabled(false);
+    	mButton.removeCallbacks(switchingRunnable);
+    	mButton.postDelayed(switchingRunnable, 3000);
+    }
 
+    private final Runnable switchingRunnable = new Runnable() {
+		
+		@Override
+		public void run() {
+			mSwitching = false;
+			mButton.setEnabled(mIsStarted);
+		}
+	};
 }

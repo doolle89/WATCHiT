@@ -58,7 +58,7 @@
 	        android:layout_height="wrap_content"
 	        android:scaleType="centerInside"
 	        android:adjustViewBounds="true"
-	        android:src="@drawable/procedure1"
+	        android:src="@drawable/camera_photo_placeholder"
         	android:background="@drawable/image_border"
             android:contentDescription="@string/content_description"/>
         

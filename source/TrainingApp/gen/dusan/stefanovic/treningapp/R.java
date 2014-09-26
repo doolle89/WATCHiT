@@ -17,8 +17,13 @@ public final class R {
         public static final int abc_slide_out_top=0x7f040005;
     }
     public static final class array {
+        /**  Leaderboard fragment 
+         */
+        public static final int leaderboard_fragment_sort_spinner_array=0x7f0c0002;
         public static final int main_menu_items_array=0x7f0c0000;
-        public static final int reality_check_items_array=0x7f0c0001;
+        /**  Training results fragment 
+         */
+        public static final int training_results_fragment_sort_spinner_array=0x7f0c0001;
     }
     public static final class attr {
         /**  Custom divider drawable to use for elements in the action bar. 
@@ -1259,37 +1264,37 @@ containing a value of this type.
         public static final int circle_green=0x7f020060;
         public static final int circle_red=0x7f020061;
         public static final int circle_yellow=0x7f020062;
-        public static final int drawer_activated_background_indicator=0x7f020063;
-        public static final int drawer_list_activated=0x7f020064;
-        public static final int drawer_shadow=0x7f020065;
-        public static final int ic_action_new_event=0x7f020066;
-        public static final int ic_action_save=0x7f020067;
-        public static final int ic_action_search=0x7f020068;
-        public static final int ic_connected=0x7f020069;
-        public static final int ic_connecting=0x7f02006a;
-        public static final int ic_disconnected=0x7f02006b;
-        public static final int ic_drawer=0x7f02006c;
-        public static final int ic_launcher=0x7f02006d;
-        public static final int image_border=0x7f02006e;
-        public static final int item_background_holo_dark=0x7f02006f;
-        public static final int item_background_holo_light=0x7f020070;
-        public static final int list_focused_holo=0x7f020071;
-        public static final int list_longpressed_holo=0x7f020072;
-        public static final int list_pressed_holo_dark=0x7f020073;
-        public static final int list_pressed_holo_light=0x7f020074;
-        public static final int list_selector_background_transition_holo_dark=0x7f020075;
-        public static final int list_selector_background_transition_holo_light=0x7f020076;
-        public static final int list_selector_disabled_holo_dark=0x7f020077;
-        public static final int list_selector_disabled_holo_light=0x7f020078;
-        public static final int np_numberpicker_selection_divider=0x7f020079;
-        public static final int procedure1=0x7f02007a;
+        public static final int default_photo=0x7f020063;
+        public static final int drawer_activated_background_indicator=0x7f020064;
+        public static final int drawer_list_activated=0x7f020065;
+        public static final int drawer_shadow=0x7f020066;
+        public static final int ic_action_new_event=0x7f020067;
+        public static final int ic_action_save=0x7f020068;
+        public static final int ic_action_search=0x7f020069;
+        public static final int ic_connected=0x7f02006a;
+        public static final int ic_connecting=0x7f02006b;
+        public static final int ic_disconnected=0x7f02006c;
+        public static final int ic_drawer=0x7f02006d;
+        public static final int ic_launcher=0x7f02006e;
+        public static final int image_border=0x7f02006f;
+        public static final int item_background_holo_dark=0x7f020070;
+        public static final int item_background_holo_light=0x7f020071;
+        public static final int list_focused_holo=0x7f020072;
+        public static final int list_longpressed_holo=0x7f020073;
+        public static final int list_pressed_holo_dark=0x7f020074;
+        public static final int list_pressed_holo_light=0x7f020075;
+        public static final int list_selector_background_transition_holo_dark=0x7f020076;
+        public static final int list_selector_background_transition_holo_light=0x7f020077;
+        public static final int list_selector_disabled_holo_dark=0x7f020078;
+        public static final int list_selector_disabled_holo_light=0x7f020079;
+        public static final int np_numberpicker_selection_divider=0x7f02007a;
         public static final int progressbar=0x7f02007b;
         public static final int stat_sample=0x7f02007c;
         public static final int step_dialog_background=0x7f02007d;
         public static final int stopwatch=0x7f02007e;
     }
     public static final class id {
-        public static final int action_add_step=0x7f060081;
+        public static final int action_add_step=0x7f060089;
         public static final int action_bar=0x7f060023;
         public static final int action_bar_activity_content=0x7f06001c;
         public static final int action_bar_container=0x7f060022;
@@ -1298,43 +1303,44 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f06002a;
         public static final int action_bar_title=0x7f060029;
         public static final int action_context_bar=0x7f060024;
-        public static final int action_create_procedure=0x7f06007f;
-        public static final int action_finish_reflection=0x7f060084;
+        public static final int action_create_procedure=0x7f060087;
+        public static final int action_finish_reflection=0x7f06008c;
         public static final int action_menu_divider=0x7f06001d;
         public static final int action_menu_presenter=0x7f06001e;
         public static final int action_mode_close_button=0x7f06002b;
-        public static final int action_next_reflection=0x7f060083;
-        public static final int action_reset_training=0x7f060086;
-        public static final int action_save_step=0x7f060080;
-        public static final int action_settings=0x7f060087;
-        public static final int action_stop_training=0x7f060085;
-        public static final int action_use_template_step=0x7f060082;
+        public static final int action_next_reflection=0x7f06008b;
+        public static final int action_reset_training=0x7f06008e;
+        public static final int action_save_step=0x7f060088;
+        public static final int action_settings=0x7f06008f;
+        public static final int action_stop_training=0x7f06008d;
+        public static final int action_use_template_step=0x7f06008a;
         public static final int activity_chooser_view_content=0x7f06002c;
         public static final int always=0x7f060012;
-        public static final int amPm=0x7f06007e;
-        public static final int autoCompleteTextView=0x7f060068;
+        public static final int amPm=0x7f060086;
+        public static final int autoCompleteTextView=0x7f060061;
         public static final int beginning=0x7f060018;
         public static final int button=0x7f060048;
+        public static final int center=0x7f060073;
         public static final int checkbox=0x7f060034;
         public static final int clickRemove=0x7f060002;
         public static final int collapseActionView=0x7f060014;
         public static final int content_frame=0x7f06004a;
         public static final int default_activity_button=0x7f06002f;
-        public static final int description=0x7f060072;
+        public static final int description=0x7f06007c;
         public static final int dialog=0x7f060015;
         public static final int disableHome=0x7f06000f;
         public static final int drawer_layout=0x7f060049;
         public static final int dropdown=0x7f060016;
-        public static final int editText=0x7f06006d;
+        public static final int editText=0x7f060067;
         public static final int edit_query=0x7f060037;
         public static final int end=0x7f06001a;
         public static final int expand_activities_button=0x7f06002d;
         public static final int expanded_menu=0x7f060033;
         public static final int flingRemove=0x7f060003;
-        public static final int fragment_container=0x7f060066;
+        public static final int fragment_container=0x7f060062;
         public static final int home=0x7f06001b;
         public static final int homeAsUp=0x7f06000c;
-        public static final int hour=0x7f06007b;
+        public static final int hour=0x7f060083;
         public static final int icon=0x7f060031;
         public static final int ifRoom=0x7f060011;
         public static final int image=0x7f06002e;
@@ -1343,9 +1349,10 @@ containing a value of this type.
         public static final int left_drawer=0x7f06004b;
         public static final int listMode=0x7f060008;
         public static final int listView=0x7f06004e;
+        public static final int list_header=0x7f06006d;
         public static final int list_item=0x7f060030;
         public static final int middle=0x7f060019;
-        public static final int minute=0x7f06007c;
+        public static final int minute=0x7f060084;
         public static final int never=0x7f060010;
         public static final int new_devices_listView=0x7f060046;
         public static final int none=0x7f060017;
@@ -1354,26 +1361,28 @@ containing a value of this type.
         /**  Just adding these so I wont have to remove a lot of code from NumberPicker.java. 
          */
         public static final int np__increment=0x7f060000;
-        public static final int np__numberpicker_input=0x7f06007a;
-        public static final int numberPicker=0x7f06005d;
+        public static final int np__numberpicker_input=0x7f060082;
+        public static final int numberPicker=0x7f060055;
         public static final int onDown=0x7f060004;
         public static final int onLongPress=0x7f060006;
         public static final int onMove=0x7f060005;
-        public static final int pager=0x7f06005a;
-        public static final int pager_title_strip=0x7f06005b;
+        public static final int pager=0x7f060050;
+        public static final int pager_title_strip=0x7f060051;
         public static final int paired_devices_listView=0x7f060044;
-        public static final int pause_button=0x7f060060;
-        public static final int procedure_description=0x7f06006b;
-        public static final int procedure_id=0x7f06006c;
-        public static final int procedure_image=0x7f06006a;
-        public static final int procedure_title=0x7f060069;
+        public static final int pause_button=0x7f060058;
+        public static final int procedure_description=0x7f060065;
+        public static final int procedure_id=0x7f060066;
+        public static final int procedure_image=0x7f060064;
+        public static final int procedure_title=0x7f060063;
         public static final int progressBar=0x7f060070;
         public static final int progress_circular=0x7f06001f;
         public static final int progress_horizontal=0x7f060020;
         public static final int radio=0x7f060036;
-        public static final int ratingBar=0x7f060079;
-        public static final int resume_button=0x7f06005f;
+        public static final int ratingBar=0x7f060081;
+        public static final int relativeLayout=0x7f060071;
+        public static final int resume_button=0x7f060057;
         public static final int scan_button=0x7f060047;
+        public static final int scrollView=0x7f06005b;
         public static final int search_badge=0x7f060039;
         public static final int search_bar=0x7f060038;
         public static final int search_button=0x7f06003a;
@@ -1384,45 +1393,49 @@ containing a value of this type.
         public static final int search_plate=0x7f06003d;
         public static final int search_src_text=0x7f06003e;
         public static final int search_voice_btn=0x7f060042;
-        public static final int seconds=0x7f06007d;
+        public static final int seconds=0x7f060085;
         public static final int shortcut=0x7f060035;
         public static final int showCustom=0x7f06000e;
         public static final int showHome=0x7f06000b;
         public static final int showTitle=0x7f06000d;
+        public static final int spinner_filter=0x7f060072;
+        public static final int spinner_sort=0x7f060074;
         public static final int split_action_bar=0x7f060025;
         public static final int start_button=0x7f06004f;
         public static final int stepImageView=0x7f06006f;
-        public static final int step_close_button=0x7f060065;
-        public static final int step_description=0x7f060064;
-        public static final int step_duration=0x7f060077;
-        public static final int step_duration_compare=0x7f060078;
-        public static final int step_end_time=0x7f060076;
-        public static final int step_errors=0x7f060074;
-        public static final int step_image=0x7f060063;
-        public static final int step_layout=0x7f060071;
-        public static final int step_start_time=0x7f060075;
-        public static final int step_status=0x7f060073;
-        public static final int step_title=0x7f060062;
+        public static final int step_close_button=0x7f06005c;
+        public static final int step_description=0x7f06005e;
+        public static final int step_duration=0x7f060079;
+        public static final int step_duration_compare=0x7f06007b;
+        public static final int step_end_time=0x7f060080;
+        public static final int step_errors=0x7f060077;
+        public static final int step_image=0x7f06005d;
+        public static final int step_layout=0x7f060075;
+        public static final int step_score=0x7f060078;
+        public static final int step_score_compare=0x7f06007a;
+        public static final int step_start_time=0x7f06007f;
+        public static final int step_status=0x7f060076;
+        public static final int step_title=0x7f06005a;
         public static final int submit_area=0x7f060040;
         public static final int tabMode=0x7f060009;
-        public static final int tableLayout=0x7f060050;
-        public static final int tableRow1=0x7f060051;
-        public static final int tableRow2=0x7f060054;
-        public static final int tableRow3=0x7f060057;
-        public static final int textView=0x7f060061;
-        public static final int textView1=0x7f060052;
-        public static final int textView2=0x7f060067;
-        public static final int textView3=0x7f060055;
-        public static final int textView5=0x7f060058;
-        public static final int textView_id=0x7f060053;
-        public static final int textView_notes=0x7f060059;
-        public static final int textView_user_id=0x7f060056;
-        public static final int timePicker=0x7f06005e;
+        public static final int tableLayout=0x7f060068;
+        public static final int textView=0x7f060059;
+        public static final int textView1=0x7f060060;
+        public static final int textView2=0x7f06005f;
+        public static final int textView_address=0x7f060053;
+        public static final int textView_date=0x7f06006c;
+        public static final int textView_errors=0x7f06006b;
+        public static final int textView_id=0x7f06007e;
+        public static final int textView_name=0x7f060052;
+        public static final int textView_score=0x7f060069;
+        public static final int textView_time=0x7f06006a;
+        public static final int textView_username=0x7f06007d;
+        public static final int timePicker=0x7f060056;
         public static final int timerEditText=0x7f06006e;
         public static final int title=0x7f060032;
         public static final int title_new_devices_textView=0x7f060045;
         public static final int title_paired_devices_textView=0x7f060043;
-        public static final int toggleButton=0x7f06005c;
+        public static final int toggleButton=0x7f060054;
         public static final int top_action_bar=0x7f060027;
         public static final int up=0x7f060028;
         public static final int useLogo=0x7f06000a;
@@ -1481,38 +1494,42 @@ containing a value of this type.
         public static final int activity_main=0x7f030018;
         public static final int activity_main_menu=0x7f030019;
         public static final int activity_procedure_preview=0x7f03001a;
-        public static final int activity_procedure_result_preview=0x7f03001b;
-        public static final int activity_reflection=0x7f03001c;
-        public static final int activity_settings=0x7f03001d;
-        public static final int activity_tab_pager=0x7f03001e;
-        public static final int activity_test=0x7f03001f;
-        public static final int activity_training=0x7f030020;
-        public static final int device_name=0x7f030021;
-        public static final int dialog_fragment_countdown=0x7f030022;
-        public static final int dialog_fragment_step=0x7f030023;
-        public static final int dialog_fragment_template_step_library=0x7f030024;
-        public static final int dialog_fragment_user_info=0x7f030025;
-        public static final int drawer_list_item=0x7f030026;
-        public static final int fragment_create_procedure_info=0x7f030027;
-        public static final int fragment_create_procedure_steps=0x7f030028;
-        public static final int fragment_create_step=0x7f030029;
-        public static final int fragment_current_step=0x7f03002a;
-        public static final int fragment_finish_reflection=0x7f03002b;
-        public static final int fragment_reflection_question=0x7f03002c;
+        public static final int activity_reflection=0x7f03001b;
+        public static final int activity_settings=0x7f03001c;
+        public static final int activity_tab_pager=0x7f03001d;
+        public static final int activity_test=0x7f03001e;
+        public static final int activity_training=0x7f03001f;
+        public static final int device_name=0x7f030020;
+        public static final int dialog_fragment_countdown=0x7f030021;
+        public static final int dialog_fragment_step=0x7f030022;
+        public static final int dialog_fragment_user_info=0x7f030023;
+        public static final int drawer_list_item=0x7f030024;
+        public static final int fragment_container=0x7f030025;
+        public static final int fragment_create_procedure_info=0x7f030026;
+        public static final int fragment_create_procedure_steps=0x7f030027;
+        public static final int fragment_create_step=0x7f030028;
+        public static final int fragment_current_step=0x7f030029;
+        public static final int fragment_finish_reflection=0x7f03002a;
+        public static final int fragment_reflection_question=0x7f03002b;
+        public static final int fragment_result_steps=0x7f03002c;
         public static final int fragment_training_overview=0x7f03002d;
         public static final int fragment_training_progress=0x7f03002e;
-        public static final int list_footer_button=0x7f03002f;
-        public static final int list_header_step_compare=0x7f030030;
-        public static final int list_header_step_reality_check=0x7f030031;
-        public static final int list_header_step_self_assessment=0x7f030032;
-        public static final int list_item_procedure=0x7f030033;
-        public static final int list_item_step_compare=0x7f030034;
-        public static final int list_item_step_reality_check=0x7f030035;
-        public static final int list_item_step_self_assessment=0x7f030036;
-        public static final int list_item_step_training=0x7f030037;
-        public static final int number_picker_with_selector_wheel=0x7f030038;
-        public static final int support_simple_spinner_dropdown_item=0x7f030039;
-        public static final int view_time_picker=0x7f03003a;
+        public static final int fragment_training_results=0x7f03002f;
+        public static final int list_footer_button=0x7f030030;
+        public static final int list_footer_step_result=0x7f030031;
+        public static final int list_header_step_compare=0x7f030032;
+        public static final int list_header_step_reality_check=0x7f030033;
+        public static final int list_header_step_self_assessment=0x7f030034;
+        public static final int list_item_procedure=0x7f030035;
+        public static final int list_item_result_procedure=0x7f030036;
+        public static final int list_item_step_compare=0x7f030037;
+        public static final int list_item_step_reality_check=0x7f030038;
+        public static final int list_item_step_result=0x7f030039;
+        public static final int list_item_step_self_assessment=0x7f03003a;
+        public static final int list_item_step_training=0x7f03003b;
+        public static final int number_picker_with_selector_wheel=0x7f03003c;
+        public static final int support_simple_spinner_dropdown_item=0x7f03003d;
+        public static final int view_time_picker=0x7f03003e;
     }
     public static final class menu {
         public static final int create_procedure=0x7f0e0000;
@@ -1579,9 +1596,9 @@ containing a value of this type.
         public static final int action_use_template_step=0x7f0b002c;
         /**  Add new step activity 
          */
-        public static final int add_new_step_activity_label=0x7f0b003e;
-        public static final int add_new_step_activity_title_library=0x7f0b0040;
-        public static final int add_new_step_activity_title_new=0x7f0b003f;
+        public static final int add_new_step_activity_label=0x7f0b0041;
+        public static final int add_new_step_activity_title_library=0x7f0b0043;
+        public static final int add_new_step_activity_title_new=0x7f0b0042;
         /**  Application 
          */
         public static final int app_name=0x7f0b000d;
@@ -1601,32 +1618,35 @@ containing a value of this type.
         public static final int button_stop=0x7f0b0031;
         public static final int button_train=0x7f0b0034;
         public static final int button_yes=0x7f0b002d;
-        public static final int compare_step_list_header_optimal=0x7f0b006a;
+        public static final int compare_step_list_header_optimal=0x7f0b006f;
+        public static final int compare_step_list_header_result=0x7f0b0070;
         /**  Compare step list header 
          */
-        public static final int compare_step_list_header_step=0x7f0b0068;
-        public static final int compare_step_list_header_time=0x7f0b0069;
+        public static final int compare_step_list_header_step=0x7f0b006d;
+        public static final int compare_step_list_header_time=0x7f0b006e;
         public static final int content_description=0x7f0b000f;
         /**  Create procedure activity 
          */
-        public static final int create_procedure_activity_label=0x7f0b003b;
-        public static final int create_procedure_activity_title_info=0x7f0b003c;
-        public static final int create_procedure_activity_title_steps=0x7f0b003d;
-        public static final int create_procedure_info_fragment_hint_description=0x7f0b0059;
+        public static final int create_procedure_activity_label=0x7f0b003c;
+        public static final int create_procedure_activity_quit_dialog_message=0x7f0b0040;
+        public static final int create_procedure_activity_quit_dialog_title=0x7f0b003f;
+        public static final int create_procedure_activity_title_info=0x7f0b003d;
+        public static final int create_procedure_activity_title_steps=0x7f0b003e;
+        public static final int create_procedure_info_fragment_hint_description=0x7f0b005e;
         /**  Create procedure info fragment 
          */
-        public static final int create_procedure_info_fragment_hint_title=0x7f0b0058;
-        public static final int create_step_fragment_hint_description=0x7f0b005b;
+        public static final int create_procedure_info_fragment_hint_title=0x7f0b005d;
+        public static final int create_step_fragment_hint_description=0x7f0b0060;
         /**  Create step fragment 
          */
-        public static final int create_step_fragment_hint_title=0x7f0b005a;
-        public static final int create_step_fragment_optimal_time=0x7f0b005c;
+        public static final int create_step_fragment_hint_title=0x7f0b005f;
+        public static final int create_step_fragment_optimal_time=0x7f0b0061;
         public static final int drawer_close=0x7f0b0022;
         public static final int drawer_open=0x7f0b0021;
-        public static final int finish_reflection_fragment_id_message=0x7f0b005e;
+        public static final int finish_reflection_fragment_id_message=0x7f0b0063;
         /**  Finish reflection fragment 
          */
-        public static final int finish_reflection_fragment_message=0x7f0b005d;
+        public static final int finish_reflection_fragment_message=0x7f0b0062;
         /**  Main menu activity 
          */
         public static final int main_menu_activity_label=0x7f0b0038;
@@ -1637,28 +1657,26 @@ containing a value of this type.
          */
         public static final int procedure_preview_activity_label=0x7f0b0039;
         public static final int procedure_preview_activity_procedure_description=0x7f0b003a;
-        /**  Reality check activity 
-         */
-        public static final int reality_check_activity_label=0x7f0b0057;
-        public static final int reality_check_step_list_header_rating=0x7f0b006d;
+        public static final int procedure_preview_activity_procedure_description2=0x7f0b003b;
+        public static final int reality_check_step_list_header_rating=0x7f0b0073;
         /**  Reality check step list header 
          */
-        public static final int reality_check_step_list_header_step=0x7f0b006b;
-        public static final int reality_check_step_list_header_time=0x7f0b006c;
+        public static final int reality_check_step_list_header_step=0x7f0b0071;
+        public static final int reality_check_step_list_header_time=0x7f0b0072;
         /**  Reflection activity 
          */
-        public static final int reflection_activity_label=0x7f0b004f;
-        public static final int reflection_activity_quit_dialog_message=0x7f0b0056;
-        public static final int reflection_activity_quit_dialog_title=0x7f0b0055;
-        public static final int reflection_activity_title_compare_to_optimal=0x7f0b0052;
-        public static final int reflection_activity_title_finish=0x7f0b0054;
-        public static final int reflection_activity_title_reality_check=0x7f0b0051;
-        public static final int reflection_activity_title_reflection_question=0x7f0b0053;
-        public static final int reflection_activity_title_self_assessment=0x7f0b0050;
-        public static final int reflection_question_fragment_hint=0x7f0b0060;
+        public static final int reflection_activity_label=0x7f0b0053;
+        public static final int reflection_activity_quit_dialog_message=0x7f0b005a;
+        public static final int reflection_activity_quit_dialog_title=0x7f0b0059;
+        public static final int reflection_activity_title_compare_to_optimal=0x7f0b0056;
+        public static final int reflection_activity_title_finish=0x7f0b0058;
+        public static final int reflection_activity_title_reality_check=0x7f0b0055;
+        public static final int reflection_activity_title_reflection_question=0x7f0b0057;
+        public static final int reflection_activity_title_self_assessment=0x7f0b0054;
+        public static final int reflection_question_fragment_hint=0x7f0b0065;
         /**  Reflection question fragment 
          */
-        public static final int reflection_question_fragment_question=0x7f0b005f;
+        public static final int reflection_question_fragment_question=0x7f0b0064;
         public static final int remote_service_binding=0x7f0b0013;
         public static final int remote_service_bound=0x7f0b0014;
         public static final int remote_service_context=0x7f0b0020;
@@ -1668,55 +1686,60 @@ containing a value of this type.
         public static final int remote_service_started=0x7f0b001d;
         public static final int remote_service_stopped=0x7f0b001e;
         public static final int remote_service_unbound=0x7f0b0015;
+        public static final int result_preview_procedure_activity_title_assessment=0x7f0b005c;
+        /**  Result preview procedure activity 
+         */
+        public static final int result_preview_procedure_activity_title_result=0x7f0b005b;
         /**   DeviceListActivity 
          */
         public static final int scanning=0x7f0b0016;
         public static final int select_device=0x7f0b0017;
-        public static final int self_assessment_step_list_header_rating=0x7f0b006f;
+        public static final int self_assessment_step_list_header_rating=0x7f0b0075;
         /**  Self assessment step list header 
          */
-        public static final int self_assessment_step_list_header_step=0x7f0b006e;
+        public static final int self_assessment_step_list_header_step=0x7f0b0074;
         /**  Step 
          */
-        public static final int step_status_completed=0x7f0b0073;
-        public static final int step_status_in_progress=0x7f0b0075;
-        public static final int step_status_paused=0x7f0b0077;
-        public static final int step_status_pending=0x7f0b0076;
-        public static final int step_status_skipped=0x7f0b0074;
+        public static final int step_status_completed=0x7f0b0079;
+        public static final int step_status_in_progress=0x7f0b007b;
+        public static final int step_status_paused=0x7f0b007d;
+        public static final int step_status_pending=0x7f0b007c;
+        public static final int step_status_skipped=0x7f0b007a;
         public static final int title_other_devices=0x7f0b001b;
         public static final int title_paired_devices=0x7f0b001a;
-        public static final int training_activity_go=0x7f0b0047;
+        public static final int training_activity_go=0x7f0b004a;
         /**  Training activity 
          */
-        public static final int training_activity_label=0x7f0b0041;
-        public static final int training_activity_quit_dialog_message=0x7f0b0049;
-        public static final int training_activity_quit_dialog_title=0x7f0b0048;
-        public static final int training_activity_reflection_dialog_message=0x7f0b004b;
-        public static final int training_activity_reflection_dialog_title=0x7f0b004a;
-        public static final int training_activity_tab_current_step=0x7f0b0042;
-        public static final int training_activity_tab_overview=0x7f0b0046;
-        public static final int training_activity_tab_progress=0x7f0b0043;
-        public static final int training_activity_tab_results=0x7f0b0045;
-        public static final int training_activity_tab_steps=0x7f0b0044;
-        public static final int training_activity_user_info_dialog_enter_username=0x7f0b004d;
-        public static final int training_activity_user_info_dialog_user_id=0x7f0b004c;
-        public static final int training_activity_user_info_dialog_username=0x7f0b004e;
+        public static final int training_activity_label=0x7f0b0044;
+        public static final int training_activity_quit_dialog_message=0x7f0b004c;
+        public static final int training_activity_quit_dialog_title=0x7f0b004b;
+        public static final int training_activity_reflection_dialog_message=0x7f0b004e;
+        public static final int training_activity_reflection_dialog_title=0x7f0b004d;
+        public static final int training_activity_tab_current_step=0x7f0b0045;
+        public static final int training_activity_tab_overview=0x7f0b0049;
+        public static final int training_activity_tab_progress=0x7f0b0046;
+        public static final int training_activity_tab_results=0x7f0b0048;
+        public static final int training_activity_tab_steps=0x7f0b0047;
+        public static final int training_activity_user_info_dialog_enter_username=0x7f0b0051;
+        public static final int training_activity_user_info_dialog_title=0x7f0b004f;
+        public static final int training_activity_user_info_dialog_user_id=0x7f0b0050;
+        public static final int training_activity_user_info_dialog_username=0x7f0b0052;
         /**  Training overview fragment 
          */
-        public static final int training_overview_fragment_duration=0x7f0b0061;
-        public static final int training_overview_fragment_time=0x7f0b0062;
+        public static final int training_overview_fragment_duration=0x7f0b0066;
+        public static final int training_overview_fragment_time=0x7f0b0067;
         /**  Training progress fragment 
          */
-        public static final int training_progress_fragment_duration=0x7f0b0063;
-        public static final int training_progress_fragment_progress=0x7f0b0065;
-        public static final int training_progress_fragment_progress_0=0x7f0b0066;
-        public static final int training_progress_fragment_progress_100=0x7f0b0067;
-        public static final int training_progress_fragment_time=0x7f0b0064;
-        public static final int training_service_context=0x7f0b0072;
-        public static final int training_service_label=0x7f0b0071;
+        public static final int training_progress_fragment_duration=0x7f0b0068;
+        public static final int training_progress_fragment_progress=0x7f0b006a;
+        public static final int training_progress_fragment_progress_0=0x7f0b006b;
+        public static final int training_progress_fragment_progress_100=0x7f0b006c;
+        public static final int training_progress_fragment_time=0x7f0b0069;
+        public static final int training_service_context=0x7f0b0078;
+        public static final int training_service_label=0x7f0b0077;
         /**  Training service 
          */
-        public static final int training_service_started=0x7f0b0070;
+        public static final int training_service_started=0x7f0b0076;
     }
     public static final class style {
         /** 

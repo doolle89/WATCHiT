@@ -8,17 +8,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import dusan.stefanovic.treningapp.R;
 
 public class TrainingOverviewFragment extends Fragment {
 
 	EditText mTimerEditText;
+	ImageView mImageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_training_overview, container, false);
         //Bundle args = getArguments();
         mTimerEditText = (EditText) rootView.findViewById(R.id.timerEditText);
+        mImageView = (ImageView) rootView.findViewById(R.id.stepImageView);
         return rootView;
     }
     

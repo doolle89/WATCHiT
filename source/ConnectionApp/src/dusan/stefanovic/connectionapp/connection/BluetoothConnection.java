@@ -52,9 +52,9 @@ public class BluetoothConnection implements Connection {
     // Member fields
     private final BluetoothAdapter mAdapter;
     private final Handler mHandler;
-    private ConnectThread mConnectThread;
-    private ConnectedThread mConnectedThread;
-    private int mState;
+    private volatile ConnectThread mConnectThread;
+    private volatile ConnectedThread mConnectedThread;
+    private volatile int mState;
     
     final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
     	
@@ -224,14 +224,14 @@ public class BluetoothConnection implements Connection {
     /**
      * Indicate that the connection attempt failed and notify the UI Activity.
      */
-    private void connectionFailed() {
+    private synchronized void connectionFailed() {
         setState(WATCHiTService.STATE_DISCONNECTED);
     }
 
     /**
      * Indicate that the connection was lost and notify the UI Activity.
      */
-    private void connectionLost() {
+    private synchronized void connectionLost() {
         setState(WATCHiTService.STATE_DISCONNECTED);
     }
 
@@ -244,12 +244,12 @@ public class BluetoothConnection implements Connection {
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
-        volatile boolean mIsRunning;
+        private volatile boolean mmIsRunning;
 
         public ConnectThread(BluetoothDevice device) {
             mmDevice = device;
             BluetoothSocket tmp = null;
-            mIsRunning = false;
+            mmIsRunning = false;
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
@@ -265,7 +265,7 @@ public class BluetoothConnection implements Connection {
             Log.i(TAG, "BEGIN mConnectThread");
             setName("ConnectThread");
 
-            mIsRunning = true;
+            mmIsRunning = true;
             // Always cancel discovery because it will slow down a connection
             mAdapter.cancelDiscovery();
 
@@ -276,9 +276,9 @@ public class BluetoothConnection implements Connection {
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket
-            	if (mIsRunning) {
-	            	cancel();
+            	if (mmIsRunning) {
 	                connectionFailed();
+	            	cancel();
             	}
                 return;
             }
@@ -293,12 +293,13 @@ public class BluetoothConnection implements Connection {
         }
 
         public synchronized void cancel() {
+            mmIsRunning = false;
             try {
-                mIsRunning = false;
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
+            interrupt();
         }
     }
 
@@ -310,12 +311,14 @@ public class BluetoothConnection implements Connection {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private volatile boolean mmIsRunning;
 
         public ConnectedThread(BluetoothSocket socket) {
             Log.d(TAG, "create ConnectedThread");
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
+            mmIsRunning = false;
 
             // Get the BluetoothSocket input and output streams
             try {
@@ -331,11 +334,12 @@ public class BluetoothConnection implements Connection {
 
         public void run() {
             Log.i(TAG, "BEGIN mConnectedThread");
+            mmIsRunning = true;
             byte[] buffer = new byte[1024];
             int bytes;
 
             // Keep listening to the InputStream while connected
-            while (true) {
+            while (mmIsRunning) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
@@ -347,7 +351,7 @@ public class BluetoothConnection implements Connection {
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
-                    break;
+                    mmIsRunning = false;
                 }
             }
         }
@@ -368,11 +372,13 @@ public class BluetoothConnection implements Connection {
         }
 
         public synchronized void cancel() {
+        	mmIsRunning = false;
             try {
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
+            interrupt();
         }
     }
 }

@@ -16,11 +16,12 @@
         android:id="@+id/step_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxHeight="250dp"
         android:scaleType="centerInside"
         android:adjustViewBounds="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/procedure1"
+        android:src="@drawable/camera_photo_placeholder"
         android:background="@drawable/image_border"
         android:contentDescription="@string/content_description" />
 

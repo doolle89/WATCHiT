@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import dusan.stefanovic.trainingapp.data.Step;
+import dusan.stefanovic.trainingapp.util.ImageHelper;
 import dusan.stefanovic.treningapp.R;
 
 public class StepDialogFragment extends DialogFragment {
@@ -53,7 +54,13 @@ public class StepDialogFragment extends DialogFragment {
         Step step = getArguments().getParcelable("step");
         if (step != null) {
         	mTitle.setText(step.getTitle());
-        	//mImage.setImageResource(0);
+        	if (step.getPhotoUrl() != null && !step.getPhotoUrl().contentEquals("")) {
+        		ImageHelper.loadImageFromFile(mImage, step.getPhotoUrl());
+        		mImage.setVisibility(View.VISIBLE);
+        	} else {
+        		mImage.setImageResource(R.drawable.default_photo);
+        		mImage.setVisibility(View.VISIBLE);
+        	}
         	mDescription.setText(step.getDescription());
         } else {
         	dismiss();

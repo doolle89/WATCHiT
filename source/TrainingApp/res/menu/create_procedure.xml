@@ -3,8 +3,7 @@
     
     
     <item android:id="@+id/action_create_procedure"
-          android:icon="@drawable/ic_action_save"
           android:title="@string/action_create_procedure"
-          treningApp:showAsAction="always" />
+          treningApp:showAsAction="always|withText" />
     
 </menu>

@@ -374,7 +374,14 @@ public class TrainingService extends Service {
     }
     
     public void processData(byte[] data, int length) {
-    	String tagValue = new String(data, 0, length);
+    	int offset = 3;
+    	String tagValue = "";
+    	
+    	try {
+    		tagValue = new String(data, offset, length - offset);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
     	
     	//Toast.makeText(this, "Tag: " + tagValue, Toast.LENGTH_SHORT).show();
     	

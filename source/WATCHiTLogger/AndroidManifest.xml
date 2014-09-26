@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dusan.stefanovic.watchitlogger"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+    
+    <permission android:name="dusan.stefanovic.connectionapp.permission.WATCHiT"
+        android:label="@string/permission_label_watchit"
+        android:permissionGroup="android.permission-group.AFFECTS_BATTERY"
+        android:protectionLevel="normal" />
+    
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="dusan.stefanovic.connectionapp.permission.WATCHiT" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="dusan.stefanovic.watchitlogger.MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+         <!-- ConnectionApp -->
+        
+        <activity
+            android:name="dusan.stefanovic.connectionapp.SettingsActivity"
+            android:process="dusan.stefanovic.connectionapp.WATCHiTLog"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:exported="false" >
+            
+            <intent-filter>
+                <action android:name="dusan.stefanovic.connectionapp.SETTINGS" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity 
+            android:name="dusan.stefanovic.connectionapp.BluetoothDeviceListActivity"
+            android:process="dusan.stefanovic.connectionapp.WATCHiTLog"
+            android:label="@string/select_device"
+            android:configChanges="orientation|keyboardHidden"
+            android:screenOrientation="portrait"
+            android:exported="false" >
+            
+            <intent-filter>
+                <action android:name="dusan.stefanovic.connectionapp.CHOOSE_BLUETOOTH_DEVICE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <service 
+            android:name="dusan.stefanovic.connectionapp.service.WATCHiTService"
+            android:permission="dusan.stefanovic.connectionapp.permission.WATCHiT"
+            android:process="dusan.stefanovic.connectionapp.WATCHiTLog"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="dusan.stefanovic.connectionapp.service.WATCHiT_SERVICE" />
+            </intent-filter>
+        </service>
+            
+    </application>
+
+</manifest>

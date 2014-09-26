@@ -12,7 +12,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
@@ -25,6 +27,10 @@ public class WATCHiTService extends Service {
 	
 	private static final int NOTIFICATION_ID = 321421;
 	
+	Looper mServiceLooper;
+    DeviceHandler mDeviceHandler;
+    Messenger mClientMessenger;
+    
     /** Keeps track of all current registered clients. */
     ArrayList<Messenger> mClients = new ArrayList<Messenger>();
     // Flag indicating is connecting mode on
@@ -34,6 +40,7 @@ public class WATCHiTService extends Service {
     int mReconnectingAfter = 10000;
     // Device's physical address
     String mDeviceAddress;
+    String mDeviceName;
     // Device connection state
     int mDeviceConnectionState;
     
@@ -49,6 +56,8 @@ public class WATCHiTService extends Service {
     public static final int READ = 11;
     public static final int WROTE = 12;
     public static final int DEVICE_NAME = 13;
+    
+    
     
     
     // Handler for handling messages from device (in particular case from Bluetooth Connection)
@@ -68,7 +77,8 @@ public class WATCHiTService extends Service {
 		
 		};
 
-		DeviceHandler(WATCHiTService service) {
+		DeviceHandler(Looper looper, WATCHiTService service) {
+			super(looper);
 			mWeakReference = new WeakReference<WATCHiTService>(service);
 	    }
 		
@@ -112,13 +122,6 @@ public class WATCHiTService extends Service {
 	            		bundle.putInt(WATCHiTServiceInterface.TAG_DATA_LENGTH, message.arg1);
 	            		newMessage.setData(bundle);
 	            		service.sendMessageToClients(newMessage);
-	                	//Toast.makeText(service, "Read: " + text, Toast.LENGTH_SHORT).show();
-	                	/*
-	                    byte[] readBuf = (byte[]) msg.obj;
-	                    // construct a string from the valid bytes in the buffer
-	                    String readMessage = new String(readBuf, 0, msg.arg1);
-	                    mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
-	                    */
 	                    break;
 	                case WROTE:
 	                	// Toast.makeText(service, "Wrote to device", Toast.LENGTH_SHORT).show();
@@ -163,7 +166,8 @@ public class WATCHiTService extends Service {
 		
 		private final WeakReference<WATCHiTService> mWeakReference; 
 
-		ClientHandler(WATCHiTService service) {
+		ClientHandler(Looper looper, WATCHiTService service) {
+			super(looper);
 			mWeakReference = new WeakReference<WATCHiTService>(service);
 	    }
 		
@@ -214,36 +218,36 @@ public class WATCHiTService extends Service {
 	            }
         	}
         }
-    }
-    
-    final DeviceHandler mDeviceHandler = new DeviceHandler(this);
-    final Messenger mClientMessenger = new Messenger(new ClientHandler(this));
-    
-    // Broadcast receiver for monitoring Bluetooth status
-    
+    }    
     
     @Override
     public void onCreate() {
+    	super.onCreate();
+    	HandlerThread thread = new HandlerThread("WATCHiT");
+    	thread.start();
+    	mServiceLooper = thread.getLooper();
+    	mDeviceHandler = new DeviceHandler(mServiceLooper, this);
+    	mClientMessenger = new Messenger(new ClientHandler(mServiceLooper, this));
         mConnection = Connection.Factory.createBluetoothConnection(mDeviceHandler);
         mDeviceConnectionState = WATCHiTServiceInterface.DEVICE_DISCONNECTED;
     }
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
     	if (!mIsConnectingON) {
             mConnection.registerStateChangeBroadcastReceiver(this);
-            // String deviceAddress = intent.getExtras().getString(WATCHiTServiceInterface.DEVICE_ADDRESS);
             SharedPreferences sharedPreferences = getSharedPreferences("WATCHiT", 0);
             String deviceAddress = sharedPreferences.getString(WATCHiTServiceInterface.DEVICE_ADDRESS, "00:00:00:00:00:00");
+            String deviceName = sharedPreferences.getString(WATCHiTServiceInterface.DEVICE_NAME, "");
     		if (intent.hasExtra(WATCHiTServiceInterface.DEVICE_ADDRESS)) {
     			deviceAddress = intent.getStringExtra(WATCHiTServiceInterface.DEVICE_ADDRESS);
+    			deviceName = intent.getStringExtra(WATCHiTServiceInterface.DEVICE_NAME);
     			SharedPreferences.Editor editor = sharedPreferences.edit();
     		    editor.putString(WATCHiTServiceInterface.DEVICE_ADDRESS, deviceAddress);
+    		    editor.putString(WATCHiTServiceInterface.DEVICE_NAME, deviceName);
     		    editor.commit();
     		}
-    		startConnectingToDevice(deviceAddress);
+    		startConnectingToDevice(deviceAddress, deviceName);
     		Message newMessage = Message.obtain(null, WATCHiTServiceInterface.SERVICE_STARTED);
         	sendMessageToClients(newMessage);
     		if(!mConnection.isEnabled()) {
@@ -271,6 +275,7 @@ public class WATCHiTService extends Service {
     	} catch (IllegalArgumentException  e) {
     		
 		} 
+        mServiceLooper.quit();
     }
 
     private void doStartForeground() {
@@ -296,9 +301,10 @@ public class WATCHiTService extends Service {
     	}
     }
     
-    private void startConnectingToDevice(String deviceAddress) {
+    private void startConnectingToDevice(String deviceAddress, String deviceName) {
         // Get the device MAC address
         mDeviceAddress = deviceAddress;
+        mDeviceName = deviceName;
 		mIsConnectingON = true;
         doStartForeground();
         mConnection.connect(mDeviceAddress);
@@ -324,9 +330,11 @@ public class WATCHiTService extends Service {
     		Message newMessage = Message.obtain(null, WATCHiTServiceInterface.UPDATE);
     		Bundle bundle = new Bundle();
     		bundle.putBoolean(WATCHiTServiceInterface.IS_DEVICE_AVAILABLE, mConnection.isAvailable());
-    		bundle.putBoolean(WATCHiTServiceInterface.IS_DEVICE_ENABLED,mConnection.isEnabled());
+    		bundle.putBoolean(WATCHiTServiceInterface.IS_DEVICE_ENABLED, mConnection.isEnabled());
     		bundle.putBoolean(WATCHiTServiceInterface.IS_CONNECTING_TO_DEVICE, mIsConnectingON);
     		bundle.putInt(WATCHiTServiceInterface.DEVICE_CONNECTION_STATUS, mDeviceConnectionState);
+    		bundle.putString(WATCHiTServiceInterface.DEVICE_ADDRESS, mDeviceAddress);
+    		bundle.putString(WATCHiTServiceInterface.DEVICE_NAME, mDeviceName);
 			newMessage.setData(bundle);
 			messenger.send(newMessage);
 		} catch (RemoteException e) {
